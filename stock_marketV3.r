@@ -152,9 +152,9 @@ ncol(eod_ret)
 nrow(eod_ret)
 
 #remove the first row (need to do for daily, weekly, monthly to remove 2012-12-31)
-eod_ret<-tail(eod_ret,-1) #use tail with a negative value
-eom_ret<-tail(eom_ret,-1) #use tail with a negative value
-eow_ret<-tail(eow_ret,-1) #use tail with a negative value
+#eod_ret<-tail(eod_ret,-1) #use tail with a negative value
+#eom_ret<-tail(eom_ret,-1) #use tail with a negative value
+#eow_ret<-tail(eow_ret,-1) #use tail with a negative value
 #check
 eod_ret[1:10,1:5] #first 10 rows and first 5 columns 
 tail(eod_ret[,1:2]) # last 6 rows, first 2 columns
@@ -191,6 +191,7 @@ eom_ret<-eom_ret[,which(colnames(eom_ret) %in% selected_symbols_monthly)]
 eow_ret[1:10,1:5] #first 10 rows and first 5 columns 
 tail(eod_ret[,1:2],2)
 tail(eow_ret[,1:2],2)
+head(eom_ret[,1:2])
 tail(eom_ret[,1:2],2)
 
 ncol(eod_ret)
@@ -203,6 +204,7 @@ nrow(eod_ret)
 #write.csv(eow_ret,'C:/Test/eow_ret.csv')
 eom_ret['CLVS']
 write.csv(eom_ret,'C:/Test/eom_ret.csv')
+
 
 # You can actually open this file in Excel!
 
