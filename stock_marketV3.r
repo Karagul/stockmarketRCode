@@ -220,9 +220,10 @@ write.csv(eod_ret,'C:/Test/eod_ret.csv')
 #Ra<-as.xts(eod_ret)
 #RaM<-as.xts(eod_ret)
 #RaW<-as.xts(eod_ret)
-Ra<-as.xts(eod_ret[,,drop=F]) #based on top 4 and worst 4 avg performers of period.
-RaW<-as.xts(eow_ret[,,drop=F]) #based on top 4 and worst 4 avg performers of period.
-RaM<-as.xts(eom_ret[,,drop=F]) #based on top 4 and worst 4 avg performers of period.
+list<-c('TREE','TAL','NVDA','GTT','NFLX','ABMD','NBIX','TTWO','USCR','TSLA','AVGO','ANIP','NXST','ALGN','NTRI','GTN','STMP','LOV','PLUG','CORT','BCRX','BEAT','IMMU','SRPT','EXEL','NKTR','AMPE','XXII','RTRX','IDRA','GMO','EGY','AMRS','SHOS','VSI','HEAR','VICL','PRKR','CPST','SGY','VVUS','REXX','KEG','CYTX','RAS','FCSC','LQDT','GNC','ICON','PTX','SSI','OREX','BAS','HK')
+Ra<-as.xts(eod_ret[,c(list),drop=F]) #based on top 4 and worst 4 avg performers of period.
+RaW<-as.xts(eow_ret[,c(list),drop=F]) #based on top 4 and worst 4 avg performers of period.
+RaM<-as.xts(eom_ret[,c(list),drop=F]) #based on top 4 and worst 4 avg performers of period.
 Rb<-as.xts(eod_ret[,'SP500TR',drop=F]) #benchmark
 RbM<-as.xts(eom_ret[,'SP500TR',drop=F]) #benchmark
 RbW<-as.xts(eow_ret[,'SP500TR',drop=F]) #benchmark
