@@ -273,6 +273,13 @@ acc_RbW<-Return.cumulative(RbW)
 
 # withold the last 5 trading days
 Ra_training<-head(Ra,-5)
+
+table(is.na(Ra_training))
+
+table(is.na(RaM_training))
+
+table(is.na(RaW_training))
+
 head(Ra_training)[1:5,1:10]
 tail(Ra_training)[,1:10]
 Rb_training<-head(Rb,-5)
