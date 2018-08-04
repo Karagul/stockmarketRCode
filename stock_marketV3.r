@@ -344,9 +344,11 @@ opt_wM<-opt_pM$weights
 length(nonSlist)
 length(shortList)
 opt_w[1:length(nonSlist)]=2/length(nonSlist)
+opt_w[(length(nonSlist)+1):(length(nonSlist)+length(shortList))]=(-1/length(shortList))
 #opt_w[1:30]
 #opt_w[31:54]
-opt_w[(length(nonSlist)+1):(length(nonSlist)+length(shortList))]=(-1/length(shortList))
+opt_wM<-opt_w
+opt_wW<-opt_w
 length(opt_w)
 
 opt_w
