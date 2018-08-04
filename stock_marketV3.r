@@ -64,7 +64,7 @@ tail(eod)
 
 # Use Calendar --------------------------------------------------------
 #I keep confusing completeness window
-tdays<-ccal[which(ccal$trading==1 & ccal$date>='2013-01-01' & ccal$date<='2018-03-27'),,drop=F]
+tdays<-ccal[which(ccal$trading==1 & ccal$date>='2012-12-31' & ccal$date<='2018-03-27'),,drop=F]
 wdays<-tdays[which(tdays$dow=="Fri"),,drop=F]
 mdays<-tdays[which(tdays$eom==1),,drop=F]
 #check
@@ -152,9 +152,9 @@ ncol(eod_ret)
 nrow(eod_ret)
 
 #remove the first row (need to do for daily, weekly, monthly to remove 2012-12-31)
-#eod_ret<-tail(eod_ret,-1) #use tail with a negative value
-#eom_ret<-tail(eom_ret,-1) #use tail with a negative value
-#eow_ret<-tail(eow_ret,-1) #use tail with a negative value
+eod_ret<-tail(eod_ret,-1) #use tail with a negative value
+eom_ret<-tail(eom_ret,-1) #use tail with a negative value
+eow_ret<-tail(eow_ret,-1) #use tail with a negative value
 #check
 eod_ret[1:10,1:5] #first 10 rows and first 5 columns 
 tail(eod_ret[,1:2]) # last 6 rows, first 2 columns
