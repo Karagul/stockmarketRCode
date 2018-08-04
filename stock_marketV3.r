@@ -204,8 +204,8 @@ nrow(eod_ret)
 #write.csv(eow_ret,'C:/Test/eow_ret.csv')
 eom_ret['CLVS']
 write.csv(eom_ret,'C:/Test/eom_ret.csv')
-write.csv(eom_ret,'C:/Test/eow_ret.csv')
-write.csv(eom_ret,'C:/Test/eod_ret.csv')
+write.csv(eow_ret,'C:/Test/eow_ret.csv')
+write.csv(eod_ret,'C:/Test/eod_ret.csv')
 
 
 # You can actually open this file in Excel!
