@@ -221,7 +221,9 @@ write.csv(eod_ret,'C:/Test/eod_ret.csv')
 #Ra<-as.xts(eod_ret)
 #RaM<-as.xts(eod_ret)
 #RaW<-as.xts(eod_ret)
-list<-c('TREE','TAL','NVDA','GTT','NFLX','ABMD','NBIX','TTWO','USCR','TSLA','AVGO','ANIP','NXST','ALGN','NTRI','GTN','STMP','LOV','PLUG','CORT','BCRX','BEAT','IMMU','SRPT','EXEL','NKTR','AMPE','XXII','RTRX','IDRA','GMO','EGY','AMRS','SHOS','VSI','HEAR','VICL','PRKR','CPST','SGY','VVUS','REXX','KEG','CYTX','RAS','FCSC','LQDT','GNC','ICON','PTX','SSI','OREX','BAS','HK')
+nonSlist<-c('TREE','TAL','NVDA','GTT','NFLX','ABMD','NBIX','TTWO','USCR','TSLA','AVGO','ANIP','NXST','ALGN','NTRI','GTN','STMP','LOV','PLUG','CORT','BCRX','BEAT','IMMU','SRPT','EXEL','NKTR','AMPE','XXII','RTRX','IDRA')
+shortList<-c('GMO','EGY','AMRS','SHOS','VSI','HEAR','VICL','PRKR','CPST','SGY','VVUS','REXX','KEG','CYTX','RAS','FCSC','LQDT','GNC','ICON','PTX','SSI','OREX','BAS','HK')
+list<-c(nonSlist,shortList)
 Ra<-as.xts(eod_ret[,c(list),drop=F]) #based on top 4 and worst 4 avg performers of period.
 RaW<-as.xts(eow_ret[,c(list),drop=F]) #based on top 4 and worst 4 avg performers of period.
 RaM<-as.xts(eom_ret[,c(list),drop=F]) #based on top 4 and worst 4 avg performers of period.
@@ -338,6 +340,17 @@ opt_pM<-optimize.portfolio(R=RaM_training,portfolio=pspecM,optimize_method = 'RO
 opt_w<-opt_p$weights
 opt_wW<-opt_pW$weights
 opt_wM<-opt_pM$weights
+
+length(nonSlist)
+length(shortList)
+opt_w[1:length(nonSlist)]=2/length(nonSlist)
+#opt_w[1:30]
+#opt_w[31:54]
+opt_w[(length(nonSlist)+1):(length(nonSlist)+length(shortList))]=(-1/length(shortList))
+length(opt_w)
+
+opt_w
+sum(opt_w)
 #opt_wM[1:6]=.6667
 #opt_wM[7:12]=--3333
 #opt_wW[1:6]=.6667
@@ -376,6 +389,8 @@ tail(Rp)
 
 #chart.CumReturns(Ra_training,legend.loc = 'topleft')
 chart.CumReturns(RaM_training,legend.loc = 'topleft')
+chart.CumReturns(Rp,legend.loc = 'topleft')
+chart.CumReturns(RpW,legend.loc = 'topleft')
 chart.CumReturns(RpM,legend.loc = 'topleft')
 
 # End of Part 3c
