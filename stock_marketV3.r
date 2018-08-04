@@ -44,6 +44,9 @@ eod<-dbGetQuery(conn,paste(qry1,'UNION',qry2))
 testing<-dbGetQuery(conn,paste(qry))
 
 dbDisconnect(conn)
+ccal[which(ccal$date=='2013-03-29'),,]
+testing<-eod[which(eod$date=='2013-03-29'),,]
+
 
 #Explore
 head(ccal)
@@ -206,6 +209,7 @@ eom_ret['CLVS']
 write.csv(eom_ret,'C:/Test/eom_ret.csv')
 write.csv(eow_ret,'C:/Test/eow_ret.csv')
 write.csv(eod_ret,'C:/Test/eod_ret.csv')
+
 
 
 # You can actually open this file in Excel!
