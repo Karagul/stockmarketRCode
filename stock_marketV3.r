@@ -273,6 +273,8 @@ acc_RbW<-Return.cumulative(RbW)
 
 # withold the last 5 trading days
 Ra_training<-head(Ra,-5)
+head(Ra_training)[1:5,1:10]
+tail(Ra_training)[,1:10]
 Rb_training<-head(Rb,-5)
 #all but 3 month
 RaM_training<-head(RaM,-3)
@@ -303,17 +305,17 @@ marW<-mean(RbW_training) #we need daily minimum acceptabe return
 require(PortfolioAnalytics)
 require(ROI) # make sure to install it
 require(ROI.plugin.quadprog)  # make sure to install it
-pspec<-portfolio.spec(assets=colnames(Ra_training))
+pspec<-portfolio.spec(assets=list)
 pspec<-add.objective(portfolio=pspec,type="risk",name='StdDev')
 pspec<-add.constraint(portfolio=pspec,type="full_investment")
 pspec<-add.constraint(portfolio=pspec,type="return",return_target=mar)
 
-pspecM<-portfolio.spec(assets=colnames(RaM_training))
+pspecM<-portfolio.spec(assets=list)
 pspecM<-add.objective(portfolio=pspecM,type="risk",name='StdDev')
 pspecM<-add.constraint(portfolio=pspecM,type="full_investment")
 pspecM<-add.constraint(portfolio=pspecM,type="return",return_target=marM)
 
-pspecW<-portfolio.spec(assets=colnames(RaW_training))
+pspecW<-portfolio.spec(assets=list)
 pspecW<-add.objective(portfolio=pspecW,type="risk",name='StdDev')
 pspecW<-add.constraint(portfolio=pspecW,type="full_investment")
 pspecW<-add.constraint(portfolio=pspecW,type="return",return_target=marW)
