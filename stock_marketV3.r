@@ -130,11 +130,12 @@ nrow(eod_pvt_complete)
 # We can replace a few missing (NA or NaN) data items with previous data
 # Let's say no more than 3 in a row...
 require(zoo)
-eod_pvt_complete<-na.locf(eod_pvt_complete,na.rm=F,fromLast=F,maxgap=3)
-eom_pvt_complete<-na.locf(eom_pvt_complete,na.rm=F,fromLast=F,maxgap=3)
-eow_pvt_complete<-na.locf(eow_pvt_complete,na.rm=F,fromLast=F,maxgap=3)
+eod_pvt_complete<-na.locf(eod_pvt_complete,na.rm=F,fromLast=T,maxgap=3)
+eom_pvt_complete<-na.locf(eom_pvt_complete,na.rm=F,fromLast=T,maxgap=3)
+eow_pvt_complete<-na.locf(eow_pvt_complete,na.rm=F,fromLast=T,maxgap=3)
 
 #re-check
+table(is.na(eod_pvt_complete))
 eom_pvt_complete[1:10,1:5] #first 10 rows and first 5 columns 
 ncol(eod_pvt_complete)
 nrow(eod_pvt_complete)
