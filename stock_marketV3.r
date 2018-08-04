@@ -228,8 +228,8 @@ RbM<-as.xts(eom_ret[,'SP500TR',drop=F]) #benchmark
 RbW<-as.xts(eow_ret[,'SP500TR',drop=F]) #benchmark
 
 
-head(Ra)
-head(Rb)
+#head(Ra)
+#head(Rb)
 
 # And now we can use the analytical package...
 
