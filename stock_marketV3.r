@@ -293,6 +293,7 @@ RbW_testing<-tail(RbW,4)
 
 
 
+
 #optimize the MV (Markowitz 1950s) portfolio weights based on training
 #table.AnnualizedReturns(Rb_training)
 mar<-mean(Rb_training) #we need daily minimum acceptabe return
@@ -320,6 +321,7 @@ pspecW<-add.constraint(portfolio=pspecW,type="return",return_target=marW)
 #optimize portfolio
 opt_p<-optimize.portfolio(R=Ra_training,portfolio=pspec,optimize_method = 'ROI')
 opt_pW<-optimize.portfolio(R=RaW_training,portfolio=pspecW,optimize_method = 'ROI')
+opt_p=opt_pW
 opt_pM<-optimize.portfolio(R=RaM_training,portfolio=pspecM,optimize_method = 'ROI')
 
 #extract weights
@@ -362,6 +364,8 @@ tail(Rp)
 
 # Chart Hypothetical Portfolio Returns ------------------------------------
 
+#chart.CumReturns(Ra_training,legend.loc = 'topleft')
+chart.CumReturns(RaM_training,legend.loc = 'topleft')
 chart.CumReturns(RpM,legend.loc = 'topleft')
 
 # End of Part 3c
