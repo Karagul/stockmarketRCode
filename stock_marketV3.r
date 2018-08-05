@@ -1,22 +1,3 @@
-# Part 3c
-
-# Stock Market Case in R
-rm(list=ls(all=T)) # this just removes everything from memory
-
-# Load CSV Files ----------------------------------------------------------
-
-# Load daily prices from CSV - no parameters needed
-dp<-read.csv('C:/Temp/daily_prices_2012_2017.csv') # no arguments
-
-#Explore
-head(dp) #first few rows
-tail(dp) #last few rows
-nrow(dp) #row count
-
-#This is an easy way (csv) but we are not going to use it here
-rm(dp) # remove from memory
-#We are going to perform most of the transformation tasks in R
-
 # Connect to PostgreSQL ---------------------------------------------------
 
 # Make sure you have created the reader role for our PostgreSQL database
@@ -43,18 +24,11 @@ qry2="SELECT ticker,date,adj_close FROM eod_quotes WHERE date BETWEEN '2012-12-3
 eod<-dbGetQuery(conn,paste(qry1,'UNION',qry2))
 testing<-dbGetQuery(conn,paste(qry))
 
+#merged eod_indices with eod_quotes (so index and quotes arein same table)
 dbDisconnect(conn)
 
-#Explore
-head(ccal)
-tail(ccal)
-nrow(ccal)
-
-head(eod)
-tail(eod)
-nrow(eod)
-
-head(eod[which(eod$symbol=='SP500TR'),])
+#filter
+#head(eod[which(eod$symbol=='SP500TR'),])
 
 #For monthly we may need one more data item (for 2011-12-30)
 #We can add it to the database (INSERT INTO) - but to practice:
@@ -79,6 +53,7 @@ max(table(eod$symbol))
 #pct<-table(eod$symbol)/(nrow(tdays)-1) #max(pct) #account for day with -1
 pct<-table(eod$symbol)/max(table(eod$symbol))
 selected_symbols_daily<-names(pct)[which(pct>=0.97)]
+
 length(selected_symbols_daily)
 eod_complete<-eod[which(eod$symbol %in% selected_symbols_daily),,drop=F]
 
@@ -208,11 +183,6 @@ write.csv(eom_ret,'C:/Test/eom_ret.csv')
 write.csv(eow_ret,'C:/Test/eow_ret.csv')
 write.csv(eod_ret,'C:/Test/eod_ret.csv')
 
-
-
-# You can actually open this file in Excel!
-
-
 # Tabular Return Data Analytics -------------------------------------------
 
 #symbolsChosen<-c('ABMD','ACAD','ALGN','ALNY','ANIP','ASCMA','AVGO','CALD','CLVS','CORT','CPST','EA','EGY','EXEL','FCSC','FOLD','GNC','GTT','HEAR','HK','HZNP','ICON','IMI','IMMU','INFI','INSY','KEG','LGND','LQDT','MCF','MU','NBIX','NFLX','NVDA','OREX','PFPT','PQ','PRTA','PTX','RAS','REXX','RTRX','SDRL','SHOS','SSI','STMP','TAL','TREE','TSLA','TTWO','UVE','VICL','VSI','VVUS','WLB'),drop=F])
@@ -221,35 +191,49 @@ write.csv(eod_ret,'C:/Test/eod_ret.csv')
 #Ra<-as.xts(eod_ret)
 #RaM<-as.xts(eod_ret)
 #RaW<-as.xts(eod_ret)
-nonSlist<-c('TREE','TAL','NVDA','GTT','NFLX','ABMD','NBIX','TTWO','USCR','TSLA','AVGO','ANIP','NXST','ALGN','NTRI','GTN','STMP','LOV','PLUG','CORT','BCRX','BEAT','IMMU','SRPT','EXEL','NKTR','AMPE','XXII','RTRX','IDRA')
-shortList<-c('GMO','EGY','AMRS','SHOS','VSI','HEAR','VICL','PRKR','CPST','SGY','VVUS','REXX','KEG','CYTX','RAS','FCSC','LQDT','GNC','ICON','PTX','SSI','OREX','BAS','HK')
-list<-c(nonSlist,shortList)
-Ra<-as.xts(eod_ret[,c(list),drop=F]) #based on top 4 and worst 4 avg performers of period.
-RaW<-as.xts(eow_ret[,c(list),drop=F]) #based on top 4 and worst 4 avg performers of period.
-RaM<-as.xts(eom_ret[,c(list),drop=F]) #based on top 4 and worst 4 avg performers of period.
+#nonSlist<-c('TREE','TAL','NVDA','GTT','NFLX','ABMD','NBIX','TTWO','USCR','TSLA','AVGO','ANIP','NXST','ALGN','NTRI','GTN','STMP','LOV','PLUG','CORT','BCRX','BEAT','IMMU','SRPT','EXEL','NKTR','AMPE','XXII','RTRX','IDRA')
+#shortList<-c('GMO','EGY','AMRS','SHOS','VSI','HEAR','VICL','PRKR','CPST','SGY','VVUS','REXX','KEG','CYTX','RAS','FCSC','LQDT','GNC','ICON','PTX','SSI','OREX','BAS','HK')
+#list<-c(nonSlist,shortList)
+#list<-c()
+#Ra<-as.xts(eod_ret[,c(list),drop=F]) #based on top 4 and worst 4 avg performers of period.
+#RaW<-as.xts(eow_ret[,c(list),drop=F]) #based on top 4 and worst 4 avg performers of period.
+#RaM<-as.xts(eom_ret[,c(list),drop=F]) #based on top 4 and worst 4 avg performers of period.
+Ra[,'HK']
+Ra<-as.xts(eod_ret)
+RaW<-as.xts(eow_ret)
+RaM<-as.xts(eom_ret)
+
 Rb<-as.xts(eod_ret[,'SP500TR',drop=F]) #benchmark
 RbM<-as.xts(eom_ret[,'SP500TR',drop=F]) #benchmark
 RbW<-as.xts(eow_ret[,'SP500TR',drop=F]) #benchmark
 
+#estimating a quarter performance
+# withold the last 21 trading days
+Ra_training<-head(Ra,-63)
+Rb_training<-head(Rb,-63)
 
-#head(Ra)
-#head(Rb)
+#all but 1 month
+RaM_training<-head(RaM,-3)
+RbM_training<-head(RbM,-3)
 
-# And now we can use the analytical package...
+#all but 4 weeks
+RaW_training<-head(RaW,-13)
+RbW_training<-head(RbW,-13)
 
-# Stats
-#table.Stats(Ra)
-
-# Distributions
-#table.Distributions(Ra)
-
-# Returns
-#table.AnnualizedReturns(cbind(Rb,Ra),scale=252) # note for monthly use scale=12
+# use the last 21 trading days for testing
+Ra_testing<-tail(Ra,63)
+Rb_testing<-tail(Rb,63)
+# use last 1 month
+RaM_testing<-tail(RaM,3)
+RbM_testing<-tail(RbM,3)
+# use last 4 weeks
+RaW_testing<-tail(RaW,-13)
+RbW_testing<-tail(RbW,-13)
 
 # Accumulate Returns
 acc_Ra<-Return.cumulative(Ra)
-acc_RaM<-Return.cumulative(RaM)
 acc_RaW<-Return.cumulative(RaW)
+acc_RaM<-Return.cumulative(RaM)
 acc_Rb<-Return.cumulative(Rb)
 acc_RbM<-Return.cumulative(RbM)
 acc_RbW<-Return.cumulative(RbW)
@@ -274,34 +258,15 @@ acc_RbW<-Return.cumulative(RbW)
 
 # MV Portfolio Optimization -----------------------------------------------
 
-# withold the last 5 trading days
-Ra_training<-head(Ra,-5)
 
-table(is.na(Ra_training))
+#table(is.na(Ra_training))
 
-table(is.na(RaM_training))
+#table(is.na(RaM_training))
 
-table(is.na(RaW_training))
+#table(is.na(RaW_training))
 
-head(Ra_training)[1:5,1:10]
-tail(Ra_training)[,1:10]
-Rb_training<-head(Rb,-5)
-#all but 3 month
-RaM_training<-head(RaM,-3)
-RbM_training<-head(RbM,-3)
-#all but 4 weeks
-RaW_training<-head(RaW,-4)
-RbW_training<-head(RbW,-4)
-
-# use the last 5 trading days for testing
-Ra_testing<-tail(Ra,5)
-Rb_testing<-tail(Rb,5)
-# use last 3 months
-RaM_testing<-tail(RaM,3)
-RbM_testing<-tail(RbM,3)
-# use last 4 weeks
-RaW_testing<-tail(RaW,4)
-RbW_testing<-tail(RbW,4)
+#head(Ra_training)[1:5,1:10]
+#tail(Ra_training)[,1:10]
 
 
 
@@ -315,17 +280,17 @@ marW<-mean(RbW_training) #we need daily minimum acceptabe return
 require(PortfolioAnalytics)
 require(ROI) # make sure to install it
 require(ROI.plugin.quadprog)  # make sure to install it
-pspec<-portfolio.spec(assets=list)
+pspec<-portfolio.spec(assets=Ra_training)
 pspec<-add.objective(portfolio=pspec,type="risk",name='StdDev')
 pspec<-add.constraint(portfolio=pspec,type="full_investment")
 pspec<-add.constraint(portfolio=pspec,type="return",return_target=mar)
 
-pspecM<-portfolio.spec(assets=list)
+pspecM<-portfolio.spec(assets=RaM_training)
 pspecM<-add.objective(portfolio=pspecM,type="risk",name='StdDev')
 pspecM<-add.constraint(portfolio=pspecM,type="full_investment")
 pspecM<-add.constraint(portfolio=pspecM,type="return",return_target=marM)
 
-pspecW<-portfolio.spec(assets=list)
+pspecW<-portfolio.spec(assets=RaW_training)
 pspecW<-add.objective(portfolio=pspecW,type="risk",name='StdDev')
 pspecW<-add.constraint(portfolio=pspecW,type="full_investment")
 pspecW<-add.constraint(portfolio=pspecW,type="return",return_target=marW)
@@ -333,7 +298,7 @@ pspecW<-add.constraint(portfolio=pspecW,type="return",return_target=marW)
 #optimize portfolio
 opt_p<-optimize.portfolio(R=Ra_training,portfolio=pspec,optimize_method = 'ROI')
 opt_pW<-optimize.portfolio(R=RaW_training,portfolio=pspecW,optimize_method = 'ROI')
-opt_p=opt_pW
+#opt_p=opt_pW
 opt_pM<-optimize.portfolio(R=RaM_training,portfolio=pspecM,optimize_method = 'ROI')
 
 #extract weights
@@ -343,25 +308,16 @@ opt_wM<-opt_pM$weights
 
 length(nonSlist)
 length(shortList)
-opt_w[1:length(nonSlist)]=2/length(nonSlist)
-opt_w[(length(nonSlist)+1):(length(nonSlist)+length(shortList))]=(-1/length(shortList))
+#opt_w[1:length(nonSlist)]=2/length(nonSlist)
+#opt_w[(length(nonSlist)+1):(length(nonSlist)+length(shortList))]=(-1/length(shortList))
 #opt_w[1:30]
 #opt_w[31:54]
-opt_wM<-opt_w
-opt_wW<-opt_w
+#opt_wM<-opt_w
+#opt_wW<-opt_w
 length(opt_w)
 
 opt_w
 sum(opt_w)
-#opt_wM[1:6]=.6667
-#opt_wM[7:12]=--3333
-#opt_wW[1:6]=.6667
-#opt_wW[7:12]=--3333
-#opt_w[1:6]=.6667
-#opt_w[7:12]=--3333
-#opt_w[1:12]=.0833
-#opt_wM[1:20]=.075
-#opt_wM[21:40]=-.025
 
 #apply weights to test returns #applies to Rb Testing then Ra Testing, shortcircuit by applying to Rb<>Training and then ptf<Ra<>Training * weights, but that's applying the weights to itself
 Rp<-Rb_testing # easier to apply the existing structure
@@ -369,12 +325,16 @@ RpM<-RbM_testing # easier to apply the existing structure
 RpW<-RbW_testing # easier to apply the existing structure
 #define new column that is the dot product of the two vectors
 Rp$ptf<-Ra_testing %*% opt_w
-RpM$ptf<-RaM_testing %*% opt_wM
 RpW$ptf<-RaW_testing %*% opt_wW
+RpM$ptf<-RaM_testing %*% opt_wM
 
 Return.cumulative(Rp)
 Return.cumulative(RpW)
 Return.cumulative(RpM)
+
+chart.CumReturns(Rp)
+chart.CumReturns(RpW)
+chart.CumReturns(RpM)
 
 Return.cumulative(RaM_testing)
 RpM
