@@ -20,12 +20,12 @@ colSortMax <- function(data) data.frame(data) %>%
   arrange(desc(max))
 
 CR_Ra_training <- colSortMax(Return.cumulative(head(eod_ret, -63)))
-CR_RaM_training <- colSortMax(Return.cumulative(head(eom_ret, -3)))
 CR_RaW_training <- colSortMax(Return.cumulative(head(eow_ret, -13)))
+CR_RaM_training <- colSortMax(Return.cumulative(head(eom_ret, -3)))
 
-avg_RaM_training <- colSortAvg(RaM_training)
-avg_RaM_training <- colSortAvg(RaM_training)
-avg_RaM_training <- colSortAvg(RaM_training)
+avg_Ra_training <- colSortAvg(head(eod_ret, -63))
+avg_RaW_training <- colSortAvg(head(eow_ret, -13))
+avg_RaM_training <- colSortAvg(head(eom_ret, -3))
 
 tail(avg_RaM_training)
 
