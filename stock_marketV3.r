@@ -107,9 +107,9 @@ nrow(eod_pvt_complete)
 # We can replace a few missing (NA or NaN) data items with previous data
 # Let's say no more than 3 in a row...
 require(zoo)
-eod_pvt_complete<-na.locf(eod_pvt_complete,na.rm=F,fromLast=T,maxgap=3)
-eom_pvt_complete<-na.locf(eom_pvt_complete,na.rm=F,fromLast=T,maxgap=3)
-eow_pvt_complete<-na.locf(eow_pvt_complete,na.rm=F,fromLast=T,maxgap=3)
+eod_pvt_complete<-na.locf(eod_pvt_complete,na.rm=T,fromLast=T,maxgap=3)
+eom_pvt_complete<-na.locf(eom_pvt_complete,na.rm=T,fromLast=T,maxgap=3)
+eow_pvt_complete<-na.locf(eow_pvt_complete,na.rm=T,fromLast=T,maxgap=3)
 
 #re-check
 table(is.na(eod_pvt_complete))
@@ -120,8 +120,11 @@ nrow(eod_pvt_complete)
 # Calculating Returns -----------------------------------------------------
 require(PerformanceAnalytics)
 eod_ret<-CalculateReturns(eod_pvt_complete)
-eom_ret<-CalculateReturns(eom_pvt_complete)
+length(eod_ret)
 eow_ret<-CalculateReturns(eow_pvt_complete) 
+length(eow_ret)
+eom_ret<-CalculateReturns(eom_pvt_complete)
+length(eom_ret)
 head(eow_pvt_complete)[1:5]
 
 #check
@@ -180,10 +183,10 @@ nrow(eod_ret)
 # Export data from R to CSV -----------------------------------------------
 #write.csv(eod_ret,'C:/Test/eod_ret.csv')
 #write.csv(eow_ret,'C:/Test/eow_ret.csv')
-eom_ret['CLVS']
-write.csv(eom_ret,'C:/Test/eom_ret.csv')
-write.csv(eow_ret,'C:/Test/eow_ret.csv')
-write.csv(eod_ret,'C:/Test/eod_ret.csv')
+#eom_ret['CLVS']
+#write.csv(eom_ret,'C:/Test/eom_ret.csv')
+#write.csv(eow_ret,'C:/Test/eow_ret.csv')
+#write.csv(eod_ret,'C:/Test/eod_ret.csv')
 
 # Tabular Return Data Analytics -------------------------------------------
 
@@ -197,13 +200,14 @@ write.csv(eod_ret,'C:/Test/eod_ret.csv')
 #shortList<-c('GMO','EGY','AMRS','SHOS','VSI','HEAR','VICL','PRKR','CPST','SGY','VVUS','REXX','KEG','CYTX','RAS','FCSC','LQDT','GNC','ICON','PTX','SSI','OREX','BAS','HK')
 #list<-c(nonSlist,shortList)
 #list<-c()
-#Ra<-as.xts(eod_ret[,c(list),drop=F]) #based on top 4 and worst 4 avg performers of period.
-#RaW<-as.xts(eow_ret[,c(list),drop=F]) #based on top 4 and worst 4 avg performers of period.
-#RaM<-as.xts(eom_ret[,c(list),drop=F]) #based on top 4 and worst 4 avg performers of period.
-Ra[,'HK']
-Ra<-as.xts(eod_ret)
-RaW<-as.xts(eow_ret)
-RaM<-as.xts(eom_ret)
+Ra<-as.xts(eod_ret[,c(list),drop=F]) #based on top 4 and worst 4 avg performers of period.
+RaW<-as.xts(eow_ret[,c(list),drop=F]) #based on top 4 and worst 4 avg performers of period.
+RaM<-as.xts(eom_ret[,c(list),drop=F]) #based on top 4 and worst 4 avg performers of period.
+#Ra[,'HK']
+#Ra<-as.xts(eod_ret)
+#RaW<-as.xts(eow_ret)
+#RaM<-as.xts(eom_ret)
+eod_ret[list]
 
 Rb<-as.xts(eod_ret[,'SP500TR',drop=F]) #benchmark
 RbM<-as.xts(eom_ret[,'SP500TR',drop=F]) #benchmark
@@ -237,8 +241,8 @@ acc_Ra<-Return.cumulative(Ra)
 acc_RaW<-Return.cumulative(RaW)
 acc_RaM<-Return.cumulative(RaM)
 acc_Rb<-Return.cumulative(Rb)
-acc_RbM<-Return.cumulative(RbM)
 acc_RbW<-Return.cumulative(RbW)
+acc_RbM<-Return.cumulative(RbM)
 
 # Capital Assets Pricing Model
 #table.CAPM(Ra,Rb)

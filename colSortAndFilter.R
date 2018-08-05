@@ -20,33 +20,33 @@ colSortMax <- function(data) data.frame(data) %>%
   arrange(desc(max))
 
 CR_Ra_training <- colSortMax(Return.cumulative(head(eod_ret, -63)))
-CR_RaW_training <- colSortMax(Return.cumulative(head(eow_ret, -13)))
-CR_RaM_training <- colSortMax(Return.cumulative(head(eom_ret, -3)))
+#CR_RaW_training <- colSortMax(Return.cumulative(head(eow_ret, -13)))
+#CR_RaM_training <- colSortMax(Return.cumulative(head(eom_ret, -3)))
 
 avg_Ra_training <- colSortAvg(head(eod_ret, -63))
-avg_RaW_training <- colSortAvg(head(eow_ret, -13))
-avg_RaM_training <- colSortAvg(head(eom_ret, -3))
-
-tail(avg_RaM_training)
+#avg_RaW_training <- colSortAvg(head(eow_ret, -13))
+#avg_RaM_training <- colSortAvg(head(eom_ret, -3))
 
 #top 20 by cumulative return
 
 #bottom 20 
 b20CR<-c()
 b20AVGR<-c()
-t20CR<-colnames(data.frame(RaM)[CR_RaM_training$colname])[1:20]
-b20CR<-colnames(data.frame(RaM)[CR_RaM_training$colname])[(length(avg_RaM_training$colname)-20):length(avg_RaM_training$colname)]
+
+#bottom 20 
+
+t20CR<-colnames(data.frame(eod_ret)[CR_Ra_training$colname])[1:20]
+b20CR<-colnames(data.frame(eod_ret)[CR_Ra_training$colname])[(length(CR_Ra_training$colname)-20):length(CR_Ra_training$colname)]
 #top 20 by average return
-t20AVGR<-colnames(data.frame(RaM)[avg_RaM_training$colname])[1:20]
+t20AVGR<-colnames(data.frame(eod_ret)[avg_Ra_training$colname])[1:20]
 #bottom 20
-b20AVGR<-colnames(data.frame(RaM)[avg_RaM_training$colname])[(length(avg_RaM_training$colname)-20):length(avg_RaM_training$colname)]
+b20AVGR<-colnames(data.frame(eod_ret)[avg_Ra_training$colname])[(length(avg_Ra_training$colname)-20):length(avg_Ra_training$colname)]
 #export dataframe in the order specified in the summary
 
 t20Mix<-unique(c(t20CR,t20AVGR))
 b20Mix<-unique(c(b20CR,b20AVGR))
 
-stack(eod_pvt[1:10,1:5])
-
+list<-c(t20Mix,b20Mix)
 #good returns
 hcr<-data.frame(stack(tail((data.frame(RaMAll)[summary$colname])[,1:20],3)))$values
 
