@@ -52,6 +52,8 @@ max(table(eod$symbol))
 
 #pct<-table(eod$symbol)/(nrow(tdays)-1) #max(pct) #account for day with -1
 pct<-table(eod$symbol)/max(table(eod$symbol))
+
+#this is the ingenious filter operation that applies a list of colnames derived from above into a selected_symbols_daily
 selected_symbols_daily<-names(pct)[which(pct>=0.97)]
 
 length(selected_symbols_daily)
@@ -212,21 +214,21 @@ RbW<-as.xts(eow_ret[,'SP500TR',drop=F]) #benchmark
 Ra_training<-head(Ra,-63)
 Rb_training<-head(Rb,-63)
 
-#all but 1 month
+#all but 3 months
 RaM_training<-head(RaM,-3)
 RbM_training<-head(RbM,-3)
 
-#all but 4 weeks
+#all but 13 weeks
 RaW_training<-head(RaW,-13)
 RbW_training<-head(RbW,-13)
 
 # use the last 21 trading days for testing
 Ra_testing<-tail(Ra,63)
 Rb_testing<-tail(Rb,63)
-# use last 1 month
+# use last 3 months
 RaM_testing<-tail(RaM,3)
 RbM_testing<-tail(RbM,3)
-# use last 4 weeks
+# use last 13 weeks
 RaW_testing<-tail(RaW,-13)
 RbW_testing<-tail(RbW,-13)
 
@@ -274,8 +276,8 @@ acc_RbW<-Return.cumulative(RbW)
 #optimize the MV (Markowitz 1950s) portfolio weights based on training
 #table.AnnualizedReturns(Rb_training)
 mar<-mean(Rb_training) #we need daily minimum acceptabe return
-marM<-mean(RbM_training) #we need daily minimum acceptabe return
-marW<-mean(RbW_training) #we need daily minimum acceptabe return
+marM<-mean(RbM_training) #we need daily minimum acceptable return
+marW<-mean(RbW_training) #we need daily minimum acceptable return
 
 require(PortfolioAnalytics)
 require(ROI) # make sure to install it
