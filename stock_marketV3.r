@@ -21,6 +21,7 @@ ccal<-dbGetQuery(conn,qry)
 #eod prices and indices
 qry1="SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '2012-12-31' AND '2018-03-27'"
 qry2="SELECT ticker,date,adj_close FROM eod_quotes WHERE date BETWEEN '2012-12-31' AND '2018-03-27'"
+#fact table
 eod<-dbGetQuery(conn,paste(qry1,'UNION',qry2))
 testing<-dbGetQuery(conn,paste(qry))
 
@@ -111,6 +112,9 @@ eod_pvt_complete<-na.locf(eod_pvt_complete,na.rm=T,fromLast=T,maxgap=3)
 eom_pvt_complete<-na.locf(eom_pvt_complete,na.rm=T,fromLast=T,maxgap=3)
 eow_pvt_complete<-na.locf(eow_pvt_complete,na.rm=T,fromLast=T,maxgap=3)
 
+#table(is.na(eod_pvt_complete))
+#head(eod_pvt_complete)[1:5]
+
 #re-check
 table(is.na(eod_pvt_complete))
 eom_pvt_complete[1:10,1:5] #first 10 rows and first 5 columns 
@@ -120,6 +124,9 @@ nrow(eod_pvt_complete)
 # Calculating Returns -----------------------------------------------------
 require(PerformanceAnalytics)
 eod_ret<-CalculateReturns(eod_pvt_complete)
+table(is.na(eod_pvt_complete))
+table(is.na(eod_ret))
+
 length(eod_ret)
 eow_ret<-CalculateReturns(eow_pvt_complete) 
 length(eow_ret)
@@ -168,46 +175,19 @@ eod_ret<-eod_ret[,which(colnames(eod_ret) %in% selected_symbols_daily)]
 eow_ret<-eow_ret[,which(colnames(eow_ret) %in% selected_symbols_weekly)]
 eom_ret<-eom_ret[,which(colnames(eom_ret) %in% selected_symbols_monthly)]
 
-#check
-eow_ret[1:10,1:5] #first 10 rows and first 5 columns 
-tail(eod_ret[,1:2],2)
-tail(eow_ret[,1:2],2)
-head(eom_ret[,1:2])
-tail(eom_ret[,1:2],2)
-
-ncol(eod_ret)
-nrow(eod_ret)
-
-#YOUR TURN: subset eom_ret data
-
-# Export data from R to CSV -----------------------------------------------
-#write.csv(eod_ret,'C:/Test/eod_ret.csv')
-#write.csv(eow_ret,'C:/Test/eow_ret.csv')
-#eom_ret['CLVS']
-#write.csv(eom_ret,'C:/Test/eom_ret.csv')
-#write.csv(eow_ret,'C:/Test/eow_ret.csv')
-#write.csv(eod_ret,'C:/Test/eod_ret.csv')
-
+table(is.na(eod_ret))
 # Tabular Return Data Analytics -------------------------------------------
-
-#symbolsChosen<-c('ABMD','ACAD','ALGN','ALNY','ANIP','ASCMA','AVGO','CALD','CLVS','CORT','CPST','EA','EGY','EXEL','FCSC','FOLD','GNC','GTT','HEAR','HK','HZNP','ICON','IMI','IMMU','INFI','INSY','KEG','LGND','LQDT','MCF','MU','NBIX','NFLX','NVDA','OREX','PFPT','PQ','PRTA','PTX','RAS','REXX','RTRX','SDRL','SHOS','SSI','STMP','TAL','TREE','TSLA','TTWO','UVE','VICL','VSI','VVUS','WLB'),drop=F])
-# We will select 'SP500TR' and c('AEGN','AAON','AMSC','ALCO','AGNC','AREX','ABCB','ABMD','ACTG','ADTN','AAPL','AAL'),drop=F])
-# We need to convert data frames to xts (extensible time series)
-#Ra<-as.xts(eod_ret)
-#RaM<-as.xts(eod_ret)
-#RaW<-as.xts(eod_ret)
-#nonSlist<-c('TREE','TAL','NVDA','GTT','NFLX','ABMD','NBIX','TTWO','USCR','TSLA','AVGO','ANIP','NXST','ALGN','NTRI','GTN','STMP','LOV','PLUG','CORT','BCRX','BEAT','IMMU','SRPT','EXEL','NKTR','AMPE','XXII','RTRX','IDRA')
-#shortList<-c('GMO','EGY','AMRS','SHOS','VSI','HEAR','VICL','PRKR','CPST','SGY','VVUS','REXX','KEG','CYTX','RAS','FCSC','LQDT','GNC','ICON','PTX','SSI','OREX','BAS','HK')
-#list<-c(nonSlist,shortList)
-#list<-c()
-Ra<-as.xts(eod_ret[,c(list),drop=F]) #based on top 4 and worst 4 avg performers of period.
-RaW<-as.xts(eow_ret[,c(list),drop=F]) #based on top 4 and worst 4 avg performers of period.
-RaM<-as.xts(eom_ret[,c(list),drop=F]) #based on top 4 and worst 4 avg performers of period.
+source("C:/Users/user/Documents/alphaAdvantageApi/stockmarketR/stockmarketRCode/colSortAndFilter.R")
+tail(eod_ret[list])
+Ra<-as.xts(eod_ret[list]) #based on top 4 and worst 4 avg performers of period.
+RaW<-as.xts(eow_ret[list]) #based on top 4 and worst 4 avg performers of period.
+RaM<-as.xts(eom_ret[list]) #based on top 4 and worst 4 avg performers of period.
 #Ra[,'HK']
 #Ra<-as.xts(eod_ret)
 #RaW<-as.xts(eow_ret)
 #RaM<-as.xts(eom_ret)
-eod_ret[list]
+head(eod_ret[list])
+
 
 Rb<-as.xts(eod_ret[,'SP500TR',drop=F]) #benchmark
 RbM<-as.xts(eom_ret[,'SP500TR',drop=F]) #benchmark
@@ -282,7 +262,10 @@ acc_RbM<-Return.cumulative(RbM)
 mar<-mean(Rb_training) #we need daily minimum acceptabe return
 marM<-mean(RbM_training) #we need daily minimum acceptable return
 marW<-mean(RbW_training) #we need daily minimum acceptable return
-
+portfolio <- portfolio.spec(Ra_training)
+unique(colnames(Ra_training))
+length(unique(colnames(Ra_training)))
+length(colnames(Ra_training))
 require(PortfolioAnalytics)
 require(ROI) # make sure to install it
 require(ROI.plugin.quadprog)  # make sure to install it
@@ -302,6 +285,12 @@ pspecW<-add.constraint(portfolio=pspecW,type="full_investment")
 pspecW<-add.constraint(portfolio=pspecW,type="return",return_target=marW)
 
 #optimize portfolio
+which(is.na(eod_pvt), arr.ind=TRUE)
+eod_pvt[which(is.na(eod_pvt), arr.ind=TRUE)]
+eod_pvt[is.na(eod_pvt)]
+head(eod_pvt[!complete.cases(eod_pvt), ][1:5])
+
+
 opt_p<-optimize.portfolio(R=Ra_training,portfolio=pspec,optimize_method = 'ROI')
 opt_pW<-optimize.portfolio(R=RaW_training,portfolio=pspecW,optimize_method = 'ROI')
 #opt_p=opt_pW

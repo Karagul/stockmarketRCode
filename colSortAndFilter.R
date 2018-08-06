@@ -47,26 +47,25 @@ t20Mix<-unique(c(t20CR,t20AVGR))
 b20Mix<-unique(c(b20CR,b20AVGR))
 
 list<-c(t20Mix,b20Mix)
+
 #good returns
-hcr<-data.frame(stack(tail((data.frame(RaMAll)[summary$colname])[,1:20],3)))$values
+#hcr<-data.frame(stack(tail((data.frame(Ra)[summary$colname])[,1:20],3)))$values
 
 #bad returns
-lcr<-data.frame(stack(tail((data.frame(RaMAll)[summary$colname])[,n20:n],3)))$values
+#lcr<-data.frame(stack(tail((data.frame(Ra)[summary$colname])[,n20:n],3)))$values
 
-boxplot(hcr,lcr)
+#boxplot(hcr,lcr)
 
-summary(hcr)
-summary(lcr)
+#summary(hcr)
+#summary(lcr)
 
-Return.cumulative(hcr)
+#Return.cumulative(hcr)
 
 #sum of individual cumulatives?
-sum(Return.cumulative(tail((data.frame(RaMAll)[summary$colname])[,1:20],3)))
-Return.cumulative(lcr)
-
-RaM_training()
+#sum(Return.cumulative(tail((data.frame(RaMAll)[summary$colname])[,1:20],3)))
+#Return.cumulative(lcr)
 
 
-write.csv(data.frame(RaMAll)[summary$colname],"c:/test/sorted.csv")
+#write.csv(data.frame(RaMAll)[summary$colname],"c:/test/sorted.csv")
 
-write.csv(data.frame(RaMAll)[list],"c:/test/sortedReduced.csv")
+#write.csv(data.frame(RaMAll)[list],"c:/test/sortedReduced.csv")
