@@ -288,19 +288,10 @@ list_Ra<-c(t20Mix_Ra,b20Mix_Ra)
 list_RaW<-c(t20Mix_RaW,b20Mix_RaW)
 list_RaM<-c(t20Mix_RaM,b20Mix_RaM)
 
-length(t20Mix_Ra)
-length(b20Mix_Ra)
-
-length(t20Mix_RaW)
-length(b20Mix_RaW)
-
-length(t20Mix_RaM)
-length(b20Mix_RaM)
-
 #Ra<-as.xts(eod_ret[,c('AEGN','AAON','AMSC','ALCO','AGNC','AREX','ABCB','ABMD','ACTG','ADTN','AAPL','AAL'),drop=F])
 Ra<-as.xts(eod_ret[list_Ra]) #colSortAndFilter.R
-RaW<-as.xts(eow_ret[list_RaW]) #colSortAndFilter.R
-RaM<-as.xts(eom_ret[list_RaM]) #colSortAndFilter.R
+RaW<-as.xts(eow_ret[list_Ra]) #colSortAndFilter.R
+RaM<-as.xts(eom_ret[list_Ra]) #colSortAndFilter.R
 tail(eom_ret[,1:2])
 tail(RaM)
 #check
@@ -412,10 +403,28 @@ opt_pM<-optimize.portfolio(R=RaM_training,portfolio=pspecM,optimize_method = 'RO
 
 #extract weights
 opt_w<-opt_p$weights
-opt_wW<-opt_pW$weights
-#opt_wW<-opt_w
-opt_wM<-opt_pM$weights
-#opt_wM<-opt_w
+#opt_wW<-opt_pW$weights
+opt_wW<-opt_w
+#opt_wM<-opt_pM$weights
+opt_wM<-opt_w
+
+length(t20Mix_Ra)
+length(b20Mix_Ra)
+
+length(t20Mix_RaW)
+length(b20Mix_RaW)
+
+length(t20Mix_RaM)
+length(b20Mix_RaM)
+
+#positve/negative weights
+positive=2
+negative=-1
+
+opt_w[1:length(t20Mix_Ra)]<-positive/length(t20Mix_Ra)
+opt_w[(length(t20Mix_Ra)+1):(length(t20Mix_Ra)+length(b20Mix_Ra))]<-negative/length(b20Mix_Ra)
+
+sum(opt_w)
 
 #apply weights to test returns
 Rp<-Rb_testing # easier to apply the existing structure
@@ -423,8 +432,8 @@ RpW<-RbW_testing # easier to apply the existing structure
 RpM<-RbM_testing # easier to apply the existing structure
 #define new column that is the dot product of the two vectors
 Rp$ptf<-Ra_testing %*% opt_w
-RpW$ptf<-RaW_testing %*% opt_wW
-RpM$ptf<-RaM_testing %*% opt_wM
+RpW$ptf<-RaW_testing %*% opt_w
+RpM$ptf<-RaM_testing %*% opt_w
 
 
 #check
@@ -432,7 +441,7 @@ head(Rp)
 tail(Rp)
 
 #Compare basic metrics
-table.AnnualizedReturns(Rp)
+#table.AnnualizedReturns(Rp) expensive
 
 Return.cumulative(Rp)
 Return.cumulative(RpW)
