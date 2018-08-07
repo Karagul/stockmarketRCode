@@ -18,7 +18,7 @@ colSortMax <- function(data) data.frame(data) %>%
   arrange(desc(max))
 
 
-#good returns
+#boxplot good returns
 #hcr<-data.frame(stack(tail((data.frame(Ra)[summary$colname])[,1:20],3)))$values
 
 #bad returns

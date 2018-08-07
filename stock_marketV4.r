@@ -265,6 +265,15 @@ list_Ra<-c(t20Mix_Ra,b20Mix_Ra)
 list_RaW<-c(t20Mix_RaW,b20Mix_RaW)
 list_RaM<-c(t20Mix_RaM,b20Mix_RaM)
 
+length(t20Mix_Ra)
+length(b20Mix_Ra)
+
+length(t20Mix_RaW)
+length(b20Mix_RaW)
+
+length(t20Mix_RaM)
+length(b20Mix_RaM)
+
 #Ra<-as.xts(eod_ret[,c('AEGN','AAON','AMSC','ALCO','AGNC','AREX','ABCB','ABMD','ACTG','ADTN','AAPL','AAL'),drop=F])
 Ra<-as.xts(eod_ret[list_Ra]) #colSortAndFilter.R
 RaW<-as.xts(eow_ret[list_RaW]) #colSortAndFilter.R
@@ -309,7 +318,7 @@ chart.CumReturns(Ra,legend.loc = 'topleft')
 chart.CumReturns(Rb,legend.loc = 'topleft')
 
 #Box plots
-chart.Boxplot(cbind(head(Rb,-252),head(Ra,-252)))
+chart.Boxplot(cbind(head(Rb,-63),head(Ra,-63)))
 
 chart.Drawdown(Ra,legend.loc = 'bottomleft')
 
@@ -318,8 +327,8 @@ chart.Drawdown(Ra,legend.loc = 'bottomleft')
 # MV Portfolio Optimization -----------------------------------------------
 
 # withold the last 252 trading days
-Ra_training<-head(Ra,-252)
-Rb_training<-head(Rb,-252)
+Ra_training<-head(Ra,-63)
+Rb_training<-head(Rb,-63)
 
 #all but 13 weeks
 RaW_training<-head(RaW,-13)
@@ -330,8 +339,8 @@ RaM_training<-head(RaM,-3)
 RbM_training<-head(RbM,-3)
 
 # use the last 21 trading days for testing
-Ra_testing<-tail(Ra,252)
-Rb_testing<-tail(Rb,252)
+Ra_testing<-tail(Ra,63)
+Rb_testing<-tail(Rb,63)
 
 # use last 13 weeks
 RaW_testing<-tail(RaW,13)
