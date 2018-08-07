@@ -272,8 +272,8 @@ Ra_testing<-tail(Ra,252)
 Rb_testing<-tail(Rb,252)
 
 # use last 13 weeks
-RaW_testing<-tail(RaW,-13)
-RbW_testing<-tail(RbW,-13)
+RaW_testing<-tail(RaW,13)
+RbW_testing<-tail(RbW,13)
 
 # use last 3 months
 RaM_testing<-tail(RaM,3)
@@ -302,9 +302,6 @@ pspecM<-portfolio.spec(assets=colnames(RaM_training))
 pspecM<-add.objective(portfolio=pspecM,type="risk",name='StdDev')
 pspecM<-add.constraint(portfolio=pspecM,type="full_investment")
 pspecM<-add.constraint(portfolio=pspecM,type="return",return_target=marM)
-
-
-
 
 #optimize portfolio
 opt_p<-optimize.portfolio(R=Ra_training,portfolio=pspec,optimize_method = 'ROI')
@@ -336,10 +333,11 @@ table.AnnualizedReturns(Rp)
 
 Return.cumulative(Rp)
 Return.cumulative(RpW)
+Return.cumulative(RpM)
 
 # Chart Hypothetical Portfolio Returns ------------------------------------
 
-chart.CumReturns(Rp,legend.loc = 'topleft')
+chart.CumReturns(RpW,legend.loc = 'topleft')
 
 # End of Part 3c
 # End of Stock Market Case Study 
