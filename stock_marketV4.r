@@ -373,10 +373,10 @@ opt_pM<-optimize.portfolio(R=RaM_training,portfolio=pspecM,optimize_method = 'RO
 
 #extract weights
 opt_w<-opt_p$weights
-#opt_wW<-opt_pW$weights
-opt_wW<-opt_w
-#opt_wM<-opt_pM$weights
-opt_wM<-opt_w
+opt_wW<-opt_pW$weights
+#opt_wW<-opt_w
+opt_wM<-opt_pM$weights
+#opt_wM<-opt_w
 
 #apply weights to test returns
 Rp<-Rb_testing # easier to apply the existing structure
