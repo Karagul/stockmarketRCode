@@ -226,14 +226,22 @@ nrow(eod_ret)
 # We need to convert data frames to xts (extensible time series)
 source("C:/Users/user/Documents/alphaAdvantageApi/stockmarketR/stockmarketRCode/colSortAndFilter.R")
 
-CR_Ra_training <- colSortMax(Return.cumulative(Ra_training))
-avg_Ra_training <- colSortAvg(Ra_training)
+eod_ret_training<-head(eod_ret,-63)
+eow_ret_training<-head(eow_ret,-13)
+eom_ret_training<-head(eom_ret,-3)
 
-CR_RaW_training <- colSortMax(Return.cumulative(RaW_training))
-avg_RaW_training <- colSortAvg(RaW_training)
+eod_ret_testing<-tail(eod_ret,63)
+eow_ret_testing<-tail(eow_ret,13)
+eom_ret_testing<-tail(eom_ret,3)
 
-CR_RaM_training <- colSortMax(Return.cumulative(RaM_training))
-avg_RaM_training <- colSortAvg(RaM_training)
+CR_Ra_training <- colSortMax(Return.cumulative(eod_ret_training))
+avg_Ra_training <- colSortAvg(eod_ret_training)
+
+CR_RaW_training <- colSortMax(Return.cumulative(eow_ret_training))
+avg_RaW_training <- colSortAvg(eow_ret_training)
+
+CR_RaM_training <- colSortMax(Return.cumulative(eom_ret_training))
+avg_RaM_training <- colSortAvg(eom_ret_training)
 
 #top 20 by cumulative return
 t20CR_Ra<-c()
@@ -348,6 +356,10 @@ chart.Drawdown(Ra,legend.loc = 'bottomleft')
 # MV Portfolio Optimization -----------------------------------------------
 
 # withold the last 252 trading days
+
+#check
+eom_ret_testing[,1:2]
+
 Ra_training<-head(Ra,-63)
 Rb_training<-head(Rb,-63)
 
