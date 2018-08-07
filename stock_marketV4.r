@@ -107,7 +107,7 @@ nrow(eod_pvt)
 #table(is.na(eod_pvt))
 # YOUR TURN: Perform the same set of tasks for monthly prices (create eom_pvt)
 
-tail(eod_pvt[,1:2])
+#tail(eod_pvt[,1:2])
 
 # Merge with Calendar -----------------------------------------------------
 eod_pvt_complete<-merge.data.frame(x=tdays[,'date',drop=F],y=eod_pvt,by='date',all.x=T)
@@ -146,8 +146,9 @@ eow_pvt_complete<-na.locf(eow_pvt_complete,na.rm=T,fromLast=F,maxgap=3)
 eom_pvt_complete<-na.locf(eom_pvt_complete,na.rm=T,fromLast=F,maxgap=3)
 
 #cut it here, see the true#  noo!!!
-tail(eom_pvt_complete[,1:2]) #cuts off 2017-12-29...
+
 #re-check
+tail(eom_pvt_complete[,1:2]) #cuts off 2017-12-29...
 eom_pvt_complete[1:10,1:5] #first 10 rows and first 5 columns 
 ncol(eod_pvt_complete)
 nrow(eod_pvt_complete)
@@ -158,7 +159,7 @@ require(PerformanceAnalytics)
 eod_ret<-CalculateReturns(eod_pvt_complete)
 eow_ret<-CalculateReturns(eow_pvt_complete)
 eom_ret<-CalculateReturns(eom_pvt_complete)
-
+tail(eom_pvt_complete[,1:2]) #cuts off 2017-12-29...
 #check
 tail(eom_ret[,1:2])
 
@@ -176,6 +177,7 @@ eow_ret<-tail(eow_ret,-1) #use tail with a negative value
 eom_ret<-tail(eom_ret,-1) #use tail with a negative value
 #check
 eod_ret[1:10,1:5] #first 10 rows and first 5 columns 
+tail(eom_ret[,1:2])
 eom_ret[,1:2]
 ncol(eod_ret)
 nrow(eod_ret)
@@ -205,6 +207,7 @@ eom_ret<-eom_ret[,which(colnames(eom_ret) %in% selected_symbols_monthly)]
 (eod_ret[!complete.cases(eod_pvt), ][1:5])
 
 #check
+tail(eom_ret[,1:2])
 eod_ret[1:10,1:5] #first 10 rows and first 5 columns 
 ncol(eod_ret)
 nrow(eod_ret)
@@ -298,7 +301,8 @@ length(b20Mix_RaM)
 Ra<-as.xts(eod_ret[list_Ra]) #colSortAndFilter.R
 RaW<-as.xts(eow_ret[list_RaW]) #colSortAndFilter.R
 RaM<-as.xts(eom_ret[list_RaM]) #colSortAndFilter.R
-
+tail(eom_ret[,1:2])
+tail(RaM)
 #check
 #tail(RaM[,1:2])
 
