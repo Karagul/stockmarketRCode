@@ -1,6 +1,6 @@
 
 start_date='2011-12-30'
-end_date='2018-07-30'
+end_date='2018-07-29'
 
 require(RPostgreSQL) # did you install this package?
 require(DBI)
@@ -15,10 +15,10 @@ conn = dbConnect(drv=pg
 
 #custom calendar
 qry='SELECT * FROM custom_calendar ORDER by date'
-#ccal<-dbGetQuery(conn,qry)
+ccal<-dbGetQuery(conn,qry)
 #eod prices and indices
 #qry1="SELECT symbol,date,adjusted_close FROM eod_indices WHERE date BETWEEN '2011-12-30' AND '2017-12-31'"
-qry1=paste0("SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '",start_date,"' AND '",end_date,"'")
+qry1=paste("SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '",start_date,"' AND '",end_date,"'")
 qry2=paste("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
 eod<-dbGetQuery(conn,paste(qry1,'UNION',qry2))
 #eod<-dbGetQuery(conn,paste(qry))
@@ -78,9 +78,10 @@ nrow(eod_complete)
 require(reshape2) #did you install this package?
 eod_pvt<-dcast(eod_complete, date ~ symbol,value.var='adj_close',fun.aggregate = mean, fill=NULL)
 #check
-eod_pvt[1:10,1:5] #first 10 rows and first 5 columns 
+tail(eod_pvt[,1:5]) #first 10 rows and first 5 columns 
 ncol(eod_pvt) # column count
 nrow(eod_pvt)
+
 #table(is.na(eod_pvt))
 # YOUR TURN: Perform the same set of tasks for monthly prices (create eom_pvt)
 
