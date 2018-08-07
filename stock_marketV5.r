@@ -1,4 +1,7 @@
 
+start_date='2016-12-30'
+end_date='2017-12-31'
+
 require(RPostgreSQL) # did you install this package?
 require(DBI)
 pg = dbDriver("PostgreSQL")
@@ -15,8 +18,8 @@ qry='SELECT * FROM custom_calendar ORDER by date'
 #ccal<-dbGetQuery(conn,qry)
 #eod prices and indices
 #qry1="SELECT symbol,date,adjusted_close FROM eod_indices WHERE date BETWEEN '2011-12-30' AND '2017-12-31'"
-qry1="SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '2016-12-30' AND '2017-12-31'"
-qry2="SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '2016-12-30' AND '2017-12-31'"
+qry1=paste0("SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '",start_date,"' AND '",end_date,"'")
+qry2=paste("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
 eod<-dbGetQuery(conn,paste(qry1,'UNION',qry2))
 #eod<-dbGetQuery(conn,paste(qry))
 dbDisconnect(conn)
@@ -31,10 +34,6 @@ tail(eod)
 nrow(eod)
 
 head(eod[which(eod$symbol=='SP500TR'),])
-
-#For monthly we may need one more data item (for 2011-12-30)
-#We can add it to the database (INSERT INTO) - but to practice: reinserts each eod run which is not tied directly with the db.
-eod_row<-data.frame(symbol='SP500TR',date=as.Date('2011-12-30'),adj_close=2158.94)
 
 eod<-rbind(eod,eod_row)
 tail(eod)
