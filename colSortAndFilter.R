@@ -19,11 +19,11 @@ colSortMax <- function(data) data.frame(data) %>%
   summarise_at(.vars = vars(value), .funs = funs(mean = mean, sum = sum, max = max)) %>%
   arrange(desc(max))
 
-CR_Ra_training <- colSortMax(Return.cumulative(head(eod_ret, -63)))
+CR_Ra_training <- colSortMax(Return.cumulative(head(eod_ret, -252)))
 #CR_RaW_training <- colSortMax(Return.cumulative(head(eow_ret, -13)))
 #CR_RaM_training <- colSortMax(Return.cumulative(head(eom_ret, -3)))
 
-avg_Ra_training <- colSortAvg(head(eod_ret, -63))
+avg_Ra_training <- colSortAvg(head(eod_ret, -252))
 #avg_RaW_training <- colSortAvg(head(eow_ret, -13))
 #avg_RaM_training <- colSortAvg(head(eom_ret, -3))
 
@@ -34,6 +34,8 @@ b20CR<-c()
 b20AVGR<-c()
 
 #bottom 20 
+
+#chart.Boxplot(eod_ret[t20CR])
 
 t20CR<-colnames(data.frame(eod_ret)[CR_Ra_training$colname])[1:20]
 b20CR<-colnames(data.frame(eod_ret)[CR_Ra_training$colname])[(length(CR_Ra_training$colname)-20):length(CR_Ra_training$colname)]

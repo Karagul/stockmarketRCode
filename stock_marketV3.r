@@ -34,12 +34,12 @@ dbDisconnect(conn)
 #For monthly we may need one more data item (for 2011-12-30)
 #We can add it to the database (INSERT INTO) - but to practice:
 #eod_row<-data.frame(symbol='SP500TR',date=as.Date('2011-12-30'),adj_close=2158.94) head(eod)
-eod<-rbind(eod,eod_row)
+#eod<-rbind(eod,eod_row)
 tail(eod)
 
 # Use Calendar --------------------------------------------------------
 #I keep confusing completeness window
-tdays<-ccal[which(ccal$trading==1 & ccal$date>='2012-12-31' & ccal$date<='2018-03-27'),,drop=F]
+tdays<-ccal[which(ccal$trading==1),,drop=F]
 wdays<-tdays[which(tdays$dow=="Fri"),,drop=F]
 mdays<-tdays[which(tdays$eom==1),,drop=F]
 #check
@@ -82,8 +82,8 @@ nrow(eod_pvt)
 
 # Merge with Calendar -----------------------------------------------------
 eod_pvt_complete<-merge.data.frame(x=tdays[,'date',drop=F],y=eod_pvt,by='date',all.x=T)
-eom_pvt_complete<-merge.data.frame(x=mdays[,'date',drop=F],y=eod_pvt,by='date',all.x=T)
 eow_pvt_complete<-merge.data.frame(x=wdays[,'date',drop=F],y=eod_pvt,by='date',all.x=T)
+eom_pvt_complete<-merge.data.frame(x=mdays[,'date',drop=F],y=eod_pvt,by='date',all.x=T)
 
 #check
 eod_pvt_complete[1:10,1:5] #first 10 rows and first 5 columns
@@ -108,9 +108,9 @@ nrow(eod_pvt_complete)
 # We can replace a few missing (NA or NaN) data items with previous data
 # Let's say no more than 3 in a row...
 require(zoo)
-eod_pvt_complete<-na.locf(eod_pvt_complete,na.rm=T,fromLast=T,maxgap=3)
-eom_pvt_complete<-na.locf(eom_pvt_complete,na.rm=T,fromLast=T,maxgap=3)
-eow_pvt_complete<-na.locf(eow_pvt_complete,na.rm=T,fromLast=T,maxgap=3)
+eod_pvt_complete<-na.locf(eod_pvt_complete,na.rm=T,fromLast=F,maxgap=3)
+eow_pvt_complete<-na.locf(eow_pvt_complete,na.rm=T,fromLast=F,maxgap=3)
+eom_pvt_complete<-na.locf(eom_pvt_complete,na.rm=T,fromLast=F,maxgap=3)
 
 #table(is.na(eod_pvt_complete))
 #head(eod_pvt_complete)[1:5]
@@ -124,13 +124,13 @@ nrow(eod_pvt_complete)
 # Calculating Returns -----------------------------------------------------
 require(PerformanceAnalytics)
 eod_ret<-CalculateReturns(eod_pvt_complete)
+eow_ret<-CalculateReturns(eow_pvt_complete) 
+eom_ret<-CalculateReturns(eom_pvt_complete)
+
 table(is.na(eod_pvt_complete))
 table(is.na(eod_ret))
-
 length(eod_ret)
-eow_ret<-CalculateReturns(eow_pvt_complete) 
 length(eow_ret)
-eom_ret<-CalculateReturns(eom_pvt_complete)
 length(eom_ret)
 head(eow_pvt_complete)[1:5]
 
@@ -157,8 +157,8 @@ nrow(eod_ret)
 colMax <- function(data) sapply(data, max, na.rm = TRUE)
 # Apply it
 max_daily_ret<-colMax(eod_ret)
-max_monthly_ret<-colMax(eom_ret)
 max_weekly_ret<-colMax(eow_ret)
+max_monthly_ret<-colMax(eom_ret)
 max_daily_ret[1:10] #first 10 max returns
 # And proceed just like we did with percentage (completeness)
 selected_symbols_daily<-names(max_daily_ret)[which(max_daily_ret<=1.00)]
@@ -188,33 +188,36 @@ RaM<-as.xts(eom_ret[list]) #based on top 4 and worst 4 avg performers of period.
 #RaM<-as.xts(eom_ret)
 head(eod_ret[list])
 
+(eod_ret[!complete.cases(eod_pvt), ][1:5])
 
 Rb<-as.xts(eod_ret[,'SP500TR',drop=F]) #benchmark
-RbM<-as.xts(eom_ret[,'SP500TR',drop=F]) #benchmark
 RbW<-as.xts(eow_ret[,'SP500TR',drop=F]) #benchmark
+RbM<-as.xts(eom_ret[,'SP500TR',drop=F]) #benchmark
 
 #estimating a quarter performance
 # withold the last 21 trading days
 Ra_training<-head(Ra,-63)
 Rb_training<-head(Rb,-63)
 
-#all but 3 months
-RaM_training<-head(RaM,-3)
-RbM_training<-head(RbM,-3)
-
 #all but 13 weeks
 RaW_training<-head(RaW,-13)
 RbW_training<-head(RbW,-13)
 
+#all but 3 months
+RaM_training<-head(RaM,-3)
+RbM_training<-head(RbM,-3)
+
 # use the last 21 trading days for testing
 Ra_testing<-tail(Ra,63)
 Rb_testing<-tail(Rb,63)
-# use last 3 months
-RaM_testing<-tail(RaM,3)
-RbM_testing<-tail(RbM,3)
+
 # use last 13 weeks
 RaW_testing<-tail(RaW,-13)
 RbW_testing<-tail(RbW,-13)
+
+# use last 3 months
+RaM_testing<-tail(RaM,3)
+RbM_testing<-tail(RbM,3)
 
 # Accumulate Returns
 acc_Ra<-Return.cumulative(Ra)
@@ -260,8 +263,8 @@ acc_RbM<-Return.cumulative(RbM)
 #optimize the MV (Markowitz 1950s) portfolio weights based on training
 #table.AnnualizedReturns(Rb_training)
 mar<-mean(Rb_training) #we need daily minimum acceptabe return
-marM<-mean(RbM_training) #we need daily minimum acceptable return
 marW<-mean(RbW_training) #we need daily minimum acceptable return
+marM<-mean(RbM_training) #we need daily minimum acceptable return
 portfolio <- portfolio.spec(Ra_training)
 unique(colnames(Ra_training))
 length(unique(colnames(Ra_training)))
@@ -269,26 +272,27 @@ length(colnames(Ra_training))
 require(PortfolioAnalytics)
 require(ROI) # make sure to install it
 require(ROI.plugin.quadprog)  # make sure to install it
-pspec<-portfolio.spec(assets=Ra_training)
+pspec<-portfolio.spec(assets=colnames(Ra_training))
 pspec<-add.objective(portfolio=pspec,type="risk",name='StdDev')
 pspec<-add.constraint(portfolio=pspec,type="full_investment")
 pspec<-add.constraint(portfolio=pspec,type="return",return_target=mar)
 
-pspecM<-portfolio.spec(assets=RaM_training)
-pspecM<-add.objective(portfolio=pspecM,type="risk",name='StdDev')
-pspecM<-add.constraint(portfolio=pspecM,type="full_investment")
-pspecM<-add.constraint(portfolio=pspecM,type="return",return_target=marM)
-
-pspecW<-portfolio.spec(assets=RaW_training)
+pspecW<-portfolio.spec(assets=colnames(RaW_training))
 pspecW<-add.objective(portfolio=pspecW,type="risk",name='StdDev')
 pspecW<-add.constraint(portfolio=pspecW,type="full_investment")
 pspecW<-add.constraint(portfolio=pspecW,type="return",return_target=marW)
 
+pspecM<-portfolio.spec(assets=colnames(RaM_training))
+pspecM<-add.objective(portfolio=pspecM,type="risk",name='StdDev')
+pspecM<-add.constraint(portfolio=pspecM,type="full_investment")
+pspecM<-add.constraint(portfolio=pspecM,type="return",return_target=marM)
+
+
 #optimize portfolio
 which(is.na(eod_pvt), arr.ind=TRUE)
 eod_pvt[which(is.na(eod_pvt), arr.ind=TRUE)]
-eod_pvt[is.na(eod_pvt)]
-head(eod_pvt[!complete.cases(eod_pvt), ][1:5])
+eod_ret[is.na(eod_pvt)]
+head(eod_ret[!complete.cases(eod_pvt), ][1:5])
 
 
 opt_p<-optimize.portfolio(R=Ra_training,portfolio=pspec,optimize_method = 'ROI')
