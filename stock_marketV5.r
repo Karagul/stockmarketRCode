@@ -18,9 +18,11 @@ qry='SELECT * FROM custom_calendar ORDER by date'
 ccal<-dbGetQuery(conn,qry)
 #eod prices and indices
 #qry1="SELECT symbol,date,adjusted_close FROM eod_indices WHERE date BETWEEN '2011-12-30' AND '2017-12-31'"
-qry1=paste("SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '",start_date,"' AND '",end_date,"'")
-qry2=paste("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
-eod<-dbGetQuery(conn,paste(qry1,'UNION',qry2))
+qry1=paste0("SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '",start_date,"' AND '",end_date,"'")
+qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
+qry3=paste0("SELECT symbol,timestamp,adjusted_close FROM etf_bond_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
+eod<-dbGetQuery(conn,paste(qry3,'UNION',qry2))
+
 #eod<-dbGetQuery(conn,paste(qry))
 dbDisconnect(conn)
 
@@ -278,6 +280,7 @@ list_RaM<-c(t20Mix_RaM,b20Mix_RaM)
 Ra<-as.xts(eod_ret[list_Ra]) #colSortAndFilter.R
 RaW<-as.xts(eow_ret[list_Ra]) #colSortAndFilter.R
 RaM<-as.xts(eom_ret[list_Ra]) #colSortAndFilter.R
+
 tail(eom_ret[,1:2])
 tail(RaM)
 #check
@@ -325,7 +328,7 @@ chart.CumReturns(Ra,legend.loc = 'topleft')
 chart.CumReturns(Rb,legend.loc = 'topleft')
 
 #Box plots
-chart.Boxplot(cbind(head(Rb,-63),head(Ra,-63)))
+chart.Boxplot(cbind(Rb_training,Ra_training))
 
 chart.Drawdown(Ra,legend.loc = 'bottomleft')
 
@@ -404,8 +407,8 @@ length(t20Mix_RaM)
 length(b20Mix_RaM)
 
 #positve/negative weights
-positive=2
-negative=-1
+positive=4
+negative=-3
 
 opt_w[1:length(t20Mix_Ra)]<-positive/length(t20Mix_Ra)
 opt_w[(length(t20Mix_Ra)+1):(length(t20Mix_Ra)+length(b20Mix_Ra))]<-negative/length(b20Mix_Ra)
