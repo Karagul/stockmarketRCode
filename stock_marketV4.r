@@ -203,10 +203,72 @@ write.csv(eod_ret,'C:/Temp/eod_ret.csv')
 # We need to convert data frames to xts (extensible time series)
 source("C:/Users/user/Documents/alphaAdvantageApi/stockmarketR/stockmarketRCode/colSortAndFilter.R")
 
+CR_Ra_training <- colSortMax(Return.cumulative(Ra_training))
+avg_Ra_training <- colSortAvg(Ra_training)
+
+CR_RaW_training <- colSortMax(Return.cumulative(RaW_training))
+avg_RaW_training <- colSortAvg(RaW_training)
+
+CR_RaM_training <- colSortMax(Return.cumulative(RaM_training))
+avg_RaM_training <- colSortAvg(RaM_training)
+
+#top 20 by cumulative return
+t20CR_Ra<-c()
+t20CR_RaW<-c()
+t20CR_RaM<-c()
+
+t20AVGR_Ra<-c()
+t20AVGR_RaW<-c()
+t20AVGR_RaM<-c()
+
+#bottom 20 
+b20CR_Ra<-c()
+b20CR_RaW<-c()
+b20CR_RaM<-c()
+
+b20AVGR_Ra<-c()
+b20AVGR_RaW<-c()
+b20AVGR_RaM<-c()
+
+#bottom 20 
+
+#chart.Boxplot(eod_ret[t20CR])
+t20CR_Ra<-colnames(data.frame(eod_ret)[CR_Ra_training$colname])[1:20]
+t20CR_RaW<-colnames(data.frame(eow_ret)[CR_RaW_training$colname])[1:20]
+t20CR_RaM<-colnames(data.frame(eom_ret)[CR_RaM_training$colname])[1:20]
+
+b20CR_Ra<-colnames(data.frame(eod_ret)[CR_Ra_training$colname])[(length(CR_Ra_training$colname)-20):length(CR_Ra_training$colname)]
+b20CR_RaW<-colnames(data.frame(eow_ret)[CR_RaW_training$colname])[(length(CR_RaW_training$colname)-20):length(CR_RaW_training$colname)]
+b20CR_RaM<-colnames(data.frame(eom_ret)[CR_RaM_training$colname])[(length(CR_RaM_training$colname)-20):length(CR_RaM_training$colname)]
+
+#top 20 by average return
+#I should only be feeding in one variable to avoid input errors, which means I need to refactor this code.
+t20AVGR_Ra<-colnames(data.frame(eod_ret)[avg_Ra_training$colname])[1:20]
+t20AVGR_RaW<-colnames(data.frame(eow_ret)[avg_RaW_training$colname])[1:20]
+t20AVGR_RaM<-colnames(data.frame(eom_ret)[avg_RaM_training$colname])[1:20]
+
+#bottom 20
+b20AVGR_Ra<-colnames(data.frame(eod_ret)[avg_Ra_training$colname])[(length(avg_Ra_training$colname)-20):length(avg_Ra_training$colname)]
+b20AVGR_RaW<-colnames(data.frame(eow_ret)[avg_RaW_training$colname])[(length(avg_RaW_training$colname)-20):length(avg_RaW_training$colname)]
+b20AVGR_RaM<-colnames(data.frame(eom_ret)[avg_RaM_training$colname])[(length(avg_RaM_training$colname)-20):length(avg_RaM_training$colname)]
+#export dataframe in the order specified in the summary
+
+t20Mix_Ra<-unique(c(t20CR_Ra,t20AVGR_Ra))
+t20Mix_RaW<-unique(c(t20CR_RaW,t20AVGR_RaW))
+t20Mix_RaM<-unique(c(t20CR_RaM,t20AVGR_RaM))
+
+b20Mix_Ra<-unique(c(b20CR_Ra,b20AVGR_Ra))
+b20Mix_RaW<-unique(c(b20CR_RaW,b20AVGR_RaW))
+b20Mix_RaM<-unique(c(b20CR_RaM,b20AVGR_RaM))
+
+list_Ra<-c(t20Mix_Ra,b20Mix_Ra)
+list_RaW<-c(t20Mix_RaW,b20Mix_RaW)
+list_RaM<-c(t20Mix_RaM,b20Mix_RaM)
+
 #Ra<-as.xts(eod_ret[,c('AEGN','AAON','AMSC','ALCO','AGNC','AREX','ABCB','ABMD','ACTG','ADTN','AAPL','AAL'),drop=F])
-Ra<-as.xts(eod_ret[list]) #colSortAndFilter.R
-RaW<-as.xts(eow_ret[list]) #colSortAndFilter.R
-RaM<-as.xts(eom_ret[list]) #colSortAndFilter.R
+Ra<-as.xts(eod_ret[list_Ra]) #colSortAndFilter.R
+RaW<-as.xts(eow_ret[list_RaW]) #colSortAndFilter.R
+RaM<-as.xts(eom_ret[list_RaM]) #colSortAndFilter.R
 
 Rb<-as.xts(eod_ret[,'SP500TR',drop=F]) #benchmark
 RbW<-as.xts(eow_ret[,'SP500TR',drop=F]) #benchmark
@@ -217,14 +279,14 @@ head(Rb)
 
 # And now we can use the analytical package...
 
-# Stats
-table.Stats(Ra)
+# Stats #expensive
+#table.Stats(Ra)
 
-# Distributions
-table.Distributions(Ra)
+# Distributions #expensive
+#table.Distributions(Ra)
 
-# Returns
-table.AnnualizedReturns(cbind(Rb,Ra),scale=252) # note for monthly use scale=12
+# Returns #expensive
+#table.AnnualizedReturns(cbind(Rb,Ra),scale=252) # note for monthly use scale=12
 
 # Accumulate Returns
 acc_Ra<-Return.cumulative(Ra)
@@ -235,8 +297,8 @@ acc_Rb<-Return.cumulative(Rb)
 acc_RbW<-Return.cumulative(RbW)
 acc_RbM<-Return.cumulative(RbM)
 
-# Capital Assets Pricing Model
-table.CAPM(Ra,Rb)
+# Capital Assets Pricing Model #expensive
+#table.CAPM(Ra,Rb)
 
 # YOUR TURN: try other tabular analyses
 
@@ -311,8 +373,10 @@ opt_pM<-optimize.portfolio(R=RaM_training,portfolio=pspecM,optimize_method = 'RO
 
 #extract weights
 opt_w<-opt_p$weights
-opt_wW<-opt_pW$weights
-opt_wM<-opt_pM$weights
+#opt_wW<-opt_pW$weights
+opt_wW<-opt_w
+#opt_wM<-opt_pM$weights
+opt_wM<-opt_w
 
 #apply weights to test returns
 Rp<-Rb_testing # easier to apply the existing structure
@@ -337,7 +401,9 @@ Return.cumulative(RpM)
 
 # Chart Hypothetical Portfolio Returns ------------------------------------
 
+chart.CumReturns(Rp,legend.loc = 'topleft')
 chart.CumReturns(RpW,legend.loc = 'topleft')
+chart.CumReturns(RpM,legend.loc = 'topleft')
 
 # End of Part 3c
 # End of Stock Market Case Study 
