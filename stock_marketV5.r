@@ -3,20 +3,22 @@ require(RPostgreSQL) # did you install this package?
 require(DBI)
 pg = dbDriver("PostgreSQL")
 conn = dbConnect(drv=pg
-                 ,user="stockmarketreader"
+                 ,user="readyloop"
                  ,password="read123"
                  ,host="localhost"
                  ,port=5432
-                 ,dbname="stockmarket"
+                 ,dbname="readyloop"
 )
 
 #custom calendar
 qry='SELECT * FROM custom_calendar ORDER by date'
-ccal<-dbGetQuery(conn,qry)
+#ccal<-dbGetQuery(conn,qry)
 #eod prices and indices
-qry1="SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '2011-12-30' AND '2017-12-31'"
-qry2="SELECT ticker,date,adj_close FROM eod_quotes WHERE date BETWEEN '2011-12-30' AND '2017-12-31'"
+#qry1="SELECT symbol,date,adjusted_close FROM eod_indices WHERE date BETWEEN '2011-12-30' AND '2017-12-31'"
+qry1="SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '2016-12-30' AND '2017-12-31'"
+qry2="SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '2016-12-30' AND '2017-12-31'"
 eod<-dbGetQuery(conn,paste(qry1,'UNION',qry2))
+#eod<-dbGetQuery(conn,paste(qry))
 dbDisconnect(conn)
 
 #Explore
