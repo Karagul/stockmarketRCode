@@ -201,8 +201,8 @@ length(selected_symbols_daily)
 
 #subset eod_ret
 eod_ret<-eod_ret[,which(colnames(eod_ret) %in% selected_symbols_daily)]
-eow_ret<-eow_ret[,which(colnames(eow_ret) %in% selected_symbols_weekly)]
-eom_ret<-eom_ret[,which(colnames(eom_ret) %in% selected_symbols_monthly)]
+eow_ret<-eow_ret[,which(colnames(eow_ret) %in% selected_symbols_daily)]
+eom_ret<-eom_ret[,which(colnames(eom_ret) %in% selected_symbols_daily)]
 
 (eod_ret[!complete.cases(eod_pvt), ][1:5])
 

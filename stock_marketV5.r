@@ -40,7 +40,7 @@ tail(eod)
 
 # Use Calendar --------------------------------------------------------
 
-tdays<-ccal[which(ccal$trading==1 & ccal$date >= '2011-12-30' & ccal$date <='2017-12-31'),,drop=F]
+tdays<-ccal[which(ccal$trading==1 & ccal$date >= start_date & ccal$date <=end_date),,drop=F]
 wdays<-tdays[which(tdays$dow=="Fri"),,drop=F]
 mdays<-tdays[which(tdays$eom==1),,drop=F]
 head(tdays)
@@ -178,8 +178,8 @@ length(selected_symbols_daily)
 
 #subset eod_ret
 eod_ret<-eod_ret[,which(colnames(eod_ret) %in% selected_symbols_daily)]
-eow_ret<-eow_ret[,which(colnames(eow_ret) %in% selected_symbols_weekly)]
-eom_ret<-eom_ret[,which(colnames(eom_ret) %in% selected_symbols_monthly)]
+eow_ret<-eow_ret[,which(colnames(eow_ret) %in% selected_symbols_daily)]
+eom_ret<-eom_ret[,which(colnames(eom_ret) %in% selected_symbols_daily)]
 
 (eod_ret[!complete.cases(eod_pvt), ][1:5])
 
