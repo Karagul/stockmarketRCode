@@ -79,6 +79,14 @@ length(selected_symbols_daily)
 
 eod_complete<-eod[which(eod$symbol %in% selected_symbols_daily),,drop=F]
 
+#temp<-c()
+#temp<-eod_complete$date
+#typeof(temp)
+#eod_complete[which(eod_complete$date=="2017-12-31")]
+
+#=='2017-12-30']
+#data.frame(eod_complete)[date>=as.Date('2017-12-29') & date<=as.Date('2017-12-31')]
+
 #check
 head(eod_complete)
 tail(eod_complete)
@@ -99,17 +107,21 @@ nrow(eod_pvt)
 #table(is.na(eod_pvt))
 # YOUR TURN: Perform the same set of tasks for monthly prices (create eom_pvt)
 
+tail(eod_pvt[,1:2])
 
 # Merge with Calendar -----------------------------------------------------
 eod_pvt_complete<-merge.data.frame(x=tdays[,'date',drop=F],y=eod_pvt,by='date',all.x=T)
 eow_pvt_complete<-merge.data.frame(x=wdays[,'date',drop=F],y=eod_pvt,by='date',all.x=T)
 eom_pvt_complete<-merge.data.frame(x=mdays[,'date',drop=F],y=eod_pvt,by='date',all.x=T)
-eow_pvt_complete[,1:2]
 
+tail(eom_pvt_complete[,1:2]) #cuts off 2017-12-29, but re-appears if I rerun it, but eom_ret didn't have it before I reran it... which tells me it changes inbetween here and eom_ret
+#eom_pvt_complete[which(eom_pvt_complete$date=)]
+
+#which[eom_pvt_complete$date=='2017-12-29']
 #check
-eod_pvt_complete[1:10,1:5] #first 10 rows and first 5 columns 
-ncol(eod_pvt_complete)
-nrow(eod_pvt_complete)
+#eod_pvt_complete[1:10,1:5] #first 10 rows and first 5 columns 
+#ncol(eod_pvt_complete)
+#nrow(eod_pvt_complete)
 
 #use dates as row names and remove the date column
 rownames(eod_pvt_complete)<-eod_pvt_complete$date
@@ -120,9 +132,10 @@ eom_pvt_complete$date<-NULL
 eow_pvt_complete$date<-NULL
 
 #re-check
+tail(eom_pvt_complete[,1:2]) #cuts off 2017-12-29...
 eod_pvt_complete[1:10,1:5] #first 10 rows and first 5 columns 
-ncol(eod_pvt_complete)
-nrow(eod_pvt_complete)
+#ncol(eod_pvt_complete)
+#nrow(eod_pvt_complete)
 table(is.na(eod_pvt_complete))
 # Missing Data Imputation -----------------------------------------------------
 # We can replace a few missing (NA or NaN) data items with previous data
@@ -130,7 +143,10 @@ table(is.na(eod_pvt_complete))
 require(zoo)
 eod_pvt_complete<-na.locf(eod_pvt_complete,na.rm=T,fromLast=F,maxgap=3)
 eow_pvt_complete<-na.locf(eow_pvt_complete,na.rm=T,fromLast=F,maxgap=3)
-eom_pvt_complete<-na.locf(eom_pvt_complete,na.rm=T,fromLast=T,maxgap=3)
+eom_pvt_complete<-na.locf(eom_pvt_complete,na.rm=T,fromLast=F,maxgap=3)
+
+#cut it here, see the true#  noo!!!
+tail(eom_pvt_complete[,1:2]) #cuts off 2017-12-29...
 #re-check
 eom_pvt_complete[1:10,1:5] #first 10 rows and first 5 columns 
 ncol(eod_pvt_complete)
@@ -143,6 +159,9 @@ eod_ret<-CalculateReturns(eod_pvt_complete)
 eow_ret<-CalculateReturns(eow_pvt_complete)
 eom_ret<-CalculateReturns(eom_pvt_complete)
 
+#check
+tail(eom_ret[,1:2])
+
 table(is.na(eod_pvt_complete))
 table(is.na(eod_ret))
 
@@ -153,10 +172,11 @@ nrow(eod_ret)
 
 #remove the first row
 eod_ret<-tail(eod_ret,-1) #use tail with a negative value
-eom_ret<-tail(eom_ret,-1) #use tail with a negative value
 eow_ret<-tail(eow_ret,-1) #use tail with a negative value
+eom_ret<-tail(eom_ret,-1) #use tail with a negative value
 #check
 eod_ret[1:10,1:5] #first 10 rows and first 5 columns 
+eom_ret[,1:2]
 ncol(eod_ret)
 nrow(eod_ret)
 
@@ -192,7 +212,7 @@ nrow(eod_ret)
 #YOUR TURN: subset eom_ret data
 
 # Export data from R to CSV -----------------------------------------------
-write.csv(eod_ret,'C:/Temp/eod_ret.csv')
+#write.csv(eod_ret,'C:/Temp/eod_ret.csv')
 
 # You can actually open this file in Excel!
 
@@ -279,9 +299,15 @@ Ra<-as.xts(eod_ret[list_Ra]) #colSortAndFilter.R
 RaW<-as.xts(eow_ret[list_RaW]) #colSortAndFilter.R
 RaM<-as.xts(eom_ret[list_RaM]) #colSortAndFilter.R
 
+#check
+#tail(RaM[,1:2])
+
 Rb<-as.xts(eod_ret[,'SP500TR',drop=F]) #benchmark
 RbW<-as.xts(eow_ret[,'SP500TR',drop=F]) #benchmark
 RbM<-as.xts(eom_ret[,'SP500TR',drop=F]) #benchmark
+
+#check
+#tail(RbM)
 
 head(Ra)
 head(Rb)
