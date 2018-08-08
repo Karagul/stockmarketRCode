@@ -126,7 +126,7 @@ require(zoo)
 eod_pvt_complete<-na.locf(eod_pvt_complete,na.rm=T,fromLast=F,maxgap=3)
 eow_pvt_complete<-na.locf(eow_pvt_complete,na.rm=T,fromLast=F,maxgap=3)
 eom_pvt_complete<-na.locf(eom_pvt_complete,na.rm=T,fromLast=F,maxgap=3)
-View(((eod_pvt_complete[c('SP500TR')])))
+#View(((eod_pvt_complete[c('SP500TR')])))
 #cut it here, see the true#  noo!!!
 
 #re-check
@@ -209,8 +209,8 @@ nrow(eod_ret)
 source("C:/Users/user/Documents/alphaAdvantageApi/stockmarketR/stockmarketRCode/colSortAndFilter.R")
 
 eod_ret_training<-head(eod_ret,-63)
-View(eod_ret_training[,1:4])
-View(eod_ret_testing[,1:4])
+#View(eod_ret_training[,1:4])
+#View(eod_ret_testing[,1:4])
 eow_ret_training<-head(eow_ret,-13)
 eom_ret_training<-head(eom_ret,-3)
 
@@ -342,7 +342,7 @@ chart.Drawdown(Ra_testing,legend.loc = 'bottomleft')
 # YOUR TURN: try other charts
 
 # MV Portfolio Optimization -----------------------------------------------
-
+#trick: re-apply same list/weights to a portfolio that covers twice the distance to determine future success over similar distance (going to want a bandwidth)
 # withold the last 252 trading days
 Ra_training<-head(Ra,-63)
 Rb_training<-head(Rb,-63)
@@ -370,6 +370,7 @@ RbW_testing<-tail(RbW,13)
 RaM_testing<-tail(RaM,3)
 RbM_testing<-tail(RbM,3)
 
+#list stuff
 hcr<-data.frame(stack(tail((data.frame(Ra_training)[t20Mix_Ra]))))$values
 lcr<-data.frame(stack(tail((data.frame(Ra_training)[b20Mix_Ra]))))$values
 
@@ -437,8 +438,8 @@ length(t20Mix_RaM)
 length(b20Mix_RaM)
 
 #positve/negative weights
-#positive=4
-#negative=-3
+positive=2
+negative=-1
 length(list_Ra)
 opt_w[1:length(t20Mix_Ra)]<-positive/length(t20Mix_Ra)
 #opt_w[1:length(t20Mix_Ra)]<-.5/length(t20Mix_Ra)
@@ -478,7 +479,9 @@ plot(Rb_testing$SP500TR)
 #write.csv(Rb_testing,"c:/test/sp5.csv")
 #write.csv(Ra_testing,"c:/test/rat.csv")
 write.csv(eod_ret[list_Ra],"c:/test/opt_Returns.csv")
-View(Ra_testing[,1:2])
+
+#check
+#View(Ra_testing[,1:2])
 
 # Chart Hypothetical Portfolio Returns ------------------------------------
 
