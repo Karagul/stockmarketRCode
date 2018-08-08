@@ -21,7 +21,7 @@ ccal<-dbGetQuery(conn,qry)
 qry1=paste0("SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '",start_date,"' AND '",end_date,"'")
 qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
 qry3=paste0("SELECT symbol,timestamp,adjusted_close FROM etf_bond_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
-eod<-dbGetQuery(conn,paste(qry3,'UNION',qry2))
+eod<-dbGetQuery(conn,paste(qry1,'UNION',qry2))
 
 #eod<-dbGetQuery(conn,paste(qry))
 dbDisconnect(conn)
@@ -80,7 +80,8 @@ nrow(eod_complete)
 require(reshape2) #did you install this package?
 eod_pvt<-dcast(eod_complete, date ~ symbol,value.var='adj_close',fun.aggregate = mean, fill=NULL)
 #check
-tail(eod_pvt[,1:5]) #first 10 rows and first 5 columns 
+#View((eod_pvt[c('date','SP500TR')])) #first 10 rows and first 5 columns 
+#View((eod_ret[c('SP500TR')]))
 ncol(eod_pvt) # column count
 nrow(eod_pvt)
 
@@ -124,7 +125,7 @@ require(zoo)
 eod_pvt_complete<-na.locf(eod_pvt_complete,na.rm=T,fromLast=F,maxgap=3)
 eow_pvt_complete<-na.locf(eow_pvt_complete,na.rm=T,fromLast=F,maxgap=3)
 eom_pvt_complete<-na.locf(eom_pvt_complete,na.rm=T,fromLast=F,maxgap=3)
-
+View(((eod_pvt_complete[c('SP500TR')])))
 #cut it here, see the true#  noo!!!
 
 #re-check
@@ -207,6 +208,8 @@ nrow(eod_ret)
 source("C:/Users/user/Documents/alphaAdvantageApi/stockmarketR/stockmarketRCode/colSortAndFilter.R")
 
 eod_ret_training<-head(eod_ret,-63)
+View(eod_ret_training[,1:4])
+View(eod_ret_testing[,1:4])
 eow_ret_training<-head(eow_ret,-13)
 eom_ret_training<-head(eom_ret,-3)
 
@@ -333,6 +336,7 @@ chart.Boxplot(cbind(Rb_training,Ra_training))
 chart.Boxplot(Rb_training)
 
 chart.Drawdown(Ra,legend.loc = 'bottomleft')
+chart.Drawdown(Ra_testing,legend.loc = 'bottomleft')
 
 # YOUR TURN: try other charts
 
@@ -358,18 +362,30 @@ Rb_testing<-tail(Rb,63)
 RaW_testing<-tail(RaW,13)
 RbW_testing<-tail(RbW,13)
 
+#View(Ra_testing[,1:4])
+#View(Rb_testing)
+
 # use last 3 months
 RaM_testing<-tail(RaM,3)
 RbM_testing<-tail(RbM,3)
 
 hcr<-data.frame(stack(tail((data.frame(Ra_training)[t20Mix_Ra]))))$values
 lcr<-data.frame(stack(tail((data.frame(Ra_training)[b20Mix_Ra]))))$values
-boxplot(hcr,lcr)
 
+hcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[t20Mix_Ra]))))$values
+lcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[b20Mix_Ra]))))$values
 boxplot(hcr,lcr)
-
 summary(hcr)
 summary(lcr)
+
+
+boxplot(hcrT20Testing,lcrT20Testing)
+boxplot(hcrT20Testing,Rb_testing,lcrT20Testing)
+
+summary(hcrT20Testing)
+summary(Rb_testing)
+summary(lcrT20Testing)
+
 
 #optimize the MV (Markowitz 1950s) portfolio weights based on training
 table.AnnualizedReturns(Rb_training)
@@ -449,6 +465,9 @@ Return.cumulative(RpM)
 chart.CumReturns(Ra_training[,t20Mix_Ra])
 chart.CumReturns(Ra_training[,b20Mix_Ra])
 chart.CumReturns(Rb_training)
+chart.CumReturns(Ra_testing)
+chart.CumReturns(Rb_testing)
+View(Ra_testing[,1:2])
 
 # Chart Hypothetical Portfolio Returns ------------------------------------
 
