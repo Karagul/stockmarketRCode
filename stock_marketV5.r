@@ -19,7 +19,8 @@ ccal<-dbGetQuery(conn,qry)
 #eod prices and indices
 #qry1="SELECT symbol,date,adjusted_close FROM eod_indices WHERE date BETWEEN '2011-12-30' AND '2017-12-31'"
 qry1=paste0("SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '",start_date,"' AND '",end_date,"'")
-qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
+#qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
+qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM etf_bond_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
 qry3=paste0("SELECT symbol,timestamp,adjusted_close FROM etf_bond_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
 eod<-dbGetQuery(conn,paste(qry1,'UNION',qry2))
 
@@ -385,6 +386,7 @@ boxplot(hcrT20Testing,Rb_testing,lcrT20Testing)
 
 summary(hcrT20Testing)
 summary(Rb_testing)
+summary(Rb_training)
 summary(lcrT20Testing)
 
 
@@ -435,11 +437,11 @@ length(t20Mix_RaM)
 length(b20Mix_RaM)
 
 #positve/negative weights
-positive=2
-negative=-1
+positive=4
+negative=-3
 
-#opt_w[1:length(t20Mix_Ra)]<-positive/length(t20Mix_Ra)
-#opt_w[(length(t20Mix_Ra)+1):(length(t20Mix_Ra)+length(b20Mix_Ra))]<-negative/length(b20Mix_Ra)
+opt_w[1:length(t20Mix_Ra)]<-positive/length(t20Mix_Ra)
+opt_w[(length(t20Mix_Ra)+1):(length(t20Mix_Ra)+length(b20Mix_Ra))]<-negative/length(b20Mix_Ra)
 
 sum(opt_w)
 
@@ -472,6 +474,7 @@ plot(Rb_testing$SP500TR)
 
 #write.csv(Rb_testing,"c:/test/sp5.csv")
 #write.csv(Ra_testing,"c:/test/rat.csv")
+write.csv(eod_ret[list_Ra],"c:/test/opt_Returns.csv")
 View(Ra_testing[,1:2])
 
 # Chart Hypothetical Portfolio Returns ------------------------------------
