@@ -437,11 +437,14 @@ length(t20Mix_RaM)
 length(b20Mix_RaM)
 
 #positve/negative weights
-positive=4
-negative=-3
-
+#positive=4
+#negative=-3
+length(list_Ra)
 opt_w[1:length(t20Mix_Ra)]<-positive/length(t20Mix_Ra)
+#opt_w[1:length(t20Mix_Ra)]<-.5/length(t20Mix_Ra)
+#opt_w[1:length(list_Ra)]=1/length(list_Ra)
 opt_w[(length(t20Mix_Ra)+1):(length(t20Mix_Ra)+length(b20Mix_Ra))]<-negative/length(b20Mix_Ra)
+#opt_w[(length(t20Mix_Ra)+1):(length(t20Mix_Ra)+length(b20Mix_Ra))]<-.5/length(b20Mix_Ra)
 
 sum(opt_w)
 
