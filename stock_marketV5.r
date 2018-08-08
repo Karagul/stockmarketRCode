@@ -378,6 +378,7 @@ boxplot(hcr,lcr)
 summary(hcr)
 summary(lcr)
 
+plot.new()
 
 boxplot(hcrT20Testing,lcrT20Testing)
 boxplot(hcrT20Testing,Rb_testing,lcrT20Testing)
@@ -434,11 +435,11 @@ length(t20Mix_RaM)
 length(b20Mix_RaM)
 
 #positve/negative weights
-positive=4
-negative=-3
+positive=2
+negative=-1
 
-opt_w[1:length(t20Mix_Ra)]<-positive/length(t20Mix_Ra)
-opt_w[(length(t20Mix_Ra)+1):(length(t20Mix_Ra)+length(b20Mix_Ra))]<-negative/length(b20Mix_Ra)
+#opt_w[1:length(t20Mix_Ra)]<-positive/length(t20Mix_Ra)
+#opt_w[(length(t20Mix_Ra)+1):(length(t20Mix_Ra)+length(b20Mix_Ra))]<-negative/length(b20Mix_Ra)
 
 sum(opt_w)
 
@@ -467,6 +468,10 @@ chart.CumReturns(Ra_training[,b20Mix_Ra])
 chart.CumReturns(Rb_training)
 chart.CumReturns(Ra_testing)
 chart.CumReturns(Rb_testing)
+plot(Rb_testing$SP500TR)
+
+#write.csv(Rb_testing,"c:/test/sp5.csv")
+#write.csv(Ra_testing,"c:/test/rat.csv")
 View(Ra_testing[,1:2])
 
 # Chart Hypothetical Portfolio Returns ------------------------------------
