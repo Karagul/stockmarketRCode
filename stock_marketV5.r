@@ -273,6 +273,7 @@ b20Mix_RaW<-unique(c(b20CR_RaW,b20AVGR_RaW))
 b20Mix_RaM<-unique(c(b20CR_RaM,b20AVGR_RaM))
 
 list_Ra<-c(t20Mix_Ra,b20Mix_Ra)
+
 list_RaW<-c(t20Mix_RaW,b20Mix_RaW)
 list_RaM<-c(t20Mix_RaM,b20Mix_RaM)
 
@@ -329,6 +330,7 @@ chart.CumReturns(Rb,legend.loc = 'topleft')
 
 #Box plots
 chart.Boxplot(cbind(Rb_training,Ra_training))
+chart.Boxplot(Rb_training)
 
 chart.Drawdown(Ra,legend.loc = 'bottomleft')
 
@@ -359,6 +361,15 @@ RbW_testing<-tail(RbW,13)
 # use last 3 months
 RaM_testing<-tail(RaM,3)
 RbM_testing<-tail(RbM,3)
+
+hcr<-data.frame(stack(tail((data.frame(Ra_training)[t20Mix_Ra]))))$values
+lcr<-data.frame(stack(tail((data.frame(Ra_training)[b20Mix_Ra]))))$values
+boxplot(hcr,lcr)
+
+boxplot(hcr,lcr)
+
+summary(hcr)
+summary(lcr)
 
 #optimize the MV (Markowitz 1950s) portfolio weights based on training
 table.AnnualizedReturns(Rb_training)
@@ -424,7 +435,6 @@ Rp$ptf<-Ra_testing %*% opt_w
 RpW$ptf<-RaW_testing %*% opt_w
 RpM$ptf<-RaM_testing %*% opt_w
 
-
 #check
 head(Rp)
 tail(Rp)
@@ -435,6 +445,10 @@ tail(Rp)
 Return.cumulative(Rp)
 Return.cumulative(RpW)
 Return.cumulative(RpM)
+
+chart.CumReturns(Ra_training[,t20Mix_Ra])
+chart.CumReturns(Ra_training[,b20Mix_Ra])
+chart.CumReturns(Rb_training)
 
 # Chart Hypothetical Portfolio Returns ------------------------------------
 
