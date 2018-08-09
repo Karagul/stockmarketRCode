@@ -314,6 +314,7 @@ head(Rb)
 
 # Accumulate Returns
 acc_Ra<-Return.cumulative(Ra)
+acc_Ra_training<-Return.cumulative(Ra_training)
 acc_RaW<-Return.cumulative(RaW)
 acc_RaM<-Return.cumulative(RaM)
 
@@ -376,20 +377,40 @@ lcr<-data.frame(stack(tail((data.frame(Ra_training)[b20Mix_Ra]))))$values
 
 hcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[t20Mix_Ra]))))$values
 lcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[b20Mix_Ra]))))$values
-boxplot(hcr,lcr)
+
+boxplot(hcr,Rb_training,lcr)
+
 summary(hcr)
+StdDev(hcr)
+sum(acc_Ra_training[,t20Mix_Ra])
+sum(acc_Ra_training[,b20Mix_Ra])
+
+#S&P500
+summary(Rb_training)
+StdDev(Rb_training)
+
 summary(lcr)
+StdDev(lcr)
 
-plot.new()
+#plot.new()
 
-boxplot(hcrT20Testing,lcrT20Testing)
+#best/worst over testing period
+summary(hcrT20Testing)
+StdDev(hcrT20Testing)
+
+#S&P500
+summary(Rb_testing)
+StdDev(Rb_testing)
+
+summary(lcrT20Testing)
+StdDev(lcrT20Testing)
+
 boxplot(hcrT20Testing,Rb_testing,lcrT20Testing)
 
 summary(hcrT20Testing)
 summary(Rb_testing)
 summary(Rb_training)
 summary(lcrT20Testing)
-
 
 #optimize the MV (Markowitz 1950s) portfolio weights based on training
 table.AnnualizedReturns(Rb_training)
