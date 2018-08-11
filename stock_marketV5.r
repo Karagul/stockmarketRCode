@@ -1,6 +1,7 @@
 
 start_date='2011-12-30'
-end_date='2018-07-29'
+end_date<-Sys.Date()
+
 
 require(RPostgreSQL) # did you install this package?
 require(DBI)
@@ -38,7 +39,6 @@ nrow(eod)
 
 head(eod[which(eod$symbol=='SP500TR'),])
 
-eod<-rbind(eod,eod_row)
 tail(eod)
 
 # Use Calendar --------------------------------------------------------
@@ -314,7 +314,6 @@ head(Rb)
 
 # Accumulate Returns
 acc_Ra<-Return.cumulative(Ra)
-acc_Ra_training<-Return.cumulative(Ra_training)
 acc_RaW<-Return.cumulative(RaW)
 acc_RaM<-Return.cumulative(RaM)
 
@@ -372,8 +371,13 @@ RaM_testing<-tail(RaM,3)
 RbM_testing<-tail(RbM,3)
 
 #list stuff
-hcr<-data.frame(stack(tail((data.frame(Ra_training)[t20Mix_Ra]))))$values
-lcr<-data.frame(stack(tail((data.frame(Ra_training)[b20Mix_Ra]))))$values
+
+acc_Ra_training<-Return.cumulative(Ra_training)
+
+acc_Ra_testing<-Return.cumulative(Ra_testing)
+
+hcr<-data.frame(stack(((data.frame(Ra_training)[t20Mix_Ra]))))$values
+lcr<-data.frame(stack(((data.frame(Ra_training)[b20Mix_Ra]))))$values
 
 hcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[t20Mix_Ra]))))$values
 lcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[b20Mix_Ra]))))$values
@@ -382,8 +386,9 @@ boxplot(hcr,Rb_training,lcr)
 
 summary(hcr)
 StdDev(hcr)
-sum(acc_Ra_training[,t20Mix_Ra])
-sum(acc_Ra_training[,b20Mix_Ra])
+
+sum(acc_Ra_testing[,t20Mix_Ra])
+sum(acc_Ra_testing[,b20Mix_Ra])
 
 #S&P500
 summary(Rb_training)
@@ -391,6 +396,19 @@ StdDev(Rb_training)
 
 summary(lcr)
 StdDev(lcr)
+
+quantile(hcr,c(0,.05,.5,.95,1))
+sum(acc_Ra_training[,t20Mix_Ra])
+
+quantile(lcr,c(0,.05,.5,.95,1))
+sum(acc_Ra_training[,b20Mix_Ra])
+
+quantile(hcrT20Testing,c(0,.05,.5,.95,1))
+sum(acc_Ra_testing[,t20Mix_Ra])
+
+quantile(lcrT20Testing,c(0,.05,.5,.95,1))
+sum(acc_Ra_testing[,b20Mix_Ra])
+
 
 #plot.new()
 
@@ -406,6 +424,17 @@ summary(lcrT20Testing)
 StdDev(lcrT20Testing)
 
 boxplot(hcrT20Testing,Rb_testing,lcrT20Testing)
+
+
+t.test(hcr,lcr)
+t.test(hcrT20Testing,lcrT20Testing)
+ttest<-t.test(hcr,lcr)
+names(ttest)
+ttest$statistic
+
+
+range(ts)
+
 
 summary(hcrT20Testing)
 summary(Rb_testing)
