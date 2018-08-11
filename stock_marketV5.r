@@ -207,7 +207,7 @@ nrow(eod_ret)
 #YOUR TURN: subset eom_ret data
 
 # Export data from R to CSV -----------------------------------------------
-#write.csv(eod_ret,'C:/Temp/eod_ret.csv')
+write.csv(eod_ret,'C:/Temp/eod_ret.csv')
 
 # You can actually open this file in Excel!
 
@@ -336,19 +336,6 @@ acc_RbM<-Return.cumulative(RbM)
 
 # YOUR TURN: try other tabular analyses
 
-# Graphical Return Data Analytics -----------------------------------------
-
-# Cumulative returns chart
-chart.CumReturns(Ra,legend.loc = 'topleft')
-chart.CumReturns(Rb,legend.loc = 'topleft')
-
-#Box plots
-chart.Boxplot(cbind(Rb_training,Ra_training))
-chart.Boxplot(Rb_training)
-
-chart.Drawdown(Ra,legend.loc = 'bottomleft')
-chart.Drawdown(Ra_testing,legend.loc = 'bottomleft')
-
 # YOUR TURN: try other charts
 
 # MV Portfolio Optimization -----------------------------------------------
@@ -391,6 +378,19 @@ lcr<-data.frame(stack(((data.frame(Ra_training)[b20Mix_Ra]))))$values
 
 hcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[t20Mix_Ra]))))$values
 lcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[b20Mix_Ra]))))$values
+
+# Graphical Return Data Analytics -----------------------------------------
+
+# Cumulative returns chart
+chart.CumReturns(Ra,legend.loc = 'topleft')
+chart.CumReturns(Rb,legend.loc = 'topleft')
+
+#Box plots
+chart.Boxplot(cbind(Rb_training,Ra_training))
+chart.Boxplot(Rb_training)
+
+chart.Drawdown(Ra,legend.loc = 'bottomleft')
+chart.Drawdown(Ra_testing,legend.loc = 'bottomleft')
 
 boxplot(hcr,Rb_training,lcr)
 
