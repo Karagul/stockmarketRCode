@@ -6,6 +6,10 @@ d <- as.POSIXlt(as.Date(Sys.Date()))
 d$year <- d$year-0
 end_date<-as.Date(d)
 
+train<-c(d)
+train$year<- train$year-5
+start_date<-as.Date(train)
+
 days=252/4
 weeks=52/4
 months=12/4
