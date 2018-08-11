@@ -1,7 +1,14 @@
-
+#modify start date at leisure
 start_date='2011-12-30'
-end_date<-Sys.Date()
 
+d <- as.POSIXlt(as.Date(Sys.Date()))
+#set # of years back here.
+d$year <- d$year-0
+end_date<-as.Date(d)
+
+days=252/4
+weeks=52/4
+months=12/4
 
 require(RPostgreSQL) # did you install this package?
 require(DBI)
@@ -211,15 +218,15 @@ nrow(eod_ret)
 # We need to convert data frames to xts (extensible time series)
 source("C:/Users/user/Documents/alphaAdvantageApi/stockmarketR/stockmarketRCode/colSortAndFilter.R")
 
-eod_ret_training<-head(eod_ret,-63)
+eod_ret_training<-head(eod_ret,-days)
 #View(eod_ret_training[,1:4])
 #View(eod_ret_testing[,1:4])
-eow_ret_training<-head(eow_ret,-13)
-eom_ret_training<-head(eom_ret,-3)
+eow_ret_training<-head(eow_ret,-weeks)
+eom_ret_training<-head(eom_ret,-months)
 
-eod_ret_testing<-tail(eod_ret,63)
-eow_ret_testing<-tail(eow_ret,13)
-eom_ret_testing<-tail(eom_ret,3)
+eod_ret_testing<-tail(eod_ret,days)
+eow_ret_testing<-tail(eow_ret,weeks)
+eom_ret_testing<-tail(eom_ret,months)
 
 CR_Ra_training <- colSortMax(Return.cumulative(eod_ret_training))
 avg_Ra_training <- colSortAvg(eod_ret_training)
@@ -347,31 +354,31 @@ chart.Drawdown(Ra_testing,legend.loc = 'bottomleft')
 # MV Portfolio Optimization -----------------------------------------------
 #trick: re-apply same list/weights to a portfolio that covers twice the distance to determine future success over similar distance (going to want a bandwidth)
 # withold the last 252 trading days
-Ra_training<-head(Ra,-63)
-Rb_training<-head(Rb,-63)
+Ra_training<-head(Ra,-days)
+Rb_training<-head(Rb,-days)
 
 #all but 13 weeks
-RaW_training<-head(RaW,-13)
-RbW_training<-head(RbW,-13)
+RaW_training<-head(RaW,-weeks)
+RbW_training<-head(RbW,-weeks)
 
 #all but 3 months
-RaM_training<-head(RaM,-3)
-RbM_training<-head(RbM,-3)
+RaM_training<-head(RaM,-months)
+RbM_training<-head(RbM,-months)
 
 # use the last 21 trading days for testing
-Ra_testing<-tail(Ra,63)
-Rb_testing<-tail(Rb,63)
+Ra_testing<-tail(Ra,days)
+Rb_testing<-tail(Rb,days)
 
 # use last 13 weeks
-RaW_testing<-tail(RaW,13)
-RbW_testing<-tail(RbW,13)
+RaW_testing<-tail(RaW,weeks)
+RbW_testing<-tail(RbW,weeks)
 
 #View(Ra_testing[,1:4])
 #View(Rb_testing)
 
 # use last 3 months
-RaM_testing<-tail(RaM,3)
-RbM_testing<-tail(RbM,3)
+RaM_testing<-tail(RaM,months)
+RbM_testing<-tail(RbM,months)
 
 #list stuff
 
@@ -390,8 +397,6 @@ boxplot(hcr,Rb_training,lcr)
 summary(hcr)
 StdDev(hcr)
 
-sum(acc_Ra_testing[,t20Mix_Ra])
-sum(acc_Ra_testing[,b20Mix_Ra])
 
 #S&P500
 summary(Rb_training)
@@ -400,16 +405,16 @@ StdDev(Rb_training)
 summary(lcr)
 StdDev(lcr)
 
-quantile(hcr,c(0,.05,.5,.95,1))
+#quantile(hcr,c(0,.05,.5,.95,1))
 sum(acc_Ra_training[,t20Mix_Ra])
 
-quantile(lcr,c(0,.05,.5,.95,1))
+#quantile(lcr,c(0,.05,.5,.95,1))
 sum(acc_Ra_training[,b20Mix_Ra])
 
-quantile(hcrT20Testing,c(0,.05,.5,.95,1))
+#quantile(hcrT20Testing,c(0,.05,.5,.95,1))
 sum(acc_Ra_testing[,t20Mix_Ra])
 
-quantile(lcrT20Testing,c(0,.05,.5,.95,1))
+#quantile(lcrT20Testing,c(0,.05,.5,.95,1))
 sum(acc_Ra_testing[,b20Mix_Ra])
 
 
@@ -491,8 +496,8 @@ length(t20Mix_RaM)
 length(b20Mix_RaM)
 
 #positve/negative weights
-positive=2
-negative=-1
+positive=4
+negative=-3
 length(list_Ra)
 opt_w[1:length(t20Mix_Ra)]<-positive/length(t20Mix_Ra)
 #opt_w[1:length(t20Mix_Ra)]<-.5/length(t20Mix_Ra)
