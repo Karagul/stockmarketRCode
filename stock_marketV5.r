@@ -1,11 +1,10 @@
 scores<-c()
-#for (iterator in 0:15)
-#{
-  #print(paste("The year is", iterator))
+for (iterator in 0:15)
+{
   
   d <- as.POSIXlt(as.Date(Sys.Date()))
   #set # of years back here.
-  d$year <- d$year-0
+  d$year <- d$year-iterator
   end_date<-as.Date(d)
   
   train<-c(d)
@@ -87,8 +86,6 @@ scores<-c()
   table(eod$symbol)
   
   
-  sapply(eod_pvt[list_Ra], function(x) sum(is.na(x)))
-  
   #filter
   #testing<-eod[which(eod$symbol=='YLCO'),,]
   #eom_ret
@@ -100,7 +97,7 @@ scores<-c()
   selected_symbols_daily<-names(pct)[which(pct>=0.99)]
   length(selected_symbols_daily)
   
-  eod_complete<-eod[which(eod$symbol %in% selected_symbols_daily),,drop=F]
+  eod_completewNA<-eod[which(eod$symbol %in% selected_symbols_daily),,drop=F]
   
   
   #temp<-c()
@@ -112,9 +109,9 @@ scores<-c()
   #data.frame(eod_complete)[date>=as.Date('2017-12-29') & date<=as.Date('2017-12-31')]
   
   #check
-  head(eod_complete)
-  tail(eod_complete)
-  nrow(eod_complete)
+  head(eod_completewNA)
+  tail(eod_completewNA)
+  nrow(eod_completewNA)
   
   #YOUR TURN: perform all these operations for monthly data
   #Create eom and eom_complete
@@ -123,25 +120,37 @@ scores<-c()
   # Transform (Pivot) -------------------------------------------------------
   
   require(reshape2) #did you install this package?
-  eod_pvt<-dcast(eod_complete, date ~ symbol,value.var='adj_close',fun.aggregate = mean, fill=NULL)
+  eod_pvtwNA<-dcast(eod_completewNA, date ~ symbol,value.var='adj_close',fun.aggregate = mean, fill=NULL)
   #check
   #View((eod_pvt[c('date','SP500TR')])) #first 10 rows and first 5 columns 
   #View((eod_ret[c('SP500TR')]))
-  ncol(eod_pvt) # column count
-  nrow(eod_pvt)
+  ncol(eod_pvtwNA) # column count
+  nrow(eod_pvtwNA)
   
   #still a problem, 451/809
   #table(is.na(eod_pvt$YLCO))
   
   #https://sebastiansauer.github.io/sum-isna/
-  pct2<-1-(sapply(eod_pvt, function(x) sum(is.na(x)))/nrow(eod_pvt))
+  pct2<-1-(sapply(eod_pvtwNA, function(x) sum(is.na(x)))/nrow(eod_pvt))
   
+  #length(eod_complete)
+  length(table(eod$symbol))
+  length(pct)
+  length(eod_pvtwNA)
+  length(pct2)
   #tail(pct,50)
-  #pct<-table(eod$symbol)/max(table(eod$symbol))
+  
   selected_symbols_daily2<-names(pct2)[which(pct2>=0.99)]
   length(selected_symbols_daily2)
+  selected_symbols_daily3<-selected_symbols_daily[match(selected_symbols_daily2,selected_symbols_daily)]
   
-  eod_complete<-eod[which(eod$symbol %in% selected_symbols_daily2),,drop=F]  
+  length(selected_symbols_daily3)
+  
+  eod_complete<-eod[which(eod$symbol %in% selected_symbols_daily3),,drop=F]
+  eod_pvt<-dcast(eod_complete, date ~ symbol,value.var='adj_close',fun.aggregate = mean, fill=NULL)
+  
+  
+  #eod_complete<-eod[which(eod$symbol %in% selected_symbols_daily2),,drop=F]  
   
   
   #table(is.na(eod_pvt))
@@ -363,9 +372,9 @@ scores<-c()
   #65/1106
   
   #still necessary to augment list with 0's for calculation.  As long as I know it's done as late in the game as possible.
-  Ra[is.na(Ra)] <- 0
-  RaW[is.na(RaW)] <- 0
-  RaM[is.na(RaM)] <- 0
+  #Ra[is.na(Ra)] <- 0
+  #RaW[is.na(RaW)] <- 0
+  #RaM[is.na(RaM)] <- 0
   
   #check
   Ra$AGT
@@ -619,7 +628,6 @@ scores<-c()
   scores<-rbind(scores,Return.cumulative(Rp$ptf))
   #jpeg(paste0(end_date,'rplot.jpg'))
   chart.CumReturns(Rp,legend.loc = 'topleft')
-  
   chart.CumReturns(RpW,legend.loc = 'topleft')
   chart.CumReturns(RpM,legend.loc = 'topleft')
   #View(eom_ret[,list_Ra])
@@ -628,5 +636,7 @@ scores<-c()
   
   # End of Part 3c
   # End of Stock Market Case Study 
+  print(paste("The year is", iterator))
+  print(paste("The year is", Return.cumulative(Rp$ptf)))
   #scores<-rbind(scores,Return.cumulative(Rp$ptf))
-#}
+}
