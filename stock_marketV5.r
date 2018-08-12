@@ -131,7 +131,7 @@ for (iterator in 0:15)
   #table(is.na(eod_pvt$YLCO))
   
   #https://sebastiansauer.github.io/sum-isna/
-  pct2<-1-(sapply(eod_pvtwNA, function(x) sum(is.na(x)))/nrow(eod_pvt))
+  pct2<-1-(sapply(eod_pvtwNA, function(x) sum(is.na(x)))/nrow(eod_pvtwNA))
   
   #length(eod_complete)
   length(table(eod$symbol))
