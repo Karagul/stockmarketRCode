@@ -328,6 +328,8 @@ for (iterator in 0:84)
   #bottom 20 
   
   #chart.Boxplot(eod_ret[t20CR])
+  round(length(colnames(eod_pvt_complete))*.1,0)
+  
   t20CR_Ra<-colnames(data.frame(eod_ret)[CR_Ra_training$colname])[1:20]
   t20CR_RaW<-colnames(data.frame(eow_ret)[CR_RaW_training$colname])[1:20]
   t20CR_RaM<-colnames(data.frame(eom_ret)[CR_RaM_training$colname])[1:20]
@@ -377,12 +379,12 @@ for (iterator in 0:84)
   #65/1106
   
   #still necessary to augment list with 0's for calculation.  As long as I know it's done as late in the game as possible.
-  #Ra[is.na(Ra)] <- 0
-  #RaW[is.na(RaW)] <- 0
-  #RaM[is.na(RaM)] <- 0
+  Ra[is.na(Ra)] <- 0
+  RaW[is.na(RaW)] <- 0
+  RaM[is.na(RaM)] <- 0
   
   #check
-  Ra$AGT
+  #Ra$AGT
   
   tail(eom_ret[,1:2])
   tail(RaM)
@@ -463,8 +465,52 @@ for (iterator in 0:84)
   
   acc_Ra_testing<-Return.cumulative(Ra_testing)
   
+  ratr<-data.frame(stack(((data.frame(Ra_training)))))$values
+  brtr<-data.frame(stack(((data.frame(Rb_training)))))$values
+  rate<-data.frame(stack(((data.frame(Ra_testing)))))$values
+  brte<-data.frame(stack(((data.frame(Rb_testing)))))$values
+  
+  #returns assets training
+    # IQR used for rounding determination and subsequent classification of returns
+    
+  chart.Boxplot(ratr)
+    quantile(ratr)
+    View(ratr)
+
+    
+    
+    IQR=quantile(ratr)[3]-quantile(ratr)[2]
+    Lhinge<-c()
+    Lhinge=quantile(ratr)[2]-IQR*1.5
+    Uhinge<-c()
+    Uhinge=quantile(ratr)[4]+IQR*1.5
+    IQRRange=Uhinge-Lhinge
+    
+    HingeRange=Uhinge-Lhinge
+    
+    #percent captured within LHinge and UHinge of Ra_training
+    length(ratr[which(ratr[]>=Lhinge & ratr[]<=Uhinge)])/length(ratr)
+    
+    
+    Lhinge+IQR*1/8
+    hist(ratr,breaks=c(quantile(ratr)[1],Lhinge,Lhinge+HingeRange*1/8,Lhinge+HingeRange*2/8,Lhinge+HingeRange*3/8,Lhinge+HingeRange*4/8,Lhinge+HingeRange*5/8,Lhinge+HingeRange*6/8,Lhinge+HingeRange*7/8,Uhinge,quantile(ratr)[5]))
+  
+  
+  
+  #returns benchmark training
+  chart.Boxplot(brtr)
+  
+  #returns assets
+  
+  #example, outliers are defined as 1Q-IQR*1.5 and 3Q*+IQR*1.5, why not set up a histogram that captures this.
+  
+  
   hcr<-data.frame(stack(((data.frame(Ra_training)[t20Mix_Ra]))))$values
+    hist(hcr)
+  
   lcr<-data.frame(stack(((data.frame(Ra_training)[b20Mix_Ra]))))$values
+    hist(lcr)
+    hist(hcr, xlim=c(Lhinge,Uhinge), ylim=c(0,6000),breaks=c(-.04310345,))
   
   hcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[t20Mix_Ra]))))$values
   lcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[b20Mix_Ra]))))$values
