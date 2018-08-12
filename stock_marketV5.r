@@ -1,11 +1,14 @@
 scores<-c()
-for (iterator in 7:15)
+
+library(mondate)
+
+for (iterator in 0:84)
 {
   
   d <- as.POSIXlt(as.Date(Sys.Date()))
   #set # of years back here.
-  d$year <- d$year-iterator
-  end_date<-as.Date(d)
+  d$year <- d$year-0
+  end_date<-as.Date(mondate(as.Date(d)) - iterator)
   
   train<-c(d)
   train$year<- train$year-5
@@ -48,6 +51,7 @@ for (iterator in 7:15)
   #eod[!(is.na(eod$adj_close) | eod$adj_close==""), ]
   
   #https://jangorecki.gitlab.io/data.table/library/data.table/html/na.omit.data.table.html
+  #https://stackoverflow.com/questions/4862178/remove-rows-with-all-or-some-nas-missing-values-in-data-frame
   eod<-na.omit(eodwNA)
   
   #table(is.na(eod))
@@ -637,7 +641,7 @@ for (iterator in 7:15)
   
   # End of Part 3c
   # End of Stock Market Case Study 
-  print(paste("The year is", iterator))
-  print(paste("The year is", Return.cumulative(Rp$ptf)))
+  print(paste("The lag month is", iterator))
+  print(paste("The return is", Return.cumulative(Rp$ptf)))
   #scores<-rbind(scores,Return.cumulative(Rp$ptf))
 }
