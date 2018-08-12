@@ -85,7 +85,7 @@ scores<-c()
   # Percentage of completeness
   
   table(eod$symbol)
-  #tail(pct,50)
+  
   
   sapply(eod_pvt[list_Ra], function(x) sum(is.na(x)))
   
@@ -95,6 +95,7 @@ scores<-c()
   #View(testing)
   
   pct<-table(eod$symbol)/(nrow(tdays)-1)
+  #tail(pct,50)
   #pct<-table(eod$symbol)/max(table(eod$symbol))
   selected_symbols_daily<-names(pct)[which(pct>=0.99)]
   length(selected_symbols_daily)
@@ -133,7 +134,15 @@ scores<-c()
   #table(is.na(eod_pvt$YLCO))
   
   #https://sebastiansauer.github.io/sum-isna/
-  sapply(eod_pvt[list_Ra], function(x) sum(is.na(x)))
+  pct2<-1-(sapply(eod_pvt, function(x) sum(is.na(x)))/nrow(eod_pvt))
+  
+  #tail(pct,50)
+  #pct<-table(eod$symbol)/max(table(eod$symbol))
+  selected_symbols_daily2<-names(pct2)[which(pct2>=0.99)]
+  length(selected_symbols_daily2)
+  
+  eod_complete<-eod[which(eod$symbol %in% selected_symbols_daily2),,drop=F]  
+  
   
   #table(is.na(eod_pvt))
   # YOUR TURN: Perform the same set of tasks for monthly prices (create eom_pvt)
