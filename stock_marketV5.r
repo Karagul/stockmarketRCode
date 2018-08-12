@@ -1,5 +1,4 @@
-#modify start date at leisure
-start_date='2011-12-30'
+#scores<-c()
 
 d <- as.POSIXlt(as.Date(Sys.Date()))
 #set # of years back here.
@@ -35,7 +34,7 @@ qry1=paste0("SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '"
 qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM etf_bond_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
 qry3=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
 qry4=paste0("SELECT symbol,timestamp,adjusted_close FROM other_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
-eod<-dbGetQuery(conn,paste(qry1,'UNION',qry2))
+eod<-dbGetQuery(conn,paste(qry1,'UNION',qry2,'UNION',qry3,'UNION',qry4))
 #eod<-dbGetQuery(conn,paste(qry1,'UNION',qry3))
 #eod<-dbGetQuery(conn,paste(qry1,'UNION',qry4))
 
@@ -66,9 +65,9 @@ nrow(tdays)-1
 # Completeness ----------------------------------------------------------
 # Percentage of completeness
 
-#pct<-table(eod$symbol)/(nrow(tdays)-1)
-pct<-table(eod$symbol)/max(table(eod$symbol))
-selected_symbols_daily<-names(pct)[which(pct>=0.98)]
+pct<-table(eod$symbol)/(nrow(tdays)-1)
+#pct<-table(eod$symbol)/max(table(eod$symbol))
+selected_symbols_daily<-names(pct)[which(pct>=0.99)]
 length(selected_symbols_daily)
 
 eod_complete<-eod[which(eod$symbol %in% selected_symbols_daily),,drop=F]
@@ -502,8 +501,8 @@ length(t20Mix_RaM)
 length(b20Mix_RaM)
 
 #positve/negative weights
-positive=2
-negative=-1
+positive=4
+negative=-3
 length(list_Ra)
 opt_w[1:length(t20Mix_Ra)]<-positive/length(t20Mix_Ra)
 #opt_w[1:length(t20Mix_Ra)]<-.5/length(t20Mix_Ra)
@@ -549,7 +548,10 @@ write.csv(eod_ret[list_Ra],"c:/test/opt_Returns.csv")
 
 # Chart Hypothetical Portfolio Returns ------------------------------------
 
+scores<-rbind(scores,Return.cumulative(Rp$ptf))
+jpeg(paste0(end_date,'rplot.jpg'))
 chart.CumReturns(Rp,legend.loc = 'topleft')
+dev.off()
 chart.CumReturns(RpW,legend.loc = 'topleft')
 chart.CumReturns(RpM,legend.loc = 'topleft')
 
