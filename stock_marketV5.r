@@ -1,4 +1,4 @@
-#scores<-c()
+scores<-c()
 #for (iterator in 0:15)
 #{
   #print(paste("The year is", iterator))
@@ -51,6 +51,7 @@
   #https://jangorecki.gitlab.io/data.table/library/data.table/html/na.omit.data.table.html
   eod<-na.omit(eodwNA)
   
+  #table(is.na(eod))
   #table(is.na(eod$adj_close))
   #table(is.na(eod_new$adj_close))
   
@@ -85,6 +86,14 @@
   
   table(eod$symbol)
   #tail(pct,50)
+  
+  sapply(eod_pvt[list_Ra], function(x) sum(is.na(x)))
+  
+  #filter
+  #testing<-eod[which(eod$symbol=='YLCO'),,]
+  #eom_ret
+  #View(testing)
+  
   pct<-table(eod$symbol)/(nrow(tdays)-1)
   #pct<-table(eod$symbol)/max(table(eod$symbol))
   selected_symbols_daily<-names(pct)[which(pct>=0.99)]
@@ -119,6 +128,12 @@
   #View((eod_ret[c('SP500TR')]))
   ncol(eod_pvt) # column count
   nrow(eod_pvt)
+  
+  #still a problem, 451/809
+  #table(is.na(eod_pvt$YLCO))
+  
+  #https://sebastiansauer.github.io/sum-isna/
+  sapply(eod_pvt[list_Ra], function(x) sum(is.na(x)))
   
   #table(is.na(eod_pvt))
   # YOUR TURN: Perform the same set of tasks for monthly prices (create eom_pvt)
@@ -593,13 +608,14 @@
   # Chart Hypothetical Portfolio Returns ------------------------------------
   
   scores<-rbind(scores,Return.cumulative(Rp$ptf))
-  jpeg(paste0(end_date,'rplot.jpg'))
+  #jpeg(paste0(end_date,'rplot.jpg'))
   chart.CumReturns(Rp,legend.loc = 'topleft')
-  dev.off()
-  dev.on()
+  
   chart.CumReturns(RpW,legend.loc = 'topleft')
   chart.CumReturns(RpM,legend.loc = 'topleft')
-  View(eom_ret[,list_Ra])
+  #View(eom_ret[,list_Ra])
+  
+  #table(is.na(eom_ret[,list_Ra]))
   
   # End of Part 3c
   # End of Stock Market Case Study 
