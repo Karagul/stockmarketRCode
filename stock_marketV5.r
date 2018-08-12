@@ -1,6 +1,6 @@
-scores<-c()
-for (iterator in 0:15)
-{
+#scores<-c()
+#for (iterator in 0:15)
+#{
   print(paste("The year is", iterator))
   
   scores<-c()
@@ -11,7 +11,7 @@ for (iterator in 0:15)
   end_date<-as.Date(d)
   
   train<-c(d)
-  train$year<- train$year-5
+  train$year<- train$year-0
   start_date<-as.Date(train)
   
   days=252/4
@@ -86,7 +86,7 @@ for (iterator in 0:15)
   # Percentage of completeness
   
   table(eod$symbol)
-  
+  #tail(pct,50)
   pct<-table(eod$symbol)/(nrow(tdays)-1)
   #pct<-table(eod$symbol)/max(table(eod$symbol))
   selected_symbols_daily<-names(pct)[which(pct>=0.99)]
@@ -598,10 +598,12 @@ for (iterator in 0:15)
   jpeg(paste0(end_date,'rplot.jpg'))
   chart.CumReturns(Rp,legend.loc = 'topleft')
   dev.off()
+  dev.on()
   chart.CumReturns(RpW,legend.loc = 'topleft')
   chart.CumReturns(RpM,legend.loc = 'topleft')
+  #View(eom_ret[,list_Ra])
   
   # End of Part 3c
   # End of Stock Market Case Study 
   #scores<-rbind(scores,Return.cumulative(Rp$ptf))
-}
+#}
