@@ -1,17 +1,15 @@
 #scores<-c()
 #for (iterator in 0:15)
 #{
-  print(paste("The year is", iterator))
-  
-  scores<-c()
+  #print(paste("The year is", iterator))
   
   d <- as.POSIXlt(as.Date(Sys.Date()))
   #set # of years back here.
-  d$year <- d$year-iterator
+  d$year <- d$year-0
   end_date<-as.Date(d)
   
   train<-c(d)
-  train$year<- train$year-0
+  train$year<- train$year-5
   start_date<-as.Date(train)
   
   days=252/4
@@ -601,7 +599,7 @@
   dev.on()
   chart.CumReturns(RpW,legend.loc = 'topleft')
   chart.CumReturns(RpM,legend.loc = 'topleft')
-  #View(eom_ret[,list_Ra])
+  View(eom_ret[,list_Ra])
   
   # End of Part 3c
   # End of Stock Market Case Study 
