@@ -1,5 +1,5 @@
 scores<-c()
-for (iterator in 0:15)
+for (iterator in 7:15)
 {
   
   d <- as.POSIXlt(as.Date(Sys.Date()))
@@ -272,7 +272,8 @@ for (iterator in 0:15)
   #YOUR TURN: subset eom_ret data
   
   # Export data from R to CSV -----------------------------------------------
-  write.csv(eod_ret,'C:/Test/eod_ret.csv')
+  #write.csv(eod_ret,paste0('C:/Test/',end_year,'eod_ret.csv')
+  #write.csv(eom_ret,paste0('C:/Test/',end_year,'eom_ret.csv')
   
   # You can actually open this file in Excel!
   
@@ -618,7 +619,7 @@ for (iterator in 0:15)
   
   #write.csv(Rb_testing,"c:/test/sp5.csv")
   #write.csv(Ra_testing,"c:/test/rat.csv")
-  write.csv(eod_ret[list_Ra],"c:/test/opt_Returns.csv")
+  #write.csv(eod_ret[list_Ra],"c:/test/opt_Returns.csv")
   
   #check
   #View(Ra_testing[,1:2])
