@@ -18,16 +18,19 @@ conn = dbConnect(drv=pg
 qry='SELECT * FROM custom_calendar ORDER by date'
 ccal<-dbGetQuery(conn,qry)
 #eod prices and indices
-#qry1="SELECT symbol,date,adjusted_close FROM eod_indices WHERE date BETWEEN '2011-12-30' AND '2017-12-31'"
-qry1=paste0("SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '1999-12-30' AND '",todayIs,"'")
+#qry1=paste0("SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '1999-12-30' AND '",todayIs,"'")
 #qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
 qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM etf_bond_facts WHERE timestamp BETWEEN '1999-12-30' AND '",todayIs,"'")
 qry3=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '1999-12-30' AND '",todayIs,"'")
 qry4=paste0("SELECT symbol,timestamp,adjusted_close FROM other_facts WHERE timestamp BETWEEN '1999-12-30' AND '",todayIs,"'")
+qry5=paste0("SELECT symbol,timestamp,close FROM qs_facts WHERE timestamp BETWEEN '1999-12-30' AND '",todayIs,"'")
 eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry2,'UNION',qry3,'UNION',qry4))
+#eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry5))
 dbDisconnect(conn)
 
 eodOutside<-na.omit(eodwNA)
+table(eodOutside$symbol)
+
 
 #scores<-c()
 iterator=0
@@ -36,15 +39,16 @@ for (iterator in seq(0, 151, by=30))
   
   #set # of years back here.
   library(mondate)
-  end_date<-as.Date(mondate(as.Date(todayIs)) - iterator)
+  end_date <-as.Date(mondate(as.Date(todayIs)) - iterator)
   
-  start_date<- as.Date(mondate(end_date)-60)
+  start_date <- as.Date(mondate(end_date)-60)
   
   days=252/4
   weeks=52/4
   months=12/4
   
-  eod<-eodOutside[which(eodOutside$date>=start_date & eodOutside$date <= end_date),,drop=F]
+  eod <<- eodOutside[which(eodOutside$date>=start_date & eodOutside$date <= end_date),,drop=F]
+  nrow(eod)
   
   
   #problem is null records are loaded
@@ -92,6 +96,7 @@ for (iterator in seq(0, 151, by=30))
   # Percentage of completeness
   
   table(eod$symbol)
+  length(table(eod$symbol))
   
   
   #filter
