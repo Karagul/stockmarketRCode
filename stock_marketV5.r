@@ -1,7 +1,7 @@
 scores<-c()
 iterator=0
 
-for (iterator in 0:4)
+for (iterator in 84:89)
 {
   
   d <- as.POSIXlt(as.Date(Sys.Date()))
@@ -11,9 +11,7 @@ for (iterator in 0:4)
   library(mondate)
   end_date<-as.Date(mondate(as.Date(d)) - iterator)
   
-  train<-c(d)
-  train$year<- train$year-5
-  start_date<-as.Date(train)
+  start_date<- as.Date(mondate(end_date)-60)
   
   days=252/4
   weeks=52/4
