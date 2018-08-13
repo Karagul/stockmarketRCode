@@ -255,15 +255,15 @@ for (iterator in 0:84)
   
   max_daily_ret[1:10] #first 10 max returns
   # And proceed just like we did with percentage (completeness)
-  selected_symbols_daily<-names(max_daily_ret)[which(max_daily_ret<=1.00)]
-  selected_symbols_monthly=selected_symbols_daily
-  selected_symbols_weekly=selected_symbols_daily
+  selected_symbols_daily3<-names(max_daily_ret)[which(max_daily_ret<=1.00)]
+  selected_symbols_monthly=selected_symbols_daily3
+  selected_symbols_weekly=selected_symbols_daily3
   length(selected_symbols_daily)
   
   #subset eod_ret
-  eod_ret<-eod_ret[,which(colnames(eod_ret) %in% selected_symbols_daily)]
-  eow_ret<-eow_ret[,which(colnames(eow_ret) %in% selected_symbols_daily)]
-  eom_ret<-eom_ret[,which(colnames(eom_ret) %in% selected_symbols_daily)]
+  eod_ret<-eod_ret[,which(colnames(eod_ret) %in% selected_symbols_daily3)]
+  eow_ret<-eow_ret[,which(colnames(eow_ret) %in% selected_symbols_daily3)]
+  eom_ret<-eom_ret[,which(colnames(eom_ret) %in% selected_symbols_daily3)]
   
   (eod_ret[!complete.cases(eod_pvt), ][1:5])
   
@@ -465,37 +465,65 @@ for (iterator in 0:84)
   
   acc_Ra_testing<-Return.cumulative(Ra_testing)
   
+  #all returns in one list (for classification)
+  
+  #allr<-eod_ret[colnames(eod_complete)]
+  
+  #allr[is.na(allr)] <- 0
+  
+  #training
   ratr<-data.frame(stack(((data.frame(Ra_training)))))$values
   brtr<-data.frame(stack(((data.frame(Rb_training)))))$values
+  
+  #testing
   rate<-data.frame(stack(((data.frame(Ra_testing)))))$values
   brte<-data.frame(stack(((data.frame(Rb_testing)))))$values
+  
+  alltr<-(c(ratr,rate))
+  summary(alltr)
+  
+  length(rate)
+  length(ratr)
+  
+  length(rate) +length(ratr)
+  
+  length(alltr)
+  
+  #Ra[is.na(Ra)] <- 0
+  #RaW[is.na(RaW)] <- 0
+  #RaM[is.na(RaM)] <- 0
   
   #returns assets training
     # IQR used for rounding determination and subsequent classification of returns
     
-  chart.Boxplot(ratr)
-    quantile(ratr)
-    View(ratr)
-
+  chart.Boxplot(alltr)
+    quantile(alltr)
+    summary(alltr)
+    write.csv(alltr,"c:/test/alltr.csv")
+    
+    length(alltr)
     
     
-    IQR=quantile(ratr)[3]-quantile(ratr)[2]
+    IQR=quantile(alltr)[3]-quantile(alltr)[2]
     Lhinge<-c()
-    Lhinge=quantile(ratr)[2]-IQR*1.5
+    Lhinge=quantile(alltr)[2]-IQR*1.5
     Uhinge<-c()
-    Uhinge=quantile(ratr)[4]+IQR*1.5
+    Uhinge=quantile(alltr)[4]+IQR*1.5
     IQRRange=Uhinge-Lhinge
     
     HingeRange=Uhinge-Lhinge
     
     #percent captured within LHinge and UHinge of Ra_training
-    length(ratr[which(ratr[]>=Lhinge & ratr[]<=Uhinge)])/length(ratr)
+    length(ratr[which(alltr[]>=Lhinge & alltr[]<=Uhinge)])/length(alltr)
     
     
     Lhinge+IQR*1/8
-    hist(ratr,breaks=c(quantile(ratr)[1],Lhinge,Lhinge+HingeRange*1/8,Lhinge+HingeRange*2/8,Lhinge+HingeRange*3/8,Lhinge+HingeRange*4/8,Lhinge+HingeRange*5/8,Lhinge+HingeRange*6/8,Lhinge+HingeRange*7/8,Uhinge,quantile(ratr)[5]))
   
-  
+    breaks=c(quantile(ratr)[1],Lhinge,Lhinge+HingeRange*1/8,Lhinge+HingeRange*2/8,Lhinge+HingeRange*3/8,Lhinge+HingeRange*4/8,Lhinge+HingeRange*5/8,Lhinge+HingeRange*6/8,Lhinge+HingeRange*7/8,Uhinge,quantile(ratr)[5])  
+    
+    hist(ratr,breaks)
+    hist(alltr,breaks)
+    
   
   #returns benchmark training
   chart.Boxplot(brtr)
@@ -506,7 +534,8 @@ for (iterator in 0:84)
   
   
   hcr<-data.frame(stack(((data.frame(Ra_training)[t20Mix_Ra]))))$values
-    hist(hcr)
+    hist(hcr,breaks=c(quantile(ratr)[1],Lhinge,Lhinge+HingeRange*1/8,Lhinge+HingeRange*2/8,Lhinge+HingeRange*3/8,Lhinge+HingeRange*4/8,Lhinge+HingeRange*5/8,Lhinge+HingeRange*6/8,Lhinge+HingeRange*7/8,Uhinge,quantile(ratr)[5]))
+    boxplot(hcr)
   
   lcr<-data.frame(stack(((data.frame(Ra_training)[b20Mix_Ra]))))$values
     hist(lcr)
@@ -516,6 +545,19 @@ for (iterator in 0:84)
   lcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[b20Mix_Ra]))))$values
   
   # Graphical Return Data Analytics -----------------------------------------
+  
+  #long portfolio
+  hist(hcr,breaks)
+  
+  #short portfolio
+  hist(lcr,breaks)
+  
+  #long testing
+  hist(hcrT20Testing,breaks)
+  
+  #short testing
+  hist(lcrT20Testing,breaks)
+  
   
   # Cumulative returns chart
   chart.CumReturns(Ra,legend.loc = 'topleft')
