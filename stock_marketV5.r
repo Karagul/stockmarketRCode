@@ -681,26 +681,11 @@ for (iterator in 0:216)
   length(t20Mix_RaM)
   length(b20Mix_RaM)
   
-  positive=0
-  negative=-1
-  
-  for (testCase in 0:1)
+  for (weight in 2:5)
   {
+    positive=weight
+    negative=abs((positive)-1)*-1
     
-    #positve/negative weights
-    if (testCase==0)
-    {
-      positive <<- 2
-      negative <<- -1
-    }
-    if (testCase==1)
-    {
-      positive <<- 4
-      negative <<- -3
-      
-    }
-    
- 
     length(list_Ra)
     opt_w[1:length(t20Mix_Ra)]<-positive/length(t20Mix_Ra)
     #opt_w[1:length(t20Mix_Ra)]<-.5/length(t20Mix_Ra)
@@ -759,17 +744,9 @@ for (iterator in 0:216)
     
     # End of Part 3c
     # End of Stock Market Case Study 
-    if (testCase==0)
-    {
-      print(paste("Weights 2 vs -1 The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))      
-    } 
-    if (testCase==1)
-    {
-      print(paste("Weights 4 vs -3 The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))      
-    }
+      print(paste("start: ", start_date, "end: ", end_date, "Weights", positive, "vs", negative, "The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))      
     #scores<-rbind(scores,Return.cumulative(Rp$ptf))
     
   }
-
   
 }
