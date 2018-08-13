@@ -1,4 +1,5 @@
 scores<-c()
+iterator=0
 
 library(mondate)
 
@@ -537,13 +538,18 @@ for (iterator in 0:84)
     hist(hcr,breaks=c(quantile(ratr)[1],Lhinge,Lhinge+HingeRange*1/8,Lhinge+HingeRange*2/8,Lhinge+HingeRange*3/8,Lhinge+HingeRange*4/8,Lhinge+HingeRange*5/8,Lhinge+HingeRange*6/8,Lhinge+HingeRange*7/8,Uhinge,quantile(ratr)[5]))
     boxplot(hcr)
   
-  lcr<-data.frame(stack(((data.frame(Ra_training)[b20Mix_Ra]))))$values
+    mean(hcr)
+    mean(lcr)
+  
+    lcr<-data.frame(stack(((data.frame(Ra_training)[b20Mix_Ra]))))$values
     hist(lcr)
     hist(hcr, xlim=c(Lhinge,Uhinge), ylim=c(0,6000),breaks=c(-.04310345,))
   
   hcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[t20Mix_Ra]))))$values
   lcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[b20Mix_Ra]))))$values
   
+  mean(hcrT20Testing)
+  mean(lcrT20Testing)
   # Graphical Return Data Analytics -----------------------------------------
   
   #long portfolio
