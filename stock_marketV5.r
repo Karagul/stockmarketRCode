@@ -1,17 +1,43 @@
+
+#dp<-read.csv('d:/quantshare/quotes.csv') # no arguments
+
+todayIs <- as.Date(as.POSIXlt(as.Date(Sys.Date())))
+
+require(RPostgreSQL) # did you install this package?
+require(DBI)
+pg = dbDriver("PostgreSQL")
+conn = dbConnect(drv=pg
+                 ,user="readyloop"
+                 ,password="read123"
+                 ,host="localhost"
+                 ,port=5432
+                 ,dbname="readyloop"
+)
+
+#custom calendar
+qry='SELECT * FROM custom_calendar ORDER by date'
+ccal<-dbGetQuery(conn,qry)
+#eod prices and indices
+#qry1="SELECT symbol,date,adjusted_close FROM eod_indices WHERE date BETWEEN '2011-12-30' AND '2017-12-31'"
+qry1=paste0("SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '1999-12-30' AND '",todayIs,"'")
+#qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
+qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM etf_bond_facts WHERE timestamp BETWEEN '1999-12-30' AND '",todayIs,"'")
+qry3=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '1999-12-30' AND '",todayIs,"'")
+qry4=paste0("SELECT symbol,timestamp,adjusted_close FROM other_facts WHERE timestamp BETWEEN '1999-12-30' AND '",todayIs,"'")
+eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry2,'UNION',qry3,'UNION',qry4))
+dbDisconnect(conn)
+
+eodOutside<-na.omit(eodwNA)
+
 #scores<-c()
 iterator=0
-
-dp<-read.csv('d:/quantshare/quotes.csv') # no arguments
 
 for (iterator in 0:216)
 {
   
-  d <- as.POSIXlt(as.Date(Sys.Date()))
   #set # of years back here.
-  d$year <- d$year-0
-  
   library(mondate)
-  end_date<-as.Date(mondate(as.Date(d)) - iterator)
+  end_date<-as.Date(mondate(as.Date(todayIs)) - iterator)
   
   start_date<- as.Date(mondate(end_date)-60)
   
@@ -19,30 +45,8 @@ for (iterator in 0:216)
   weeks=52/4
   months=12/4
   
-  require(RPostgreSQL) # did you install this package?
-  require(DBI)
-  pg = dbDriver("PostgreSQL")
-  conn = dbConnect(drv=pg
-                   ,user="readyloop"
-                   ,password="read123"
-                   ,host="localhost"
-                   ,port=5432
-                   ,dbname="readyloop"
-  )
+  eod<-eodOutside[which(eodOutside$date>=start_date & eodOutside$date <= end_date),,drop=F]
   
-  #custom calendar
-  qry='SELECT * FROM custom_calendar ORDER by date'
-  ccal<-dbGetQuery(conn,qry)
-  #eod prices and indices
-  #qry1="SELECT symbol,date,adjusted_close FROM eod_indices WHERE date BETWEEN '2011-12-30' AND '2017-12-31'"
-  qry1=paste0("SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '",start_date,"' AND '",end_date,"'")
-  #qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
-  qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM etf_bond_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
-  qry3=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
-  qry4=paste0("SELECT symbol,timestamp,adjusted_close FROM other_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
-  eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry2,'UNION',qry3,'UNION',qry4))
-  #eod<-dbGetQuery(conn,paste(qry1,'UNION',qry2))
-  #eod<-dbGetQuery(conn,paste(qry1,'UNION',qry4))
   
   #problem is null records are loaded
   #table(eod$symbol=='AGT')
@@ -53,7 +57,7 @@ for (iterator in 0:216)
   
   #https://jangorecki.gitlab.io/data.table/library/data.table/html/na.omit.data.table.html
   #https://stackoverflow.com/questions/4862178/remove-rows-with-all-or-some-nas-missing-values-in-data-frame
-  eod<-na.omit(eodwNA)
+  
   
   #table(is.na(eod))
   #table(is.na(eod$adj_close))
@@ -62,7 +66,7 @@ for (iterator in 0:216)
   #remove.na(eod)
   
   #eod<-dbGetQuery(conn,paste(qry))
-  dbDisconnect(conn)
+  
   
   #Explore
   head(ccal)
