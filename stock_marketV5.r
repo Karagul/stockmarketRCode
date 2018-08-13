@@ -1,7 +1,7 @@
-scores<-c()
+#scores<-c()
 iterator=0
 
-for (iterator in 84:89)
+for (iterator in 0:216)
 {
   
   d <- as.POSIXlt(as.Date(Sys.Date()))
@@ -519,8 +519,9 @@ for (iterator in 84:89)
     Lhinge+IQR*1/8
   
     breaks=c(quantile(ratr)[1],Lhinge,Lhinge+HingeRange*1/8,Lhinge+HingeRange*2/8,Lhinge+HingeRange*3/8,Lhinge+HingeRange*4/8,Lhinge+HingeRange*5/8,Lhinge+HingeRange*6/8,Lhinge+HingeRange*7/8,Uhinge,quantile(ratr)[5])  
-    
+
     hist(ratr,breaks)
+
     hist(alltr,breaks)
     
   
@@ -674,66 +675,95 @@ for (iterator in 84:89)
   length(t20Mix_RaM)
   length(b20Mix_RaM)
   
-  #positve/negative weights
-  positive=2
+  positive=0
   negative=-1
-  length(list_Ra)
-  opt_w[1:length(t20Mix_Ra)]<-positive/length(t20Mix_Ra)
-  #opt_w[1:length(t20Mix_Ra)]<-.5/length(t20Mix_Ra)
-  #opt_w[1:length(list_Ra)]=1/length(list_Ra)
-  opt_w[(length(t20Mix_Ra)+1):(length(t20Mix_Ra)+length(b20Mix_Ra))]<-negative/length(b20Mix_Ra)
-  #opt_w[(length(t20Mix_Ra)+1):(length(t20Mix_Ra)+length(b20Mix_Ra))]<-.5/length(b20Mix_Ra)
   
-  sum(opt_w)
+  for (testCase in 0:1)
+  {
+    
+    #positve/negative weights
+    if (testCase==0)
+    {
+      positive <<- 2
+      negative <<- -1
+    }
+    if (testCase==1)
+    {
+      positive <<- 4
+      negative <<- -3
+      
+    }
+    
+ 
+    length(list_Ra)
+    opt_w[1:length(t20Mix_Ra)]<-positive/length(t20Mix_Ra)
+    #opt_w[1:length(t20Mix_Ra)]<-.5/length(t20Mix_Ra)
+    #opt_w[1:length(list_Ra)]=1/length(list_Ra)
+    opt_w[(length(t20Mix_Ra)+1):(length(t20Mix_Ra)+length(b20Mix_Ra))]<-negative/length(b20Mix_Ra)
+    #opt_w[(length(t20Mix_Ra)+1):(length(t20Mix_Ra)+length(b20Mix_Ra))]<-.5/length(b20Mix_Ra)
+    
+    sum(opt_w)
+    
+    #apply weights to test returns
+    Rp<-Rb_testing # easier to apply the existing structure
+    RpW<-RbW_testing # easier to apply the existing structure
+    RpM<-RbM_testing # easier to apply the existing structure
+    #define new column that is the dot product of the two vectors
+    Rp$ptf<-Ra_testing %*% opt_w
+    RpW$ptf<-RaW_testing %*% opt_w
+    RpM$ptf<-RaM_testing %*% opt_w
+    
+    #check
+    head(Rp)
+    tail(Rp)
+    
+    #Compare basic metrics
+    #table.AnnualizedReturns(Rp) expensive
+    
+    Return.cumulative(Rp)
+    Return.cumulative(RpW)
+    Return.cumulative(RpM)
+    
+    chart.CumReturns(Ra_training[,t20Mix_Ra])
+    chart.CumReturns(Ra_training[,b20Mix_Ra])
+    chart.CumReturns(Rb_training)
+    chart.CumReturns(Ra_testing)
+    
+    chart.CumReturns(Rb_testing)
+    plot(Rb_testing$SP500TR)
+    
+    #write.csv(Rb_testing,"c:/test/sp5.csv")
+    #write.csv(Ra_testing,"c:/test/rat.csv")
+    #write.csv(eod_ret[list_Ra],"c:/test/opt_Returns.csv")
+    
+    #check
+    #View(Ra_testing[,1:2])
+    
+    # Chart Hypothetical Portfolio Returns ------------------------------------
+    
+    
+    jpeg(paste0(end_date,"rplot.jpg"))
+    chart.CumReturns(Rp,legend.loc = 'topleft')
+    dev.off()
+    chart.CumReturns(RpW,legend.loc = 'topleft')
+    chart.CumReturns(RpM,legend.loc = 'topleft')
+    #View(eom_ret[,list_Ra])
+    
+    #table(is.na(eom_ret[,list_Ra]))
+    
+    # End of Part 3c
+    # End of Stock Market Case Study 
+    if (testCase==0)
+    {
+      print(paste("Weights 2 vs -1 The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))      
+    } 
+    if (testCase==1)
+    {
+      print(paste("Weights 4 vs -3 The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))      
+    }
+    #scores<-rbind(scores,Return.cumulative(Rp$ptf))
+    
+  }
+
   
-  #apply weights to test returns
-  Rp<-Rb_testing # easier to apply the existing structure
-  RpW<-RbW_testing # easier to apply the existing structure
-  RpM<-RbM_testing # easier to apply the existing structure
-  #define new column that is the dot product of the two vectors
-  Rp$ptf<-Ra_testing %*% opt_w
-  RpW$ptf<-RaW_testing %*% opt_w
-  RpM$ptf<-RaM_testing %*% opt_w
-  
-  #check
-  head(Rp)
-  tail(Rp)
-  
-  #Compare basic metrics
-  #table.AnnualizedReturns(Rp) expensive
-  
-  Return.cumulative(Rp)
-  Return.cumulative(RpW)
-  Return.cumulative(RpM)
-  
-  chart.CumReturns(Ra_training[,t20Mix_Ra])
-  chart.CumReturns(Ra_training[,b20Mix_Ra])
-  chart.CumReturns(Rb_training)
-  chart.CumReturns(Ra_testing)
-  chart.CumReturns(Rb_testing)
-  plot(Rb_testing$SP500TR)
-  
-  #write.csv(Rb_testing,"c:/test/sp5.csv")
-  #write.csv(Ra_testing,"c:/test/rat.csv")
-  #write.csv(eod_ret[list_Ra],"c:/test/opt_Returns.csv")
-  
-  #check
-  #View(Ra_testing[,1:2])
-  
-  # Chart Hypothetical Portfolio Returns ------------------------------------
-  
-  scores<-rbind(scores,Return.cumulative(Rp$ptf))
-  #jpeg(paste0(end_date,'rplot.jpg'))
-  chart.CumReturns(Rp,legend.loc = 'topleft')
-  chart.CumReturns(RpW,legend.loc = 'topleft')
-  chart.CumReturns(RpM,legend.loc = 'topleft')
-  #View(eom_ret[,list_Ra])
-  
-  #table(is.na(eom_ret[,list_Ra]))
-  
-  # End of Part 3c
-  # End of Stock Market Case Study 
-  print(paste("The lag month is", iterator))
-  print(paste("The return is", Return.cumulative(Rp$ptf)))
-  scores<-rbind(scores,Return.cumulative(Rp$ptf))
 }
