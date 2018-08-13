@@ -1,6 +1,8 @@
 #scores<-c()
 iterator=0
 
+dp<-read.csv('d:/quantshare/quotes.csv') # no arguments
+
 for (iterator in 0:216)
 {
   
@@ -327,7 +329,7 @@ for (iterator in 0:216)
   #bottom 20 
   
   #chart.Boxplot(eod_ret[t20CR])
-  setPercent=round(length(colnames(eod_pvt_complete))*.01,0)
+  setPercent=round(length(colnames(eod_pvt_complete))*.10,0)
   
   t20CR_Ra<-colnames(data.frame(eod_ret)[CR_Ra_training$colname])[1:setPercent]
   t20CR_RaW<-colnames(data.frame(eow_ret)[CR_RaW_training$colname])[1:setPercent]
@@ -518,7 +520,7 @@ for (iterator in 0:216)
     
     Lhinge+IQR*1/8
   
-    breaks=c(quantile(ratr)[1],Lhinge,Lhinge+HingeRange*1/8,Lhinge+HingeRange*2/8,Lhinge+HingeRange*3/8,Lhinge+HingeRange*4/8,Lhinge+HingeRange*5/8,Lhinge+HingeRange*6/8,Lhinge+HingeRange*7/8,Uhinge,quantile(ratr)[5])  
+    breaks=c(quantile(alltr)[1],Lhinge,Lhinge+HingeRange*1/8,Lhinge+HingeRange*2/8,Lhinge+HingeRange*3/8,Lhinge+HingeRange*4/8,Lhinge+HingeRange*5/8,Lhinge+HingeRange*6/8,Lhinge+HingeRange*7/8,Uhinge,quantile(alltr)[5])  
 
     hist(ratr,breaks)
 
