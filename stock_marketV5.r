@@ -3,7 +3,7 @@ iterator=0
 
 library(mondate)
 
-for (iterator in 0:84)
+for (iterator in 0:4)
 {
   
   d <- as.POSIXlt(as.Date(Sys.Date()))
@@ -535,7 +535,7 @@ for (iterator in 0:84)
   
   
   hcr<-data.frame(stack(((data.frame(Ra_training)[t20Mix_Ra]))))$values
-    hist(hcr,breaks=c(quantile(ratr)[1],Lhinge,Lhinge+HingeRange*1/8,Lhinge+HingeRange*2/8,Lhinge+HingeRange*3/8,Lhinge+HingeRange*4/8,Lhinge+HingeRange*5/8,Lhinge+HingeRange*6/8,Lhinge+HingeRange*7/8,Uhinge,quantile(ratr)[5]))
+    hist(hcr,breaks)
     boxplot(hcr)
   
     mean(hcr)
@@ -543,7 +543,7 @@ for (iterator in 0:84)
   
     lcr<-data.frame(stack(((data.frame(Ra_training)[b20Mix_Ra]))))$values
     hist(lcr)
-    hist(hcr, xlim=c(Lhinge,Uhinge), ylim=c(0,6000),breaks=c(-.04310345,))
+    hist(hcr, breaks)
   
   hcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[t20Mix_Ra]))))$values
   lcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[b20Mix_Ra]))))$values
@@ -737,5 +737,5 @@ for (iterator in 0:84)
   # End of Stock Market Case Study 
   print(paste("The lag month is", iterator))
   print(paste("The return is", Return.cumulative(Rp$ptf)))
-  #scores<-rbind(scores,Return.cumulative(Rp$ptf))
+  scores<-rbind(scores,Return.cumulative(Rp$ptf))
 }
