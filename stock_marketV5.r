@@ -328,26 +328,26 @@ for (iterator in 0:84)
   #bottom 20 
   
   #chart.Boxplot(eod_ret[t20CR])
-  round(length(colnames(eod_pvt_complete))*.1,0)
+  setPercent=round(length(colnames(eod_pvt_complete))*.01,0)
   
-  t20CR_Ra<-colnames(data.frame(eod_ret)[CR_Ra_training$colname])[1:20]
-  t20CR_RaW<-colnames(data.frame(eow_ret)[CR_RaW_training$colname])[1:20]
-  t20CR_RaM<-colnames(data.frame(eom_ret)[CR_RaM_training$colname])[1:20]
+  t20CR_Ra<-colnames(data.frame(eod_ret)[CR_Ra_training$colname])[1:setPercent]
+  t20CR_RaW<-colnames(data.frame(eow_ret)[CR_RaW_training$colname])[1:setPercent]
+  t20CR_RaM<-colnames(data.frame(eom_ret)[CR_RaM_training$colname])[1:setPercent]
   
-  b20CR_Ra<-colnames(data.frame(eod_ret)[CR_Ra_training$colname])[(length(CR_Ra_training$colname)-20):length(CR_Ra_training$colname)]
-  b20CR_RaW<-colnames(data.frame(eow_ret)[CR_RaW_training$colname])[(length(CR_RaW_training$colname)-20):length(CR_RaW_training$colname)]
-  b20CR_RaM<-colnames(data.frame(eom_ret)[CR_RaM_training$colname])[(length(CR_RaM_training$colname)-20):length(CR_RaM_training$colname)]
+  b20CR_Ra<-colnames(data.frame(eod_ret)[CR_Ra_training$colname])[(length(CR_Ra_training$colname)-setPercent):length(CR_Ra_training$colname)]
+  b20CR_RaW<-colnames(data.frame(eow_ret)[CR_RaW_training$colname])[(length(CR_RaW_training$colname)-setPercent):length(CR_RaW_training$colname)]
+  b20CR_RaM<-colnames(data.frame(eom_ret)[CR_RaM_training$colname])[(length(CR_RaM_training$colname)-setPercent):length(CR_RaM_training$colname)]
   
   #top 20 by average return
   #I should only be feeding in one variable to avoid input errors, which means I need to refactor this code.
-  t20AVGR_Ra<-colnames(data.frame(eod_ret)[avg_Ra_training$colname])[1:20]
-  t20AVGR_RaW<-colnames(data.frame(eow_ret)[avg_RaW_training$colname])[1:20]
-  t20AVGR_RaM<-colnames(data.frame(eom_ret)[avg_RaM_training$colname])[1:20]
+  t20AVGR_Ra<-colnames(data.frame(eod_ret)[avg_Ra_training$colname])[1:setPercent]
+  t20AVGR_RaW<-colnames(data.frame(eow_ret)[avg_RaW_training$colname])[1:setPercent]
+  t20AVGR_RaM<-colnames(data.frame(eom_ret)[avg_RaM_training$colname])[1:setPercent]
   
   #bottom 20
-  b20AVGR_Ra<-colnames(data.frame(eod_ret)[avg_Ra_training$colname])[(length(avg_Ra_training$colname)-20):length(avg_Ra_training$colname)]
-  b20AVGR_RaW<-colnames(data.frame(eow_ret)[avg_RaW_training$colname])[(length(avg_RaW_training$colname)-20):length(avg_RaW_training$colname)]
-  b20AVGR_RaM<-colnames(data.frame(eom_ret)[avg_RaM_training$colname])[(length(avg_RaM_training$colname)-20):length(avg_RaM_training$colname)]
+  b20AVGR_Ra<-colnames(data.frame(eod_ret)[avg_Ra_training$colname])[(length(avg_Ra_training$colname)-setPercent):length(avg_Ra_training$colname)]
+  b20AVGR_RaW<-colnames(data.frame(eow_ret)[avg_RaW_training$colname])[(length(avg_RaW_training$colname)-setPercent):length(avg_RaW_training$colname)]
+  b20AVGR_RaM<-colnames(data.frame(eom_ret)[avg_RaM_training$colname])[(length(avg_RaM_training$colname)-setPercent):length(avg_RaM_training$colname)]
   #export dataframe in the order specified in the summary
   
   t20Mix_Ra<-unique(c(t20CR_Ra,t20AVGR_Ra))
