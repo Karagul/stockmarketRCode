@@ -31,8 +31,7 @@ eodOutside<-na.omit(eodwNA)
 
 #scores<-c()
 iterator=0
-
-for (iterator in 0:216)
+for (iterator in seq(0, 151, by=30))
 {
   
   #set # of years back here.
@@ -198,7 +197,7 @@ for (iterator in 0:216)
   eod_pvt_complete[1:10,1:5] #first 10 rows and first 5 columns 
   #ncol(eod_pvt_complete)
   #nrow(eod_pvt_complete)
-  table(is.na(eod_pvt_complete))
+  #table(is.na(eod_pvt_complete))
   
   # Missing Data Imputation -----------------------------------------------------
   # We can replace a few missing (NA or NaN) data items with previous data
@@ -333,7 +332,7 @@ for (iterator in 0:216)
   #bottom 20 
   
   #chart.Boxplot(eod_ret[t20CR])
-  setPercent=round(length(colnames(eod_pvt_complete))*.10,0)
+  setPercent=round(length(colnames(eod_pvt_complete))*.025,0)
   
   t20CR_Ra<-colnames(data.frame(eod_ret)[CR_Ra_training$colname])[1:setPercent]
   t20CR_RaW<-colnames(data.frame(eow_ret)[CR_RaW_training$colname])[1:setPercent]
@@ -374,7 +373,7 @@ for (iterator in 0:216)
   RaM<-as.xts(eom_ret[list_Ra]) #colSortAndFilter.R
   
   #check
-  Ra$AGT
+  #Ra$AGT
   
   # remove NA's and nulls
   #table(is.na(Ra))
@@ -543,12 +542,13 @@ for (iterator in 0:216)
     hist(hcr,breaks)
     boxplot(hcr)
   
-    mean(hcr)
-    mean(lcr)
   
     lcr<-data.frame(stack(((data.frame(Ra_training)[b20Mix_Ra]))))$values
     hist(lcr)
     hist(hcr, breaks)
+    
+    mean(hcr)
+    mean(lcr)
   
   hcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[t20Mix_Ra]))))$values
   lcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[b20Mix_Ra]))))$values
