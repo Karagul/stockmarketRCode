@@ -1,14 +1,14 @@
 scores<-c()
 iterator=0
 
-library(mondate)
-
 for (iterator in 0:4)
 {
   
   d <- as.POSIXlt(as.Date(Sys.Date()))
   #set # of years back here.
   d$year <- d$year-0
+  
+  library(mondate)
   end_date<-as.Date(mondate(as.Date(d)) - iterator)
   
   train<-c(d)
