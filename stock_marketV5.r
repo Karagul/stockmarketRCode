@@ -20,17 +20,42 @@ ccal<-dbGetQuery(conn,qry)
 #eod prices and indices
 #qry1=paste0("SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '1999-12-30' AND '",todayIs,"'")
 #qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
+qryQSCount=("select symbol from mv_qs_symbols")
 qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM etf_bond_facts WHERE timestamp BETWEEN '1999-12-30' AND '",todayIs,"'")
 qry3=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '1999-12-30' AND '",todayIs,"'")
 qry4=paste0("SELECT symbol,timestamp,adjusted_close FROM other_facts WHERE timestamp BETWEEN '1999-12-30' AND '",todayIs,"'")
 qry5=paste0("SELECT symbol,timestamp,close FROM qs_facts WHERE timestamp BETWEEN '1999-12-30' AND '",todayIs,"'")
-eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry2,'UNION',qry3,'UNION',qry4))
+#eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry2,'UNION',qry3,'UNION',qry4))
 #eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry5))
+QSSymbols<-dbGetQuery(conn,paste(qryQSCount))
+
+QSSymbolCount<-nrow(QSSymbols)
+#width=round(QSSymbolCount*.1)
+
+
+
+#10% of symbols
+#symbolKeySubset <- c(sample(1:(as.numeric(QSSymbolCount)), as.numeric(round(QSSymbolCount*.1)), replace=F))
+
+require(dplyr)
+#symbolKeySubset <- symbolKeySubset[sample(, as.numeric(round(QSSymbolCount*.1)))]
+
+symbolKeySubset <- sample_n(QSSymbols, as.numeric(round(QSSymbolCount*.10)))
+
+#write.csv()
+#https://stackoverflow.com/questions/33634713/rpostgresql-import-dataframe-into-a-table
+dbWriteTable(conn, "symbolKeySubset", symbolKeySubset, row.names=FALSE, append=TRUE)
+
+system("c:/users/user/documents/alphaadvantageapi/stockmarketr/stockmarketrcode/runSubsetQuery.bat", intern = TRUE)
+
+qryMVQSS=paste0("mv_qs_facts.symbol, mv_qs_facts.close as adj_close FROM mv_qs_facts INNER JOIN mv_qs_symbol_subset ON mv_qs_facts.symbol=mv_qs_symbol_subset.symbol;")
+
+eodwNA<-dbGetQuery(conn,paste(qryMVQSS))
+
 dbDisconnect(conn)
 
 eodOutside<-na.omit(eodwNA)
 table(eodOutside$symbol)
-
 
 #scores<-c()
 iterator=0
@@ -134,6 +159,8 @@ for (iterator in seq(0, 151, by=30))
   
   require(reshape2) #did you install this package?
   eod_pvtwNA<-dcast(eod_completewNA, date ~ symbol,value.var='adj_close',fun.aggregate = mean, fill=NULL)
+  
+  
   #check
   #View((eod_pvt[c('date','SP500TR')])) #first 10 rows and first 5 columns 
   #View((eod_ret[c('SP500TR')]))
@@ -160,15 +187,10 @@ for (iterator in seq(0, 151, by=30))
   length(selected_symbols_daily3)
   
   eod_complete<-eod[which(eod$symbol %in% selected_symbols_daily3),,drop=F]
+  
+  
   eod_pvt<-dcast(eod_complete, date ~ symbol,value.var='adj_close',fun.aggregate = mean, fill=NULL)
-  
-  
-  #eod_complete<-eod[which(eod$symbol %in% selected_symbols_daily2),,drop=F]  
-  
-  
-  #table(is.na(eod_pvt))
-  # YOUR TURN: Perform the same set of tasks for monthly prices (create eom_pvt)
-  
+
   #tail(eod_pvt[,1:2])
   tail(tdays)
   # Merge with Calendar -----------------------------------------------------
