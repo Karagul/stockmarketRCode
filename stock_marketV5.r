@@ -48,7 +48,7 @@ dbWriteTable(conn, "symbolKeySubset", symbolKeySubset, row.names=FALSE, append=T
 
 system("c:/users/user/documents/alphaadvantageapi/stockmarketr/stockmarketrcode/runSubsetQuery.bat", intern = TRUE)
 
-qryMVQSS=paste0("mv_qs_facts.symbol, mv_qs_facts.close as adj_close FROM mv_qs_facts INNER JOIN mv_qs_symbol_subset ON mv_qs_facts.symbol=mv_qs_symbol_subset.symbol;")
+qryMVQSS=paste0("SELECT mv_qs_facts.symbol, mv_qs_facts.close as adj_close FROM mv_qs_facts INNER JOIN mv_qs_symbol_subset ON mv_qs_facts.symbol=mv_qs_symbol_subset.symbol;")
 
 eodwNA<-dbGetQuery(conn,paste(qryMVQSS))
 
