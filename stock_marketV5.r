@@ -18,7 +18,7 @@ conn = dbConnect(drv=pg
 qry='SELECT * FROM custom_calendar ORDER by date'
 ccal<-dbGetQuery(conn,qry)
 #eod prices and indices
-#qry1=paste0("SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '1999-12-30' AND '",todayIs,"'")
+qry1=paste0("SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '1999-12-30' AND '",todayIs,"'")
 #qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
 qryQSCount=("select symbol from mv_qs_symbols")
 qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM etf_bond_facts WHERE timestamp BETWEEN '1999-12-30' AND '",todayIs,"'")
@@ -40,7 +40,7 @@ QSSymbolCount<-nrow(QSSymbols)
 require(dplyr)
 #symbolKeySubset <- symbolKeySubset[sample(, as.numeric(round(QSSymbolCount*.1)))]
 
-symbolKeySubset <- sample_n(QSSymbols, as.numeric(round(QSSymbolCount*.10)))
+symbolKeySubset <- sample_n(QSSymbols, as.numeric(round(QSSymbolCount*.01)))
 
 #write.csv()
 #https://stackoverflow.com/questions/33634713/rpostgresql-import-dataframe-into-a-table
@@ -48,9 +48,11 @@ dbWriteTable(conn, "symbolKeySubset", symbolKeySubset, row.names=FALSE, append=T
 
 system("c:/users/user/documents/alphaadvantageapi/stockmarketr/stockmarketrcode/runSubsetQuery.bat", intern = TRUE)
 
-qryMVQSS=paste0("SELECT mv_qs_facts.symbol, mv_qs_facts.timestamp as date, mv_qs_facts.close as adj_close FROM mv_qs_facts INNER JOIN mv_qs_symbol_subset ON mv_qs_facts.symbol=mv_qs_symbol_subset.symbol;")
+qryMVQSSv=paste0("create view v_qs_sample as SELECT mv_qs_facts.symbol, mv_qs_facts.timestamp as date, mv_qs_facts.close as adj_close FROM mv_qs_facts INNER JOIN mv_qs_symbol_subset ON mv_qs_facts.symbol=mv_qs_symbol_subset.symbol;")
 
-eodwNA<-dbGetQuery(conn,paste(qryMVQSS))
+qryMVQSS=paste0("select * from v_qs_sample")
+
+eodwNA<-dbGetQuery(conn,paste(qryMVQSS,'UNION',qry1))
 
 dbDisconnect(conn)
 
