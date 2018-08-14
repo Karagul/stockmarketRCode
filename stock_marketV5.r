@@ -40,7 +40,7 @@ QSSymbolCount<-nrow(QSSymbols)
 require(dplyr)
 #symbolKeySubset <- symbolKeySubset[sample(, as.numeric(round(QSSymbolCount*.1)))]
 
-symbolKeySubset <- sample_n(QSSymbols, as.numeric(round(QSSymbolCount*.01)))
+symbolKeySubset <- sample_n(QSSymbols, as.numeric(round(QSSymbolCount*.1)))
 
 #write.csv()
 #https://stackoverflow.com/questions/33634713/rpostgresql-import-dataframe-into-a-table
@@ -713,7 +713,7 @@ for (iterator in seq(0, 151, by=30))
   length(t20Mix_RaM)
   length(b20Mix_RaM)
   
-  for (weight in 2:5)
+  for (weight in 2:6)
   {
     positive=weight
     negative=abs((positive)-1)*-1
@@ -724,6 +724,12 @@ for (iterator in seq(0, 151, by=30))
     #opt_w[1:length(list_Ra)]=1/length(list_Ra)
     opt_w[(length(t20Mix_Ra)+1):(length(t20Mix_Ra)+length(b20Mix_Ra))]<-negative/length(b20Mix_Ra)
     #opt_w[(length(t20Mix_Ra)+1):(length(t20Mix_Ra)+length(b20Mix_Ra))]<-.5/length(b20Mix_Ra)
+    
+    if(weight==6)
+    {
+      opt_w<-opt_p$weights
+      
+    }
     
     sum(opt_w)
     
