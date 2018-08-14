@@ -20,16 +20,16 @@ ccal<-dbGetQuery(conn,qry)
 #eod prices and indices
 qry1=paste0("SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '1999-12-30' AND '",todayIs,"'")
 #qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
-qryQSCount=("select symbol from mv_qs_symbols")
+#qryQSCount=("select symbol from mv_qs_symbols")
 qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM etf_bond_facts WHERE timestamp BETWEEN '1999-12-30' AND '",todayIs,"'")
 qry3=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '1999-12-30' AND '",todayIs,"'")
 qry4=paste0("SELECT symbol,timestamp,adjusted_close FROM other_facts WHERE timestamp BETWEEN '1999-12-30' AND '",todayIs,"'")
-qry5=paste0("SELECT symbol,timestamp,close FROM qs_facts WHERE timestamp BETWEEN '1999-12-30' AND '",todayIs,"'")
-#eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry2,'UNION',qry3,'UNION',qry4))
+#qry5=paste0("SELECT symbol,timestamp,close FROM qs_facts WHERE timestamp BETWEEN '1999-12-30' AND '",todayIs,"'")
+eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry2,'UNION',qry3,'UNION',qry4))
 #eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry5))
-QSSymbols<-dbGetQuery(conn,paste(qryQSCount))
+#QSSymbols<-dbGetQuery(conn,paste(qryQSCount))
 
-QSSymbolCount<-nrow(QSSymbols)
+#QSSymbolCount<-nrow(QSSymbols)
 #width=round(QSSymbolCount*.1)
 
 
@@ -48,11 +48,11 @@ dbWriteTable(conn, "symbolKeySubset", symbolKeySubset, row.names=FALSE, append=T
 
 system("c:/users/user/documents/alphaadvantageapi/stockmarketr/stockmarketrcode/runSubsetQuery.bat", intern = TRUE)
 
-qryMVQSSv=paste0("create view v_qs_sample as SELECT mv_qs_facts.symbol, mv_qs_facts.timestamp as date, mv_qs_facts.close as adj_close FROM mv_qs_facts INNER JOIN mv_qs_symbol_subset ON mv_qs_facts.symbol=mv_qs_symbol_subset.symbol;")
+#qryMVQSSv=paste0("create view v_qs_sample as SELECT mv_qs_facts.symbol, mv_qs_facts.timestamp as date, mv_qs_facts.close as adj_close FROM mv_qs_facts INNER JOIN mv_qs_symbol_subset ON mv_qs_facts.symbol=mv_qs_symbol_subset.symbol;")
 
-qryMVQSS=paste0("select * from v_qs_sample")
+#qryMVQSS=paste0("select * from v_qs_sample")
 
-eodwNA<-dbGetQuery(conn,paste(qryMVQSS,'UNION',qry1))
+#eodwNA<-dbGetQuery(conn,paste(qryMVQSS,'UNION',qry1))
 
 dbDisconnect(conn)
 
@@ -64,7 +64,7 @@ table(eodOutside$symbol)
 
 #scores<-c()
 iterator=0
-for (iterator in seq(0, 151, by=30))
+for (iterator in seq(0, 0, by=1))
 {
   
   #set # of years back here.
@@ -334,6 +334,13 @@ for (iterator in seq(0, 151, by=30))
   eow_ret_testing<-tail(eow_ret,weeks)
   eom_ret_testing<-tail(eom_ret,months)
   
+  #beta's derived using linear regression model between benchmark and sassy assets
+
+  linearMod <- lm(Ra_training~Rb_training)
+  #print(linearMod)
+
+  linCoeffBetas<- colSortMax(linearMod$coefficients)
+  
   CR_Ra_training <- colSortMax(Return.cumulative(eod_ret_training))
   avg_Ra_training <- colSortAvg(eod_ret_training)
   
@@ -364,7 +371,16 @@ for (iterator in seq(0, 151, by=30))
   #bottom 20 
   
   #chart.Boxplot(eod_ret[t20CR])
+  #top/bottom 2.5%
   setPercent=round(length(colnames(eod_pvt_complete))*.025,0)
+  
+  #hold based on beta's, but not shorts
+  basedOnBetas<-colnames(data.frame(Ra_training)[linCoeffBetas$colname])[1:setPercent]
+  
+  
+  
+  Ra_training[,basedOnBetas]
+  write.csv(Ra_training[,basedOnBetas],"c:/test/Opt_Ret_WBetas.csv")
   
   t20CR_Ra<-colnames(data.frame(eod_ret)[CR_Ra_training$colname])[1:setPercent]
   t20CR_RaW<-colnames(data.frame(eow_ret)[CR_RaW_training$colname])[1:setPercent]
@@ -394,12 +410,12 @@ for (iterator in seq(0, 151, by=30))
   b20Mix_RaW<-unique(c(b20CR_RaW,b20AVGR_RaW))
   b20Mix_RaM<-unique(c(b20CR_RaM,b20AVGR_RaM))
   
-  list_Ra<-c(t20Mix_Ra,b20Mix_Ra)
+  #list_Ra<-c(t20Mix_Ra,b20Mix_Ra)
+  list_Ra<-c(basedOnBetas,b20Mix_Ra)
   
   list_RaW<-c(t20Mix_RaW,b20Mix_RaW)
   list_RaM<-c(t20Mix_RaM,b20Mix_RaM)
   
-  #Ra<-as.xts(eod_ret[,c('AEGN','AAON','AMSC','ALCO','AGNC','AREX','ABCB','ABMD','ACTG','ADTN','AAPL','AAL'),drop=F])
   Ra<-as.xts(eod_ret[list_Ra]) #colSortAndFilter.R
   RaW<-as.xts(eow_ret[list_Ra]) #colSortAndFilter.R
   RaM<-as.xts(eom_ret[list_Ra]) #colSortAndFilter.R
@@ -552,7 +568,6 @@ for (iterator in seq(0, 151, by=30))
     #percent captured within LHinge and UHinge of Ra_training
     length(ratr[which(alltr[]>=Lhinge & alltr[]<=Uhinge)])/length(alltr)
     
-    
     Lhinge+IQR*1/8
   
     breaks=c(quantile(alltr)[1],Lhinge,Lhinge+HingeRange*1/8,Lhinge+HingeRange*2/8,Lhinge+HingeRange*3/8,Lhinge+HingeRange*4/8,Lhinge+HingeRange*5/8,Lhinge+HingeRange*6/8,Lhinge+HingeRange*7/8,Uhinge,quantile(alltr)[5])  
@@ -560,7 +575,6 @@ for (iterator in seq(0, 151, by=30))
     hist(ratr,breaks)
 
     hist(alltr,breaks)
-    
   
   #returns benchmark training
   chart.Boxplot(brtr)
@@ -569,11 +583,9 @@ for (iterator in seq(0, 151, by=30))
   
   #example, outliers are defined as 1Q-IQR*1.5 and 3Q*+IQR*1.5, why not set up a histogram that captures this.
   
-  
   hcr<-data.frame(stack(((data.frame(Ra_training)[t20Mix_Ra]))))$values
     hist(hcr,breaks)
     boxplot(hcr)
-  
   
     lcr<-data.frame(stack(((data.frame(Ra_training)[b20Mix_Ra]))))$values
     hist(lcr)
@@ -601,7 +613,6 @@ for (iterator in seq(0, 151, by=30))
   #short testing
   hist(lcrT20Testing,breaks)
   
-  
   # Cumulative returns chart
   chart.CumReturns(Ra,legend.loc = 'topleft')
   chart.CumReturns(Rb,legend.loc = 'topleft')
@@ -617,7 +628,6 @@ for (iterator in seq(0, 151, by=30))
   
   summary(hcr)
   StdDev(hcr)
-  
   
   #S&P500
   summary(Rb_training)
@@ -638,7 +648,6 @@ for (iterator in seq(0, 151, by=30))
   #quantile(lcrT20Testing,c(0,.05,.5,.95,1))
   sum(acc_Ra_testing[,b20Mix_Ra])
   
-  
   #plot.new()
   
   #best/worst over testing period
@@ -653,7 +662,6 @@ for (iterator in seq(0, 151, by=30))
   StdDev(lcrT20Testing)
   
   boxplot(hcrT20Testing,Rb_testing,lcrT20Testing)
-  
   
   t.test(hcr,lcr)
   t.test(hcrT20Testing,lcrT20Testing)
@@ -713,7 +721,7 @@ for (iterator in seq(0, 151, by=30))
   length(t20Mix_RaM)
   length(b20Mix_RaM)
   
-  for (weight in 2:6)
+  for (weight in 2:5)
   {
     positive=weight
     negative=abs((positive)-1)*-1
@@ -724,12 +732,6 @@ for (iterator in seq(0, 151, by=30))
     #opt_w[1:length(list_Ra)]=1/length(list_Ra)
     opt_w[(length(t20Mix_Ra)+1):(length(t20Mix_Ra)+length(b20Mix_Ra))]<-negative/length(b20Mix_Ra)
     #opt_w[(length(t20Mix_Ra)+1):(length(t20Mix_Ra)+length(b20Mix_Ra))]<-.5/length(b20Mix_Ra)
-    
-    if(weight==6)
-    {
-      opt_w<-opt_p$weights
-      
-    }
     
     sum(opt_w)
     
@@ -757,16 +759,8 @@ for (iterator in seq(0, 151, by=30))
     chart.CumReturns(Ra_training[,b20Mix_Ra])
     chart.CumReturns(Rb_training)
     chart.CumReturns(Ra_testing)
-    
     chart.CumReturns(Rb_testing)
-    plot(Rb_testing$SP500TR)
     
-    #write.csv(Rb_testing,"c:/test/sp5.csv")
-    #write.csv(Ra_testing,"c:/test/rat.csv")
-    #write.csv(eod_ret[list_Ra],"c:/test/opt_Returns.csv")
-    
-    #check
-    #View(Ra_testing[,1:2])
     
     # Chart Hypothetical Portfolio Returns ------------------------------------
     
@@ -786,5 +780,20 @@ for (iterator in seq(0, 151, by=30))
     #scores<-rbind(scores,Return.cumulative(Rp$ptf))
     
   }
+  
+    opt_w<-opt_p$weights
+    
+    Rp<-Rb_testing # easier to apply the existing structure
+    RpW<-RbW_testing # easier to apply the existing structure
+    RpM<-RbM_testing # easier to apply the existing structure
+    #define new column that is the dot product of the two vectors
+    Rp$ptf<-Ra_testing %*% opt_w
+    RpW$ptf<-RaW_testing %*% opt_w
+    RpM$ptf<-RaM_testing %*% opt_w
+    chart.CumReturns(Ra_testing)
+
+    print(paste("start: ", start_date, "end: ", end_date, "Markowtiz Profile & The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))          
+    
+  
   
 }
