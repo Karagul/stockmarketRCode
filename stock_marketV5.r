@@ -360,7 +360,7 @@ for (iterator in seq(0, 0, by=1))
   #y <- eod_ret[,which(names(eod)=="SP500TR")]
   
   #y <- eod_ret[which(eod_ret)
-  length(ratr[which(alltr[]>=Lhinge & alltr[]<=Uhinge)])/length(alltr)
+  
   
   #need to base it on how Ra_training is created, and recreate it here.
   
@@ -370,8 +370,6 @@ tail(x)
   
   
   linearMod <- lm(y~x)
-  
-  linearMod <- lm(Ra_training~Rb_training)
   
   print(linearMod)
 
@@ -418,7 +416,7 @@ tail(x)
   #eod_ret[,basedOnBetas]
   #basedOnBetas
   #list_Ra
-  write.csv(eod_ret[,basedOnBetas],"c:/test/Opt_Ret_WBetas.csv")
+  #write.csv(eod_ret[,basedOnBetas],"c:/test/Opt_Ret_WBetas.csv")
   
   t20CR_Ra<-colnames(data.frame(eod_ret)[CR_Ra_training$colname])[1:setPercent]
   t20CR_RaW<-colnames(data.frame(eow_ret)[CR_RaW_training$colname])[1:setPercent]
@@ -448,7 +446,7 @@ tail(x)
   b20Mix_RaW<-unique(c(b20CR_RaW,b20AVGR_RaW))
   b20Mix_RaM<-unique(c(b20CR_RaM,b20AVGR_RaM))
   
-  #list_Ra<-c(t20Mix_Ra,b20Mix_Ra)
+  list_Ra<-c(t20Mix_Ra,b20Mix_Ra)
   #list_Ra<-c(basedOnBetas,b20Mix_Ra)
   #list_Ra<-basedOnBetas
   #eod_ret[,list_Ra]
@@ -567,11 +565,14 @@ tail(x)
   ratr<-data.frame(stack(((data.frame(Ra_training)))))$values
   brtr<-data.frame(stack(((data.frame(Rb_training)))))$values
   
+  
+  
   #testing
   rate<-data.frame(stack(((data.frame(Ra_testing)))))$values
   brte<-data.frame(stack(((data.frame(Rb_testing)))))$values
   
   alltr<-(c(ratr,rate))
+  
   summary(alltr)
   
   length(rate)
@@ -599,6 +600,9 @@ tail(x)
     IQR=quantile(alltr)[3]-quantile(alltr)[2]
     Lhinge<-c()
     Lhinge=quantile(alltr)[2]-IQR*1.5
+    
+    length(ratr[which(alltr[]>=Lhinge & alltr[]<=Uhinge)])/length(alltr)
+    
     Uhinge<-c()
     Uhinge=quantile(alltr)[4]+IQR*1.5
     IQRRange=Uhinge-Lhinge
