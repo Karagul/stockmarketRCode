@@ -71,7 +71,7 @@ for (iterator in seq(1, 24, by=1))
 {
   print(iterator)
 }
-iterator=2
+iterator=0
 for (iterator in seq(0, 24, by=1))
 {
   
@@ -415,9 +415,9 @@ for (iterator in seq(0, 24, by=1))
   t20CR_RaW<-c()
   t20CR_RaM<-c()
   
-  t20AVGR_Ra<-c()
-  t20AVGR_RaW<-c()
-  t20AVGR_RaM<-c()
+  #t20AVGR_Ra<-c()
+  #t20AVGR_RaW<-c()
+  #t20AVGR_RaM<-c()
   
   #bottom 20 
   b20CR_Ra<-c()
@@ -458,38 +458,38 @@ for (iterator in seq(0, 24, by=1))
   #t20Beta<-colnames(data.frame(eod_ret_training)[trainingBetaSorted$colname])[1:setPercent]
   #b20Beta<-colnames(data.frame(eod_ret_training)[trainingBetaSorted$colname])[1:setPercent]
   
-  t20CR_Ra<-colnames(data.frame(eod_ret)[CR_Ra_training$colname])[1:setPercent]
-  t20CR_RaW<-colnames(data.frame(eow_ret)[CR_RaW_training$colname])[1:setPercent]
-  t20CR_RaM<-colnames(data.frame(eom_ret)[CR_RaM_training$colname])[1:setPercent]
+  #t20CR_Ra<-colnames(data.frame(eod_ret)[CR_Ra_training$colname])[1:setPercent]
+  #t20CR_RaW<-colnames(data.frame(eow_ret)[CR_RaW_training$colname])[1:setPercent]
+  #t20CR_RaM<-colnames(data.frame(eom_ret)[CR_RaM_training$colname])[1:setPercent]
   
   #... training
-  b20CR_Ra<-colnames(data.frame(eod_ret)[CR_Ra_training$colname])[(length(CR_Ra_training$colname)-setPercent):length(CR_Ra_training$colname)]
-  b20CR_RaW<-colnames(data.frame(eow_ret)[CR_RaW_training$colname])[(length(CR_RaW_training$colname)-setPercent):length(CR_RaW_training$colname)]
-  b20CR_RaM<-colnames(data.frame(eom_ret)[CR_RaM_training$colname])[(length(CR_RaM_training$colname)-setPercent):length(CR_RaM_training$colname)]
+  #b20CR_Ra<-colnames(data.frame(eod_ret)[CR_Ra_training$colname])[(length(CR_Ra_training$colname)-setPercent):length(CR_Ra_training$colname)]
+  #b20CR_RaW<-colnames(data.frame(eow_ret)[CR_RaW_training$colname])[(length(CR_RaW_training$colname)-setPercent):length(CR_RaW_training$colname)]
+  #b20CR_RaM<-colnames(data.frame(eom_ret)[CR_RaM_training$colname])[(length(CR_RaM_training$colname)-setPercent):length(CR_RaM_training$colname)]
   
   #top 20 by average return
   #I should only be feeding in one variable to avoid input errors, which means I need to refactor this code.
-  t20AVGR_Ra<-colnames(data.frame(eod_ret)[avg_Ra_training$colname])[1:setPercent]
-  t20AVGR_Ra_testing<-colnames(data.frame(eod_ret)[avg_Ra_testing$colname])[1:setPercent]
+  #t20AVGR_Ra<-colnames(data.frame(eod_ret)[avg_Ra_training$colname])[1:setPercent]
+  #t20AVGR_Ra_testing<-colnames(data.frame(eod_ret)[avg_Ra_testing$colname])[1:setPercent]
   
-  t20AVGR_RaW<-colnames(data.frame(eow_ret)[avg_RaW_training$colname])[1:setPercent]
-  t20AVGR_RaM<-colnames(data.frame(eom_ret)[avg_RaM_training$colname])[1:setPercent]
+  #t20AVGR_RaW<-colnames(data.frame(eow_ret)[avg_RaW_training$colname])[1:setPercent]
+  #t20AVGR_RaM<-colnames(data.frame(eom_ret)[avg_RaM_training$colname])[1:setPercent]
   
   #bottom 20
-  b20AVGR_Ra<-colnames(data.frame(eod_ret)[avg_Ra_training$colname])[(length(avg_Ra_training$colname)-setPercent):length(avg_Ra_training$colname)]
-  b20AVGR_Ra_testing<-colnames(data.frame(eod_ret)[avg_Ra_testing$colname])[(length(avg_Ra_testing$colname)-setPercent):length(avg_Ra_testing$colname)]
+  #b20AVGR_Ra<-colnames(data.frame(eod_ret)[avg_Ra_training$colname])[(length(avg_Ra_training$colname)-setPercent):length(avg_Ra_training$colname)]
+  #b20AVGR_Ra_testing<-colnames(data.frame(eod_ret)[avg_Ra_testing$colname])[(length(avg_Ra_testing$colname)-setPercent):length(avg_Ra_testing$colname)]
   
-  b20AVGR_RaW<-colnames(data.frame(eow_ret)[avg_RaW_training$colname])[(length(avg_RaW_training$colname)-setPercent):length(avg_RaW_training$colname)]
-  b20AVGR_RaM<-colnames(data.frame(eom_ret)[avg_RaM_training$colname])[(length(avg_RaM_training$colname)-setPercent):length(avg_RaM_training$colname)]
+  #b20AVGR_RaW<-colnames(data.frame(eow_ret)[avg_RaW_training$colname])[(length(avg_RaW_training$colname)-setPercent):length(avg_RaW_training$colname)]
+  #b20AVGR_RaM<-colnames(data.frame(eom_ret)[avg_RaM_training$colname])[(length(avg_RaM_training$colname)-setPercent):length(avg_RaM_training$colname)]
   #export dataframe in the order specified in the summary
   
-  t20Mix_Ra<-unique(c(t20CR_Ra,t20AVGR_Ra))
-  t20Mix_RaW<-unique(c(t20CR_RaW,t20AVGR_RaW))
-  t20Mix_RaM<-unique(c(t20CR_RaM,t20AVGR_RaM))
+  #t20Mix_Ra<-unique(c(t20CR_Ra,t20AVGR_Ra))
+  #t20Mix_RaW<-unique(c(t20CR_RaW,t20AVGR_RaW))
+  #t20Mix_RaM<-unique(c(t20CR_RaM,t20AVGR_RaM))
   
-  b20Mix_Ra<-unique(c(b20CR_Ra,b20AVGR_Ra))
-  b20Mix_RaW<-unique(c(b20CR_RaW,b20AVGR_RaW))
-  b20Mix_RaM<-unique(c(b20CR_RaM,b20AVGR_RaM))
+  #b20Mix_Ra<-unique(c(b20CR_Ra,b20AVGR_Ra))
+  #b20Mix_RaW<-unique(c(b20CR_RaW,b20AVGR_RaW))
+  #b20Mix_RaM<-unique(c(b20CR_RaM,b20AVGR_RaM))
   
   list_Ra<-c()
   #list_Ra<-c(t20Mix_Ra,b20Mix_Ra)
@@ -498,8 +498,11 @@ for (iterator in seq(0, 24, by=1))
   #list_Ra<-basedOnBetas
   #eod_ret[,list_Ra]
   
-  list_RaW<-c(t20Mix_RaW,b20Mix_RaW)
-  list_RaM<-c(t20Mix_RaM,b20Mix_RaM)
+  #list_RaW<-c(t20Mix_RaW,b20Mix_RaW)
+  #list_RaM<-c(t20Mix_RaM,b20Mix_RaM)
+  
+  list_RaW<-c(t20Beta,b20Beta)
+  list_RaM<-c(t20Beta,b20Beta)
   #eod_ret[,list_Ra]
   
   #based on top/bottom 20
@@ -648,11 +651,11 @@ for (iterator in seq(0, 24, by=1))
       IQR=quantile(alltr)[3]-quantile(alltr)[2]
       Lhinge<-c()
       Lhinge=quantile(alltr)[2]-IQR*1.5
-      
-      length(ratr[which(alltr[]>=Lhinge & alltr[]<=Uhinge)])/length(alltr)
-      
+    
       Uhinge<-c()
       Uhinge=quantile(alltr)[4]+IQR*1.5
+      
+      #length(ratr[which(alltr[]>=Lhinge & alltr[]<=Uhinge)])/length(alltr)      
       IQRRange=Uhinge-Lhinge
       
       HingeRange=Uhinge-Lhinge
@@ -675,19 +678,19 @@ for (iterator in seq(0, 24, by=1))
     
     #example, outliers are defined as 1Q-IQR*1.5 and 3Q*+IQR*1.5, why not set up a histogram that captures this.
     
-    hcr<-data.frame(stack(((data.frame(Ra_training)[t20Mix_Ra]))))$values
+    hcr<-data.frame(stack(((data.frame(Ra_training)[t20Beta]))))$values
       hist(hcr,breaks)
       boxplot(hcr)
     
-      lcr<-data.frame(stack(((data.frame(Ra_training)[b20Mix_Ra]))))$values
+      lcr<-data.frame(stack(((data.frame(Ra_training)[b20Beta]))))$values
       hist(lcr)
       hist(hcr, breaks)
       
       mean(hcr)
       mean(lcr)
     
-    hcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[t20Mix_Ra]))))$values
-    lcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[b20Mix_Ra]))))$values
+    hcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[t20Beta]))))$values
+    lcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[b20Beta]))))$values
     
     mean(hcrT20Testing)
     mean(lcrT20Testing)
@@ -729,16 +732,16 @@ for (iterator in seq(0, 24, by=1))
     StdDev(lcr)
     
     #quantile(hcr,c(0,.05,.5,.95,1))
-    sum(acc_Ra_training[,t20Mix_Ra])
+    sum(acc_Ra_training[,t20Beta])
     
     #quantile(lcr,c(0,.05,.5,.95,1))
-    sum(acc_Ra_training[,b20Mix_Ra])
+    sum(acc_Ra_training[,b20Beta])
     
     #quantile(hcrT20Testing,c(0,.05,.5,.95,1))
-    sum(acc_Ra_testing[,t20Mix_Ra])
+    sum(acc_Ra_testing[,t20Beta])
     
     #quantile(lcrT20Testing,c(0,.05,.5,.95,1))
-    sum(acc_Ra_testing[,b20Mix_Ra])
+    sum(acc_Ra_testing[,b20Beta])
     
     #plot.new()
     
@@ -804,14 +807,14 @@ for (iterator in seq(0, 24, by=1))
   #opt_wM<-opt_pM$weights
   opt_wM<-opt_w
   
-  length(t20Mix_Ra)
-  length(b20Mix_Ra)
+  #length(t20Mix_Ra)
+  #length(b20Mix_Ra)
   
-  length(t20Mix_RaW)
-  length(b20Mix_RaW)
+  #length(t20Mix_RaW)
+  #length(b20Mix_RaW)
   
-  length(t20Mix_RaM)
-  length(b20Mix_RaM)
+  #length(t20Mix_RaM)
+  #length(b20Mix_RaM)
   
   for (weight in 2:5)
   {
@@ -869,11 +872,11 @@ for (iterator in seq(0, 24, by=1))
       chart.CumReturns(eod_ret_testing[,b20Beta])
 
     #graph cumulative returns by best/worst avg's before and after    
-      chart.CumReturns(Ra_training[,t20AVGR_Ra])
-      chart.CumReturns(Ra_testing[,t20AVGR_Ra])
+      #chart.CumReturns(Ra_training[,t20AVGR_Ra])
+      #chart.CumReturns(Ra_testing[,t20AVGR_Ra])
     
-      chart.CumReturns(Ra_training[,b20AVGR_Ra])
-      chart.CumReturns(Ra_testing[,b20AVGR_Ra])
+      #chart.CumReturns(Ra_training[,b20AVGR_Ra])
+      #chart.CumReturns(Ra_testing[,b20AVGR_Ra])
 
     #compare accumulated returns via means of best/worst beta's
       
@@ -890,31 +893,31 @@ for (iterator in seq(0, 24, by=1))
     #compare accumulated returns via means of best/worst avg return
       
       #good returns, before after, do predictions hold?
-      mean_acc_training_t20 <- mean(acc_Ra_training[,t20AVGR_Ra])
-      mean_acc_testing_t20 <- mean(acc_Ra_testing[,t20AVGR_Ra])
+      #mean_acc_training_t20 <- mean(acc_Ra_training[,t20AVGR_Ra])
+      #mean_acc_testing_t20 <- mean(acc_Ra_testing[,t20AVGR_Ra])
       
       #bad returns, before after, do predictions hold?
-      mean_acc_training_b20 <- mean(acc_Ra_training[,b20AVGR_Ra])
-      mean_acc_testing_b20 <- mean(acc_Ra_testing[,b20AVGR_Ra])
+      #mean_acc_training_b20 <- mean(acc_Ra_training[,b20AVGR_Ra])
+      #mean_acc_testing_b20 <- mean(acc_Ra_testing[,b20AVGR_Ra])
       
-      print (paste("Beta: [from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 mean_acc_testing_b20", mean_acc_training_t20 , mean_acc_testing_t20 , mean_acc_training_b20, mean_acc_testing_b20))
+      #print (paste("Beta: [from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 mean_acc_testing_b20", mean_acc_training_t20 , mean_acc_testing_t20 , mean_acc_training_b20, mean_acc_testing_b20))
       
     #compare accumulated returns, avg
       
       #good returns, before after, do predictions hold?
-      mean_acc_training_t20 <- mean(acc_Ra_training[,t20AVGR_Ra])
-      mean_acc_testing_t20 <- mean(acc_Ra_testing[,t20AVGR_Ra])
+      #mean_acc_training_t20 <- mean(acc_Ra_training[,t20AVGR_Ra])
+      #mean_acc_testing_t20 <- mean(acc_Ra_testing[,t20AVGR_Ra])
       
       #bad returns, before after, do predictions hold?
-      mean_acc_training_b20 <- mean(acc_Ra_training[,b20AVGR_Ra])
-      mean_acc_testing_b20 <- mean(acc_Ra_testing[,b20AVGR_Ra])
+      #mean_acc_training_b20 <- mean(acc_Ra_training[,b20AVGR_Ra])
+      #mean_acc_testing_b20 <- mean(acc_Ra_testing[,b20AVGR_Ra])
     
-      print (paste("Average: [from a Set of Average] Cumulative Returns: train_t20 test_t20 train_b20 test_b20", mean_acc_training_t20 , mean_acc_testing_t20 , mean_acc_training_b20, mean_acc_testing_b20))
+      #print (paste("Average: [from a Set of Average] Cumulative Returns: train_t20 test_t20 train_b20 test_b20", mean_acc_training_t20 , mean_acc_testing_t20 , mean_acc_training_b20, mean_acc_testing_b20))
 
     #chart.CumReturns(Ra_training[,b20AVGR_Ra])
     
-    boxplot(data.frame(stack(((data.frame(eod_ret_training[,t20AVGR_Ra])))))$values, horizontal = 1)
-    boxplot(data.frame(stack(((data.frame(eod_ret_testing[,t20AVGR_Ra])))))$values, horizontal = 1)
+    #boxplot(data.frame(stack(((data.frame(eod_ret_training[,t20AVGR_Ra])))))$values, horizontal = 1)
+    #boxplot(data.frame(stack(((data.frame(eod_ret_testing[,t20AVGR_Ra])))))$values, horizontal = 1)
     
     boxplot(data.frame(stack(((data.frame(eod_ret_training[,t20Beta])))))$values, horizontal = 1)
     
@@ -928,11 +931,11 @@ for (iterator in seq(0, 24, by=1))
     jpeg(paste0(end_date,"rplot.jpg"))
     dev.off()
     
-    chart.CumReturns(Ra_training[,t20Mix_Ra])
-    chart.CumReturns(Ra_testing[,t20Mix_Ra])
+    #chart.CumReturns(Ra_training[,t20Mix_Ra])
+    #chart.CumReturns(Ra_testing[,t20Mix_Ra])
     
-    chart.CumReturns(Ra_training[,b20Mix_Ra])
-    chart.CumReturns(Ra_testing[,b20Mix_Ra])
+    #chart.CumReturns(Ra_training[,b20Mix_Ra])
+    #chart.CumReturns(Ra_testing[,b20Mix_Ra])
     
     #chart.CumReturns(Rp,legend.loc = 'topleft')
     
