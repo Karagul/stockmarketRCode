@@ -403,8 +403,8 @@ for (iterator in seq(1, 24, by=1))
   avg_RaM_training <- colSortAvg(eom_ret_training)
   
   #top 20 by cumulative return
-  t20Betas<-c()
-  b20Betas<-c()
+  t20Beta<-c()
+  b20Beta<-c()
   
   t20CR_Ra<-c()
   t20CR_RaW<-c()
@@ -423,8 +423,6 @@ for (iterator in seq(1, 24, by=1))
   b20AVGR_RaW<-c()
   b20AVGR_RaM<-c()
   
-  
-  
   #bottom 20 
   
   #chart.Boxplot(eod_ret[t20CR])
@@ -432,7 +430,7 @@ for (iterator in seq(1, 24, by=1))
   setPercent=round(length(colnames(eod_pvt_complete))*.025,0)
   
   #goal should be hold based on beta's, but not shorts
-  #t20Betas<-trainingBetaSorted[,1:setPercent]
+  #t20Beta<-trainingBetaSorted[,1:setPercent]
   
   colnames(data.frame(Ra_training)[trainingBetas$colname])[1:setPercent]
   
@@ -835,39 +833,75 @@ for (iterator in seq(1, 24, by=1))
     Return.cumulative(Rp)
     Return.cumulative(RpW)
     Return.cumulative(RpM)
-    
-    #what is the average
-    chart.CumReturns(Ra_training[,t20AVGR_Ra])
-    chart.CumReturns(Ra_testing[,t20AVGR_Ra])
-    
-    
-    #what is the average
-    chart.CumReturns(Ra_training[,b20AVGR_Ra])
-    chart.CumReturns(Ra_testing[,b20AVGR_Ra])
-    
-    #good returns, before after, do predictions hold?
-    mean_acc_training_t20 <- mean(acc_Ra_training[,t20AVGR_Ra])
-    mean_acc_testing_t20 <- mean(acc_Ra_testing[,t20AVGR_Ra])
-    
-    #bad returns, before after, do predictions hold?
-    mean_acc_training_b20 <- mean(acc_Ra_training[,b20AVGR_Ra])
-    mean_acc_testing_b20 <- mean(acc_Ra_testing[,b20AVGR_Ra])
-    
-    print (paste(mean_acc_training_t20 , mean_acc_testing_t20 , mean_acc_training_b20, mean_acc_testing_b20))
 
-    chart.CumReturns(Ra_training[,t20AVGR_Ra])
-    chart.CumReturns(Ra_testing[,t20AVGR_Ra])
+    #b20AVGR_Ra is b20AVGR_Ra_training, I just didn't name b20AVGR_Ra correctly, but the [filter] in b20AVGR_Ra specifies names sourced from training data.    
+    #what is the average
     
+    t20Beta <- head(trainingBetaSorted,setPercent)[,1]$colname
+    b20Beta <- tail(trainingBetaSorted,setPercent)[,1]$colname
     
+    #class(t20Beta)
     
-    #b20AVGR_Ra is b20AVGR_Ra_training, I just didn't name b20AVGR_Ra correctly, but the [filter] in b20AVGR_Ra specifies names sourced from training data.
-    chart.CumReturns(Ra_training[,b20AVGR_Ra])
-    chart.CumReturns(Ra_testing[,b20AVGR_Ra])
+    #class(t20AVGR_Ra)
     
+    #need to extract these as names for this next step.
+    
+    #graph cumulative returns by best/worst beta's before and after
+      chart.CumReturns(eod_ret_training[,t20Beta])
+      chart.CumReturns(eod_ret_testing[,t20Beta])
+      
+      chart.CumReturns(eod_ret_training[,b20Beta])
+      chart.CumReturns(eod_ret_testing[,b20Beta])
+
+    #graph cumulative returns by best/worst avg's before and after    
+      chart.CumReturns(Ra_training[,t20AVGR_Ra])
+      chart.CumReturns(Ra_testing[,t20AVGR_Ra])
+    
+      chart.CumReturns(Ra_training[,b20AVGR_Ra])
+      chart.CumReturns(Ra_testing[,b20AVGR_Ra])
+
+    #compare accumulated returns via means of best/worst beta's
+      
+      #good returns, before after, do predictions hold?
+      mean_acc_training_beta_t20 <- mean(Return.cumulative(eod_ret_training[,t20Beta]))
+      mean_acc_testing_beta_t20 <- mean(Return.cumulative(eod_ret_testing[,t20Beta]))
+      
+      #bad returns, before after, do predictions hold?
+      mean_acc_training_beta_b20 <- mean(Return.cumulative(eod_ret_training[,b20Beta]))
+      mean_acc_testing_beta_b20 <- mean(Return.cumulative(eod_ret_testing[,b20Beta]))
+      
+      print (paste("Beta: [from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 mean_acc_testing_b20", mean_acc_training_beta_t20 , mean_acc_testing_beta_t20 , mean_acc_training_beta_b20, mean_acc_testing_beta_b20))
+      
+    #compare accumulated returns via means of best/worst avg return
+      
+      #good returns, before after, do predictions hold?
+      mean_acc_training_t20 <- mean(acc_Ra_training[,t20AVGR_Ra])
+      mean_acc_testing_t20 <- mean(acc_Ra_testing[,t20AVGR_Ra])
+      
+      #bad returns, before after, do predictions hold?
+      mean_acc_training_b20 <- mean(acc_Ra_training[,b20AVGR_Ra])
+      mean_acc_testing_b20 <- mean(acc_Ra_testing[,b20AVGR_Ra])
+      
+      print (paste("Beta: [from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 mean_acc_testing_b20", mean_acc_training_t20 , mean_acc_testing_t20 , mean_acc_training_b20, mean_acc_testing_b20))
+      
+    #compare accumulated returns, avg
+      
+      #good returns, before after, do predictions hold?
+      mean_acc_training_t20 <- mean(acc_Ra_training[,t20AVGR_Ra])
+      mean_acc_testing_t20 <- mean(acc_Ra_testing[,t20AVGR_Ra])
+      
+      #bad returns, before after, do predictions hold?
+      mean_acc_training_b20 <- mean(acc_Ra_training[,b20AVGR_Ra])
+      mean_acc_testing_b20 <- mean(acc_Ra_testing[,b20AVGR_Ra])
+    
+      print (paste("Average: [from a Set of Average] Cumulative Returns: train_t20 test_t20 train_b20 test_b20", mean_acc_training_t20 , mean_acc_testing_t20 , mean_acc_training_b20, mean_acc_testing_b20))
+
     #chart.CumReturns(Ra_training[,b20AVGR_Ra])
     
     boxplot(data.frame(stack(((data.frame(eod_ret_training[,t20AVGR_Ra])))))$values, horizontal = 1)
     boxplot(data.frame(stack(((data.frame(eod_ret_testing[,t20AVGR_Ra])))))$values, horizontal = 1)
+    
+    boxplot(data.frame(stack(((data.frame(eod_ret_training[,t20B])))))$values, horizontal = 1)
     
     chart.CumReturns(Rb_training)
     chart.CumReturns(Rb_testing)
@@ -875,6 +909,7 @@ for (iterator in seq(1, 24, by=1))
     # Chart Hypothetical Portfolio Returns ------------------------------------
    
     jpeg(paste0(end_date,"rplot.jpg"))
+    dev.off()
     
     chart.CumReturns(Ra_training[,t20Mix_Ra])
     chart.CumReturns(Ra_testing[,t20Mix_Ra])
@@ -883,7 +918,7 @@ for (iterator in seq(1, 24, by=1))
     chart.CumReturns(Ra_testing[,b20Mix_Ra])
     
     #chart.CumReturns(Rp,legend.loc = 'topleft')
-    dev.off()
+    
     #chart.CumReturns(RpW,legend.loc = 'topleft')
     #chart.CumReturns(RpM,legend.loc = 'topleft')
     #View(eom_ret[,list_Ra])
