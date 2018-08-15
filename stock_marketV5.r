@@ -69,7 +69,7 @@ table(eodOutside$symbol)
 iterator=0
 #for (iterator in seq(1, 24, by=1))
 {
-  print(iterator)
+  print(paste("iterator", iterator))
 }
 iterator=0
 for (iterator in seq(0, 151, by=1))
@@ -823,6 +823,9 @@ for (iterator in seq(0, 151, by=1))
   #length(t20Mix_RaM)
   #length(b20Mix_RaM)
   
+  #keep this above the print statements
+  print(paste("iterator", iterator))
+  
   for (weight in 2:5)
   {
     positive=weight
@@ -961,20 +964,46 @@ for (iterator in seq(0, 151, by=1))
     
   }
   
-    opt_p<-optimize.portfolio(R=Ra_training,portfolio=pspec,optimize_method = 'ROI')
-    opt_w<-opt_p$weights
+    opt_wp<-optimize.portfolio(R=Ra_training,portfolio=pspec,optimize_method = 'ROI')
     
-    Rp<-Rb_testing # easier to apply the existing structure
-    RpW<-RbW_testing # easier to apply the existing structure
-    RpM<-RbM_testing # easier to apply the existing structure
-    #define new column that is the dot product of the two vectors
+    opt_wpw<-opt_wp$weights
+
+    
+    #sum(combinedOpt)
+
+    positive=2
+    negative=-1
+    
+    opt_w<-c()
+    #length(list_Ra)
+    #opt_w[1:length(t20Mix_Ra)]<-positive/length(t20Mix_Ra)
+    opt_w[1:length(t20Beta)]<-positive/length(t20Beta)
+    #opt_w[1:length(t20Mix_Ra)]<-.5/length(t20Mix_Ra)
+    #opt_w[1:length(list_Ra)]=1/length(list_Ra)
+    opt_w[(length(t20Beta)+1):(length(b20Beta)+length(t20Beta))]<-negative/length(b20Beta)
+    
+    
+    
+    combinedOpt=(opt_w+opt_wpw)/2
+    
+    sum(combinedOpt)
+        
+    #just beta's
+    Rp$ptf<-c()
     Rp$ptf<-Ra_testing %*% opt_w
     RpW$ptf<-RaW_testing %*% opt_w
     RpM$ptf<-RaM_testing %*% opt_w
     
-    chart.CumReturns(Ra_testing)
-
-    print (paste("Beta: [from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 test_b20", mean_acc_training_beta_t20 , mean_acc_testing_beta_t20 , mean_acc_training_beta_b20, mean_acc_testing_beta_b20))
+    print (paste("Beta: Iterator:[from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 test_b20", mean_acc_training_beta_t20 , mean_acc_testing_beta_t20 , mean_acc_training_beta_b20, mean_acc_testing_beta_b20))
     print(paste("start: ", start_date, "end: ", end_date, "Markowtiz Profile & The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))          
+    
+    #just
+    
+    Rp$ptf <- c()
+    Rp$ptf<-Ra_testing %*% opt_wpw
+    RpW$ptf<-RaW_testing %*% opt_wpw
+    RpM$ptf<-RaM_testing %*% opt_wpw
+    print(paste("Mixed with 2/-1 shorted Beta's Markowtiz Profile & The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))          
   
+    #tail(eod_ret[,1:2])
 }
