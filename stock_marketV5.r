@@ -338,42 +338,50 @@ for (iterator in seq(0, 0, by=1))
   
   #beta's derived using linear regression model between benchmark and sassy assets
 
-  RATrainingPre<-as.xts(eod_ret_training[,-which(names(eod_ret) == "SP500TR")]) #colSortAndFilter.R
-  RBTrainingPre<-as.xts(eod_ret_training[,'SP500TR',drop=F]) #benchmark
+  #I had to re-derive these, which means later
+  
+  RA4LM<-as.xts(eod_ret_training[,-which(names(eod_ret) == "SP500TR")]) #colSortAndFilter.R
+  
+  RB4LM<-as.xts(eod_ret_training[,'SP500TR',drop=F]) #benchmark
   
   #[,-which(names(tail(eod_ret,days)) == "SP500TR")]) #colSortAndFilter.R
-  RATestingPre<-as.xts(eod_ret_training[,-which(names(eod_ret) == "SP500TR")]) #colSortAndFilter.R
-  RBTestingPre<-as.xts(eod_ret_training[,-which(names(eod_ret) == "SP500TR")]) #colSortAndFilter.R
+  #RATestingPre<-as.xts(eod_ret_training[,-which(names(eod_ret) == "SP500TR")]) #colSortAndFilter.R
+  #RBTestingPre<-as.xts(eod_ret_training[,-which(names(eod_ret) == "SP500TR")]) #colSortAndFilter.R
   
   #head(Rb,-days)
   
-  
-  
-  x <- RATrainingPre
+  x <- RB4LM
   nrow(x)  
   
-  y <- RBTrainingPre
+  #tail(x)  
+  
+  y <- RA4LM
   nrow(y)
   
+  xtr<-head(x,-days)
+  ytr<-head(y,-days)
   
+  xtst<-tail(x,days)
+  ytst<-tail(y,days)
   
   #y <- eod_ret[,which(names(eod)=="SP500TR")]
   
   #y <- eod_ret[which(eod_ret)
   
-  
   #need to base it on how Ra_training is created, and recreate it here.
   
+  linearModTotal <- lm(y~x)
+  linearModTraining <- lm(ytr ~ xtr)
+  linearModTesting <- lm(ytst~xtst)
   
-  
-tail(x)  
-  
-  
-  linearMod <- lm(y~x)
-  
-  print(linearMod)
+  print(linearModTotal)
 
-  linCoeffBetas<- colSortMax(linearMod$coefficients)
+  #training capm beta's, sorted because no follow up ops outside of my algorithm rely on it's order (simple filter operation)
+  trainingBetaSorted <- colSortMax(t(linearModTraining$coefficients))
+  
+  testingBetaSorted <- colSortMax(t(linearModTesting$coefficients))
+  
+  totalBetaSorted <- colSortMax(t(linearModTotal$coefficients))
   
   CR_Ra_training <- colSortMax(Return.cumulative(eod_ret_training))
   avg_Ra_training <- colSortAvg(eod_ret_training)
@@ -383,6 +391,7 @@ tail(x)
   
   CR_RaM_training <- colSortMax(Return.cumulative(eom_ret_training))
   avg_RaM_training <- colSortAvg(eom_ret_training)
+  
   
   #top 20 by cumulative return
   t20CR_Ra<-c()
@@ -409,9 +418,7 @@ tail(x)
   setPercent=round(length(colnames(eod_pvt_complete))*.025,0)
   
   #goal should be hold based on beta's, but not shorts
-  #basedOnBetas<-colnames(data.frame(Ra_training)[linCoeffBetas$colname])[1:setPercent]
-  
-  
+  #basedOnBetas<-colnames(data.frame(Ra_training)[trainingBetas$colname])[1:setPercent]
   
   #eod_ret[,basedOnBetas]
   #basedOnBetas
@@ -454,6 +461,8 @@ tail(x)
   list_RaW<-c(t20Mix_RaW,b20Mix_RaW)
   list_RaM<-c(t20Mix_RaM,b20Mix_RaM)
   #eod_ret[,list_Ra]
+  
+  #based on top/bottom 20
   Ra<-as.xts(eod_ret[list_Ra]) #colSortAndFilter.R
   RaW<-as.xts(eow_ret[list_Ra]) #colSortAndFilter.R
   RaM<-as.xts(eom_ret[list_Ra]) #colSortAndFilter.R
@@ -811,10 +820,19 @@ tail(x)
     
     
     jpeg(paste0(end_date,"rplot.jpg"))
-    chart.CumReturns(Rp,legend.loc = 'topleft')
+    
+    
+    
+    chart.CumReturns(Ra_training[,t20Mix_Ra])
+    chart.CumReturns(Ra_testing[,b20Mix_Ra])
+    
+    
+    
+    
+    #chart.CumReturns(Rp,legend.loc = 'topleft')
     dev.off()
-    chart.CumReturns(RpW,legend.loc = 'topleft')
-    chart.CumReturns(RpM,legend.loc = 'topleft')
+    #chart.CumReturns(RpW,legend.loc = 'topleft')
+    #chart.CumReturns(RpM,legend.loc = 'topleft')
     #View(eom_ret[,list_Ra])
     
     #table(is.na(eom_ret[,list_Ra]))
