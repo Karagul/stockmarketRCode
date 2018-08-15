@@ -245,6 +245,8 @@ for (iterator in seq(0, 0, by=1))
   #re-check, if years is set -3, then agt has 364 non na's, but 808 na's... something is getting past the filter here.
   table(is.na(data.frame(eod_pvt_complete$AGT)))
   
+  #colnames(eod_ret)
+  
   tail(eod_pvt_complete[,1:2]) #cuts off 2017-12-29...
   eom_pvt_complete[1:10,1:5] #first 10 rows and first 5 columns 
   ncol(eod_pvt_complete)
@@ -294,7 +296,7 @@ for (iterator in seq(0, 0, by=1))
   selected_symbols_daily3<-names(max_daily_ret)[which(max_daily_ret<=1.00)]
   selected_symbols_monthly=selected_symbols_daily3
   selected_symbols_weekly=selected_symbols_daily3
-  length(selected_symbols_daily)
+  #length(selected_symbols_daily)
   
   #subset eod_ret
   eod_ret<-eod_ret[,which(colnames(eod_ret) %in% selected_symbols_daily3)]
@@ -330,14 +332,48 @@ for (iterator in seq(0, 0, by=1))
   eow_ret_training<-head(eow_ret,-weeks)
   eom_ret_training<-head(eom_ret,-months)
   
-  eod_ret_testing<-tail(eod_ret,days)
-  eow_ret_testing<-tail(eow_ret,weeks)
-  eom_ret_testing<-tail(eom_ret,months)
+  #eod_ret_testing<-tail(eod_ret,days)
+  #eow_ret_testing<-tail(eow_ret,weeks)
+  #eom_ret_testing<-tail(eom_ret,months)
   
   #beta's derived using linear regression model between benchmark and sassy assets
 
+  RATrainingPre<-as.xts(eod_ret_training[,-which(names(eod_ret) == "SP500TR")]) #colSortAndFilter.R
+  RBTrainingPre<-as.xts(eod_ret_training[,'SP500TR',drop=F]) #benchmark
+  
+  #[,-which(names(tail(eod_ret,days)) == "SP500TR")]) #colSortAndFilter.R
+  RATestingPre<-as.xts(eod_ret_training[,-which(names(eod_ret) == "SP500TR")]) #colSortAndFilter.R
+  RBTestingPre<-as.xts(eod_ret_training[,-which(names(eod_ret) == "SP500TR")]) #colSortAndFilter.R
+  
+  #head(Rb,-days)
+  
+  
+  
+  x <- RATrainingPre
+  nrow(x)  
+  
+  y <- RBTrainingPre
+  nrow(y)
+  
+  
+  
+  #y <- eod_ret[,which(names(eod)=="SP500TR")]
+  
+  #y <- eod_ret[which(eod_ret)
+  length(ratr[which(alltr[]>=Lhinge & alltr[]<=Uhinge)])/length(alltr)
+  
+  #need to base it on how Ra_training is created, and recreate it here.
+  
+  
+  
+tail(x)  
+  
+  
+  linearMod <- lm(y~x)
+  
   linearMod <- lm(Ra_training~Rb_training)
-  #print(linearMod)
+  
+  print(linearMod)
 
   linCoeffBetas<- colSortMax(linearMod$coefficients)
   
@@ -374,13 +410,15 @@ for (iterator in seq(0, 0, by=1))
   #top/bottom 2.5%
   setPercent=round(length(colnames(eod_pvt_complete))*.025,0)
   
-  #hold based on beta's, but not shorts
-  basedOnBetas<-colnames(data.frame(Ra_training)[linCoeffBetas$colname])[1:setPercent]
+  #goal should be hold based on beta's, but not shorts
+  #basedOnBetas<-colnames(data.frame(Ra_training)[linCoeffBetas$colname])[1:setPercent]
   
   
   
-  Ra_training[,basedOnBetas]
-  write.csv(Ra_training[,basedOnBetas],"c:/test/Opt_Ret_WBetas.csv")
+  #eod_ret[,basedOnBetas]
+  #basedOnBetas
+  #list_Ra
+  write.csv(eod_ret[,basedOnBetas],"c:/test/Opt_Ret_WBetas.csv")
   
   t20CR_Ra<-colnames(data.frame(eod_ret)[CR_Ra_training$colname])[1:setPercent]
   t20CR_RaW<-colnames(data.frame(eow_ret)[CR_RaW_training$colname])[1:setPercent]
@@ -411,11 +449,13 @@ for (iterator in seq(0, 0, by=1))
   b20Mix_RaM<-unique(c(b20CR_RaM,b20AVGR_RaM))
   
   #list_Ra<-c(t20Mix_Ra,b20Mix_Ra)
-  list_Ra<-c(basedOnBetas,b20Mix_Ra)
+  #list_Ra<-c(basedOnBetas,b20Mix_Ra)
+  #list_Ra<-basedOnBetas
+  #eod_ret[,list_Ra]
   
   list_RaW<-c(t20Mix_RaW,b20Mix_RaW)
   list_RaM<-c(t20Mix_RaM,b20Mix_RaM)
-  
+  #eod_ret[,list_Ra]
   Ra<-as.xts(eod_ret[list_Ra]) #colSortAndFilter.R
   RaW<-as.xts(eow_ret[list_Ra]) #colSortAndFilter.R
   RaM<-as.xts(eom_ret[list_Ra]) #colSortAndFilter.R
@@ -684,7 +724,8 @@ for (iterator in seq(0, 0, by=1))
   require(PortfolioAnalytics)
   require(ROI) # make sure to install it
   require(ROI.plugin.quadprog)  # make sure to install it
-  pspec<-portfolio.spec(assets=colnames(Ra_training))
+  pspec<-portfolio.spec(assets=colnames(Ra_training[,list_Ra]))
+  
   pspec<-add.objective(portfolio=pspec,type="risk",name='StdDev')
   pspec<-add.constraint(portfolio=pspec,type="full_investment")
   pspec<-add.constraint(portfolio=pspec,type="return",return_target=mar)
