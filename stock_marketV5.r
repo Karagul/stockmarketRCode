@@ -71,8 +71,8 @@ for (iterator in seq(1, 24, by=1))
 {
   print(iterator)
 }
-iterator=0
-for (iterator in seq(1, 24, by=1))
+iterator=2
+for (iterator in seq(0, 24, by=1))
 {
   
   #set # of years back here.
@@ -450,7 +450,13 @@ for (iterator in seq(1, 24, by=1))
   #doesn't give column names
   #(t(head(CR_Ra_training,setPercent)))
 
-  b20beta_Ra<-colnames(data.frame(eod_ret_training)[trainingBetaSorted$colname])[1:setPercent]
+  t20Beta<-head(colnames(data.frame((eod_ret_training)[trainingBetaSorted$colname])),setPercent)
+  b20Beta<-tail(colnames(data.frame((eod_ret_training)[trainingBetaSorted$colname])),setPercent)
+  
+  #tail(colnames(data.frame((eod_ret_training)[trainingBetaSorted$colname])),setPercent)
+  
+  #t20Beta<-colnames(data.frame(eod_ret_training)[trainingBetaSorted$colname])[1:setPercent]
+  #b20Beta<-colnames(data.frame(eod_ret_training)[trainingBetaSorted$colname])[1:setPercent]
   
   t20CR_Ra<-colnames(data.frame(eod_ret)[CR_Ra_training$colname])[1:setPercent]
   t20CR_RaW<-colnames(data.frame(eow_ret)[CR_RaW_training$colname])[1:setPercent]
@@ -485,7 +491,9 @@ for (iterator in seq(1, 24, by=1))
   b20Mix_RaW<-unique(c(b20CR_RaW,b20AVGR_RaW))
   b20Mix_RaM<-unique(c(b20CR_RaM,b20AVGR_RaM))
   
-  list_Ra<-c(t20Mix_Ra,b20Mix_Ra)
+  list_Ra<-c()
+  #list_Ra<-c(t20Mix_Ra,b20Mix_Ra)
+  list_Ra<-c(t20Beta,b20Beta)
   #list_Ra<-c(basedOnBetas,b20Mix_Ra)
   #list_Ra<-basedOnBetas
   #eod_ret[,list_Ra]
@@ -941,6 +949,7 @@ for (iterator in seq(1, 24, by=1))
     
   }
   
+    opt_p<-optimize.portfolio(R=Ra_training,portfolio=pspec,optimize_method = 'ROI')
     opt_w<-opt_p$weights
     
     Rp<-Rb_testing # easier to apply the existing structure
