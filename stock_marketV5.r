@@ -17,42 +17,45 @@ conn = dbConnect(drv=pg
 #custom calendar
 qry='SELECT * FROM custom_calendar ORDER by date'
 ccal<-dbGetQuery(conn,qry)
+
+end_date<-dbGetQuery(conn,"select max(timestamp) from etf_bond_facts")
+end_date$max
+#end_date<-todayIs
+dbDisconnect(conn)
+
+#have to reference $max else it returns a data.frame of a unix timetsamp vs a dereferenced string date
+conn = dbConnect(drv=pg, user="readyloop", password="read123", host="localhost", port=5432, dbname="readyloop")
 #eod prices and indices
-qry1=paste0("SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '1999-12-30' AND '",todayIs,"'")
+qry1=paste0("SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '1999-12-30' AND '",end_date$max,"'")
 #qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
 #qryQSCount=("select symbol from mv_qs_symbols")
-qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM etf_bond_facts WHERE timestamp BETWEEN '1999-12-30' AND '",todayIs,"'")
-qry3=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '1999-12-30' AND '",todayIs,"'")
-qry4=paste0("SELECT symbol,timestamp,adjusted_close FROM other_facts WHERE timestamp BETWEEN '1999-12-30' AND '",todayIs,"'")
-#qry5=paste0("SELECT symbol,timestamp,close FROM qs_facts WHERE timestamp BETWEEN '1999-12-30' AND '",todayIs,"'")
+qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM etf_bond_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date$max,"'")
+qry3=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date$max,"'")
+qry4=paste0("SELECT symbol,timestamp,adjusted_close FROM other_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date$max,"'")
+#qry5=paste0("SELECT symbol,timestamp,close FROM qs_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date$max,"'")
 eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry2,'UNION',qry3,'UNION',qry4))
 #eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry5))
 #QSSymbols<-dbGetQuery(conn,paste(qryQSCount))
-
-#QSSymbolCount<-nrow(QSSymbols)
-#width=round(QSSymbolCount*.1)
-
-
+  #QSSymbolCount<-nrow(QSSymbols)
 
 #10% of symbols
-#symbolKeySubset <- c(sample(1:(as.numeric(QSSymbolCount)), as.numeric(round(QSSymbolCount*.1)), replace=F))
+  #width=round(QSSymbolCount*.1)  
+  #symbolKeySubset <- symbolKeySubset[sample(, as.numeric(round(QSSymbolCount*.1)))]
+  #symbolKeySubset <- c(sample(1:(as.numeric(QSSymbolCount)), as.numeric(round(QSSymbolCount*.1)), replace=F))
 
-require(dplyr)
-#symbolKeySubset <- symbolKeySubset[sample(, as.numeric(round(QSSymbolCount*.1)))]
+  #symbolKeySubset <- sample_n(QSSymbols, as.numeric(round(QSSymbolCount*.1)))
 
-symbolKeySubset <- sample_n(QSSymbols, as.numeric(round(QSSymbolCount*.1)))
+  #https://stackoverflow.com/questions/33634713/rpostgresql-import-dataframe-into-a-table
+  #dbWriteTable(conn, "symbolKeySubset", symbolKeySubset, row.names=FALSE, append=TRUE)
+  #system("c:/users/user/documents/alphaadvantageapi/stockmarketr/stockmarketrcode/runSubsetQuery.bat", intern = TRUE)
 
-#write.csv()
-#https://stackoverflow.com/questions/33634713/rpostgresql-import-dataframe-into-a-table
-dbWriteTable(conn, "symbolKeySubset", symbolKeySubset, row.names=FALSE, append=TRUE)
+  #require(dplyr)
 
-system("c:/users/user/documents/alphaadvantageapi/stockmarketr/stockmarketrcode/runSubsetQuery.bat", intern = TRUE)
+  #qryMVQSSv=paste0("create view v_qs_sample as SELECT mv_qs_facts.symbol, mv_qs_facts.timestamp as date, mv_qs_facts.close as adj_close FROM mv_qs_facts INNER JOIN mv_qs_symbol_subset ON mv_qs_facts.symbol=mv_qs_symbol_subset.symbol;")
 
-#qryMVQSSv=paste0("create view v_qs_sample as SELECT mv_qs_facts.symbol, mv_qs_facts.timestamp as date, mv_qs_facts.close as adj_close FROM mv_qs_facts INNER JOIN mv_qs_symbol_subset ON mv_qs_facts.symbol=mv_qs_symbol_subset.symbol;")
+  #qryMVQSS=paste0("select * from v_qs_sample")
 
-#qryMVQSS=paste0("select * from v_qs_sample")
-
-#eodwNA<-dbGetQuery(conn,paste(qryMVQSS,'UNION',qry1))
+  #eodwNA<-dbGetQuery(conn,paste(qryMVQSS,'UNION',qry1))
 
 dbDisconnect(conn)
 
@@ -71,11 +74,11 @@ for (iterator in seq(0, 0, by=1))
   library(mondate)
   end_date <-as.Date(mondate(as.Date(todayIs)) - iterator)
   
-  start_date <- as.Date(mondate(end_date)-60)
+  start_date <- as.Date(mondate(end_date)-24)
   
-  days=252/4
-  weeks=52/4
-  months=12/4
+  days=252
+  weeks=52
+  months=12
   
   eod <<- eodOutside[which(eodOutside$date>=start_date & eodOutside$date <= end_date),,drop=F]
   nrow(eod)
@@ -332,9 +335,9 @@ for (iterator in seq(0, 0, by=1))
   eow_ret_training<-head(eow_ret,-weeks)
   eom_ret_training<-head(eom_ret,-months)
   
-  #eod_ret_testing<-tail(eod_ret,days)
-  #eow_ret_testing<-tail(eow_ret,weeks)
-  #eom_ret_testing<-tail(eom_ret,months)
+  eod_ret_testing<-tail(eod_ret,days)
+  eow_ret_testing<-tail(eow_ret,weeks)
+  eom_ret_testing<-tail(eom_ret,months)
   
   #beta's derived using linear regression model between benchmark and sassy assets
 
@@ -377,14 +380,16 @@ for (iterator in seq(0, 0, by=1))
   print(linearModTotal)
 
   #training capm beta's, sorted because no follow up ops outside of my algorithm rely on it's order (simple filter operation)
-  trainingBetaSorted <- colSortMax(t(linearModTraining$coefficients))
+  trainingBetaSorted <- colSortMax(linearModTraining$coefficients)
   
-  testingBetaSorted <- colSortMax(t(linearModTesting$coefficients))
+  testingBetaSorted <- colSortMax(linearModTesting$coefficients)
   
-  totalBetaSorted <- colSortMax(t(linearModTotal$coefficients))
+  totalBetaSorted <- colSortMax(linearModTotal$coefficients)
   
   CR_Ra_training <- colSortMax(Return.cumulative(eod_ret_training))
   avg_Ra_training <- colSortAvg(eod_ret_training)
+  
+  avg_Ra_testing <- colSortAvg(eod_ret_testing)
   
   CR_RaW_training <- colSortMax(Return.cumulative(eow_ret_training))
   avg_RaW_training <- colSortAvg(eow_ret_training)
