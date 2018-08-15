@@ -67,12 +67,12 @@ table(eodOutside$symbol)
 
 #scores<-c()
 iterator=0
-for (iterator in seq(1, 24, by=1))
+#for (iterator in seq(1, 24, by=1))
 {
   print(iterator)
 }
 iterator=0
-for (iterator in seq(0, 24, by=1))
+for (iterator in seq(0, 151, by=1))
 {
   
   #set # of years back here.
@@ -390,6 +390,13 @@ for (iterator in seq(0, 24, by=1))
 
   #training capm beta's, sorted because no follow up ops outside of my algorithm rely on it's order (simple filter operation)
   trainingBetaSorted <- colSortMax(linearModTraining$coefficients)
+  
+  #trainingBetaSorted[,]
+  
+  #t20Beta
+  
+  
+  #Return.cumulative(eod_ret_training$TNA)
   
   testingBetaSorted <- colSortMax(linearModTesting$coefficients)
   
@@ -882,13 +889,12 @@ for (iterator in seq(0, 24, by=1))
       
       #good returns, before after, do predictions hold?
       mean_acc_training_beta_t20 <- mean(Return.cumulative(eod_ret_training[,t20Beta]))
+      
       mean_acc_testing_beta_t20 <- mean(Return.cumulative(eod_ret_testing[,t20Beta]))
       
       #bad returns, before after, do predictions hold?
       mean_acc_training_beta_b20 <- mean(Return.cumulative(eod_ret_training[,b20Beta]))
       mean_acc_testing_beta_b20 <- mean(Return.cumulative(eod_ret_testing[,b20Beta]))
-      
-      print (paste("Beta: [from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 mean_acc_testing_b20", mean_acc_training_beta_t20 , mean_acc_testing_beta_t20 , mean_acc_training_beta_b20, mean_acc_testing_beta_b20))
       
     #compare accumulated returns via means of best/worst avg return
       
@@ -934,8 +940,11 @@ for (iterator in seq(0, 24, by=1))
     #chart.CumReturns(Ra_training[,t20Mix_Ra])
     #chart.CumReturns(Ra_testing[,t20Mix_Ra])
     
-    #chart.CumReturns(Ra_training[,b20Mix_Ra])
-    #chart.CumReturns(Ra_testing[,b20Mix_Ra])
+    chart.CumReturns(Ra_training[,t20Beta])
+    chart.CumReturns(Ra_testing[,t20Beta])
+    
+    chart.CumReturns(Ra_training[,b20Beta])
+    chart.CumReturns(Ra_testing[,b20Beta])
     
     #chart.CumReturns(Rp,legend.loc = 'topleft')
     
@@ -962,8 +971,10 @@ for (iterator in seq(0, 24, by=1))
     Rp$ptf<-Ra_testing %*% opt_w
     RpW$ptf<-RaW_testing %*% opt_w
     RpM$ptf<-RaM_testing %*% opt_w
+    
     chart.CumReturns(Ra_testing)
 
+    print (paste("Beta: [from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 test_b20", mean_acc_training_beta_t20 , mean_acc_testing_beta_t20 , mean_acc_training_beta_b20, mean_acc_testing_beta_b20))
     print(paste("start: ", start_date, "end: ", end_date, "Markowtiz Profile & The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))          
   
 }
