@@ -66,7 +66,12 @@ nrow(eodOutside)
 table(eodOutside$symbol)
 
 #scores<-c()
-iterator=1
+iterator=0
+for (iterator in seq(1, 24, by=1))
+{
+  print(iterator)
+}
+iterator=0
 for (iterator in seq(1, 24, by=1))
 {
   
@@ -381,7 +386,7 @@ for (iterator in seq(1, 24, by=1))
   
   linearModTesting <- lm(ytst~xtst)
   
-  print(linearModTotal)
+  #print(linearModTotal)
 
   #training capm beta's, sorted because no follow up ops outside of my algorithm rely on it's order (simple filter operation)
   trainingBetaSorted <- colSortMax(linearModTraining$coefficients)
@@ -432,7 +437,7 @@ for (iterator in seq(1, 24, by=1))
   #goal should be hold based on beta's, but not shorts
   #t20Beta<-trainingBetaSorted[,1:setPercent]
   
-  colnames(data.frame(Ra_training)[trainingBetas$colname])[1:setPercent]
+  #colnames(data.frame(Ra_training)[trainingBetas$colname])[1:setPercent]
   
   #eod_ret[,basedOnBetas]
   #basedOnBetas
@@ -440,12 +445,12 @@ for (iterator in seq(1, 24, by=1))
   #write.csv(eod_ret[,basedOnBetas],"c:/test/Opt_Ret_WBetas.csv")
   
   #need to rename eod to training?  no, doesn't need to be eod_ret_training because of the filter applied via []
-  #why am I setting a percent here if these are not sorted... oh, the CR_Ra_training is sorted...
+  #why am I setting a percent here if these are not sorted... oh, the CR_Ra_training is sorted... doesn't hurt though.
   
   #doesn't give column names
   #(t(head(CR_Ra_training,setPercent)))
 
-  b20beta_Ra<-colnames(data.frame(eod_ret)[trainingBetaSorted])
+  b20beta_Ra<-colnames(data.frame(eod_ret_training)[trainingBetaSorted$colname])[1:setPercent]
   
   t20CR_Ra<-colnames(data.frame(eod_ret)[CR_Ra_training$colname])[1:setPercent]
   t20CR_RaW<-colnames(data.frame(eow_ret)[CR_RaW_training$colname])[1:setPercent]
@@ -805,11 +810,13 @@ for (iterator in seq(1, 24, by=1))
     positive=weight
     negative=abs((positive)-1)*-1
     
-    length(list_Ra)
-    opt_w[1:length(t20Mix_Ra)]<-positive/length(t20Mix_Ra)
+    opt_w<-c()
+    #length(list_Ra)
+    #opt_w[1:length(t20Mix_Ra)]<-positive/length(t20Mix_Ra)
+    opt_w[1:length(t20Beta)]<-positive/length(t20Beta)
     #opt_w[1:length(t20Mix_Ra)]<-.5/length(t20Mix_Ra)
     #opt_w[1:length(list_Ra)]=1/length(list_Ra)
-    opt_w[(length(t20Mix_Ra)+1):(length(t20Mix_Ra)+length(b20Mix_Ra))]<-negative/length(b20Mix_Ra)
+    opt_w[(length(t20Beta)+1):(length(b20Beta)+length(t20Beta))]<-negative/length(b20Beta)
     #opt_w[(length(t20Mix_Ra)+1):(length(t20Mix_Ra)+length(b20Mix_Ra))]<-.5/length(b20Mix_Ra)
     
     sum(opt_w)
@@ -901,7 +908,9 @@ for (iterator in seq(1, 24, by=1))
     boxplot(data.frame(stack(((data.frame(eod_ret_training[,t20AVGR_Ra])))))$values, horizontal = 1)
     boxplot(data.frame(stack(((data.frame(eod_ret_testing[,t20AVGR_Ra])))))$values, horizontal = 1)
     
-    boxplot(data.frame(stack(((data.frame(eod_ret_training[,t20B])))))$values, horizontal = 1)
+    boxplot(data.frame(stack(((data.frame(eod_ret_training[,t20Beta])))))$values, horizontal = 1)
+    
+    boxplot(data.frame(stack(((data.frame(eod_ret_testing[,t20Beta])))))$values, horizontal = 1)
     
     chart.CumReturns(Rb_training)
     chart.CumReturns(Rb_testing)
