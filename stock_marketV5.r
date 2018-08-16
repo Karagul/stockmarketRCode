@@ -423,6 +423,17 @@ for (iterator in seq(0, 151, by=1))
   
   CR_RaM_training <- colSortMax(Return.cumulative(eom_ret_training))
   avg_RaM_training <- colSortAvg(eom_ret_training)
+
+
+  write.csv(eod_ret_training[,t20Beta],"c:/test/Testing_T20B.csv")
+  write.csv(eod_ret_testing[,b20Beta],"c:/test/Testing_B20B.csv")
+  
+  
+    
+  write.csv(eod_ret_testing[,t20Avg],"c:/test/Testing_T20A.csv")
+  write.csv(eod_ret_testing[,b20Avg],"c:/test/Testing_B20A.csv")
+  
+  write.csv(testingBetaSorted,"c:/test/testingBetaSorted.csv")
   
   write.csv(trainingBetaSorted,"c:/test/trainingBetaSorted.csv")
   write.csv(testingBetaSorted,"c:/test/testingBetaSorted.csv")
@@ -476,38 +487,15 @@ for (iterator in seq(0, 151, by=1))
   #doesn't give column names
   #(t(head(CR_Ra_training,setPercent)))
 
+  #if shorting, negative beta's doesn't do any good.
   t20Beta<-head(colnames(data.frame((eod_ret_training)[trainingBetaSorted$colname])),setPercent)
   b20Beta<-tail(colnames(data.frame((eod_ret_training)[trainingBetaSorted$colname])),setPercent)
   
-  #tail(colnames(data.frame((eod_ret_training)[trainingBetaSorted$colname])),setPercent)
+  t20Avg<-head(colnames(data.frame((eod_ret_training)[trainingAvgSorted$colname])),setPercent)
+  b20Avg<-tail(colnames(data.frame((eod_ret_training)[trainingAvgSorted$colname])),setPercent)
   
-  #t20Beta<-colnames(data.frame(eod_ret_training)[trainingBetaSorted$colname])[1:setPercent]
-  #b20Beta<-colnames(data.frame(eod_ret_training)[trainingBetaSorted$colname])[1:setPercent]
-  
-  #t20CR_Ra<-colnames(data.frame(eod_ret)[CR_Ra_training$colname])[1:setPercent]
-  #t20CR_RaW<-colnames(data.frame(eow_ret)[CR_RaW_training$colname])[1:setPercent]
-  #t20CR_RaM<-colnames(data.frame(eom_ret)[CR_RaM_training$colname])[1:setPercent]
-  
-  #... training
-  #b20CR_Ra<-colnames(data.frame(eod_ret)[CR_Ra_training$colname])[(length(CR_Ra_training$colname)-setPercent):length(CR_Ra_training$colname)]
-  #b20CR_RaW<-colnames(data.frame(eow_ret)[CR_RaW_training$colname])[(length(CR_RaW_training$colname)-setPercent):length(CR_RaW_training$colname)]
-  #b20CR_RaM<-colnames(data.frame(eom_ret)[CR_RaM_training$colname])[(length(CR_RaM_training$colname)-setPercent):length(CR_RaM_training$colname)]
-  
-  #top 20 by average return
-  #I should only be feeding in one variable to avoid input errors, which means I need to refactor this code.
-  #t20AVGR_Ra<-colnames(data.frame(eod_ret)[avg_Ra_training$colname])[1:setPercent]
-  #t20AVGR_Ra_testing<-colnames(data.frame(eod_ret)[avg_Ra_testing$colname])[1:setPercent]
-  
-  #t20AVGR_RaW<-colnames(data.frame(eow_ret)[avg_RaW_training$colname])[1:setPercent]
-  #t20AVGR_RaM<-colnames(data.frame(eom_ret)[avg_RaM_training$colname])[1:setPercent]
-  
-  #bottom 20
-  #b20AVGR_Ra<-colnames(data.frame(eod_ret)[avg_Ra_training$colname])[(length(avg_Ra_training$colname)-setPercent):length(avg_Ra_training$colname)]
-  #b20AVGR_Ra_testing<-colnames(data.frame(eod_ret)[avg_Ra_testing$colname])[(length(avg_Ra_testing$colname)-setPercent):length(avg_Ra_testing$colname)]
-  
-  #b20AVGR_RaW<-colnames(data.frame(eow_ret)[avg_RaW_training$colname])[(length(avg_RaW_training$colname)-setPercent):length(avg_RaW_training$colname)]
-  #b20AVGR_RaM<-colnames(data.frame(eom_ret)[avg_RaM_training$colname])[(length(avg_RaM_training$colname)-setPercent):length(avg_RaM_training$colname)]
-  #export dataframe in the order specified in the summary
+  t20Cum<-head(colnames(data.frame((eod_ret_training)[trainingCumRetSorted$colname])),setPercent)
+  b20Cum<-tail(colnames(data.frame((eod_ret_training)[trainingCumRetSorted$colname])),setPercent)
   
   #t20Mix_Ra<-unique(c(t20CR_Ra,t20AVGR_Ra))
   #t20Mix_RaW<-unique(c(t20CR_RaW,t20AVGR_RaW))
