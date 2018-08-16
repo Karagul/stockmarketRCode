@@ -74,10 +74,11 @@ iterator=0
 {
   print(paste("iterator", iterator))
 }
+
 iterator=0
 for (iterator in seq(0, 151, by=1))
 {
-  
+
   #set # of years back here.
   library(mondate)
   end_date <-as.Date(mondate(as.Date(todayIs)) - iterator)
@@ -424,26 +425,6 @@ for (iterator in seq(0, 151, by=1))
   CR_RaM_training <- colSortMax(Return.cumulative(eom_ret_training))
   avg_RaM_training <- colSortAvg(eom_ret_training)
 
-
-  write.csv(eod_ret_training[,t20Beta],"c:/test/Testing_T20B.csv")
-  write.csv(eod_ret_testing[,b20Beta],"c:/test/Testing_B20B.csv")
-  
-  
-    
-  write.csv(eod_ret_testing[,t20Avg],"c:/test/Testing_T20A.csv")
-  write.csv(eod_ret_testing[,b20Avg],"c:/test/Testing_B20A.csv")
-  
-  write.csv(testingBetaSorted,"c:/test/testingBetaSorted.csv")
-  
-  write.csv(trainingBetaSorted,"c:/test/trainingBetaSorted.csv")
-  write.csv(testingBetaSorted,"c:/test/testingBetaSorted.csv")
-  
-  write.csv(trainingAvgSorted,"c:/test/trainingAvgSorted.csv")
-  write.csv(testingAvgSorted,"c:/test/testingAvgSorted.csv")
-  
-  write.csv(trainingCumRetSorted,"c:/test/trainingCumRetSorted.csv")
-  write.csv(testingCumRetSorted,"c:/test/testingCumRetSorted.csv")
-  
   #top 20 by cumulative return
   t20Beta<-c()
   b20Beta<-c()
@@ -488,6 +469,7 @@ for (iterator in seq(0, 151, by=1))
   #(t(head(CR_Ra_training,setPercent)))
 
   #if shorting, negative beta's doesn't do any good.
+  #note, tails isn't necessarily in reverse order, just so happens I'm only grabbing the last few #'s...
   t20Beta<-head(colnames(data.frame((eod_ret_training)[trainingBetaSorted$colname])),setPercent)
   b20Beta<-tail(colnames(data.frame((eod_ret_training)[trainingBetaSorted$colname])),setPercent)
   
@@ -505,9 +487,29 @@ for (iterator in seq(0, 151, by=1))
   #b20Mix_RaW<-unique(c(b20CR_RaW,b20AVGR_RaW))
   #b20Mix_RaM<-unique(c(b20CR_RaM,b20AVGR_RaM))
   
+  
+  write.csv(eod_ret_training[,t20Beta],"c:/test/Testing_T20B.csv")
+  write.csv(eod_ret_testing[,b20Beta],"c:/test/Testing_B20B.csv")
+  
+  write.csv(eod_ret_testing[,t20Avg],"c:/test/Testing_T20A.csv")
+  write.csv(eod_ret_testing[,b20Avg],"c:/test/Testing_B20A.csv")
+  
+  write.csv(testingBetaSorted,"c:/test/testingBetaSorted.csv")
+  
+  write.csv(trainingBetaSorted,"c:/test/trainingBetaSorted.csv")
+  write.csv(testingBetaSorted,"c:/test/testingBetaSorted.csv")
+  
+  write.csv(trainingAvgSorted,"c:/test/trainingAvgSorted.csv")
+  write.csv(testingAvgSorted,"c:/test/testingAvgSorted.csv")
+  
+  write.csv(trainingCumRetSorted,"c:/test/trainingCumRetSorted.csv")
+  write.csv(testingCumRetSorted,"c:/test/testingCumRetSorted.csv")
+  
+  
   list_Ra<-c()
   #list_Ra<-c(t20Mix_Ra,b20Mix_Ra)
   list_Ra<-c(t20Beta,b20Beta)
+  list_Ra<-c(t20Beta)
   #list_Ra<-c(basedOnBetas,b20Mix_Ra)
   #list_Ra<-basedOnBetas
   #eod_ret[,list_Ra]
@@ -842,10 +844,11 @@ for (iterator in seq(0, 151, by=1))
     #length(list_Ra)
     #opt_w[1:length(t20Mix_Ra)]<-positive/length(t20Mix_Ra)
     opt_w[1:length(t20Beta)]<-positive/length(t20Beta)
-    #opt_w[1:length(t20Mix_Ra)]<-.5/length(t20Mix_Ra)
     #opt_w[1:length(list_Ra)]=1/length(list_Ra)
-    opt_w[(length(t20Beta)+1):(length(b20Beta)+length(t20Beta))]<-negative/length(b20Beta)
-    #opt_w[(length(t20Mix_Ra)+1):(length(t20Mix_Ra)+length(b20Mix_Ra))]<-.5/length(b20Mix_Ra)
+    
+    #use with negative
+    #opt_w[(length(t20Beta)+1):(length(b20Beta)+length(t20Beta))]<-negative/length(b20Beta)
+    
     
     sum(opt_w)
     
@@ -966,7 +969,9 @@ for (iterator in seq(0, 151, by=1))
     
     # End of Part 3c
     # End of Stock Market Case Study 
-      print(paste("start: ", start_date, "end: ", end_date, "Weights", positive, "vs", negative, "The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))      
+    
+    #don't use without shorts
+      #print(paste("start: ", start_date, "end: ", end_date, "Weights", positive, "vs", negative, "The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))      
     #scores<-rbind(scores,Return.cumulative(Rp$ptf))
     
   }
@@ -1002,7 +1007,9 @@ for (iterator in seq(0, 151, by=1))
     RpM$ptf<-RaM_testing %*% opt_w
     
     print (paste("Beta: Iterator:[from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 test_b20", mean_acc_training_beta_t20 , mean_acc_testing_beta_t20 , mean_acc_training_beta_b20, mean_acc_testing_beta_b20))
-    print(paste("start: ", start_date, "end: ", end_date, "Markowtiz Profile & The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))          
+    
+    #only use with negative weights
+    #print(paste("start: ", start_date, "end: ", end_date, "Markowtiz Profile & The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))          
     
     #just
     
@@ -1013,4 +1020,5 @@ for (iterator in seq(0, 151, by=1))
     print(paste("Mixed with 2/-1 shorted Beta's Markowtiz Profile & The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))          
   
     #tail(eod_ret[,1:2])
+
 }
