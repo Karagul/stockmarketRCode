@@ -1,6 +1,9 @@
 
 #dp<-read.csv('d:/quantshare/quotes.csv') # no arguments
 
+library(Rserve);
+require(Rserve);
+
 todayIs <- as.Date(as.POSIXlt(as.Date(Sys.Date())))
 
 require(RPostgreSQL) # did you install this package?
@@ -366,12 +369,14 @@ for (iterator in seq(0, 151, by=1))
   y <- RA4LM
   nrow(y)
   
+  #head
   xtr<-head(x,-days)
   ytr<-head(y,-days)
   
   nrow(xtr)
   nrow(ytr)
   
+  #tail
   xtst<-tail(x,days)
   ytst<-tail(y,days)
   
@@ -389,16 +394,21 @@ for (iterator in seq(0, 151, by=1))
   #print(linearModTotal)
 
   #training capm beta's, sorted because no follow up ops outside of my algorithm rely on it's order (simple filter operation)
-  trainingBetaSorted <- colSortMax(linearModTraining$coefficients)
-  
+    
   #trainingBetaSorted[,]
   
   #t20Beta
   
   
   #Return.cumulative(eod_ret_training$TNA)
-  
+  trainingBetaSorted <- colSortMax(linearModTraining$coefficients)
   testingBetaSorted <- colSortMax(linearModTesting$coefficients)
+  
+  trainingAvgSorted <- colSortAvg(eod_ret_training)
+  testingAvgSorted <- colSortAvg(eod_ret_testing)
+  
+  trainingCumRetSorted <- colSortMax(Return.cumulative(eod_ret_training))
+  testingCumRetSorted <- colSortMax(Return.cumulative(eod_ret_testing))
   
   totalBetaSorted <- colSortMax(linearModTotal$coefficients)
   
@@ -413,6 +423,15 @@ for (iterator in seq(0, 151, by=1))
   
   CR_RaM_training <- colSortMax(Return.cumulative(eom_ret_training))
   avg_RaM_training <- colSortAvg(eom_ret_training)
+  
+  write.csv(trainingBetaSorted,"c:/test/trainingBetaSorted.csv")
+  write.csv(testingBetaSorted,"c:/test/testingBetaSorted.csv")
+  
+  write.csv(trainingAvgSorted,"c:/test/trainingAvgSorted.csv")
+  write.csv(testingAvgSorted,"c:/test/testingAvgSorted.csv")
+  
+  write.csv(trainingCumRetSorted,"c:/test/trainingCumRetSorted.csv")
+  write.csv(testingCumRetSorted,"c:/test/testingCumRetSorted.csv")
   
   #top 20 by cumulative return
   t20Beta<-c()
