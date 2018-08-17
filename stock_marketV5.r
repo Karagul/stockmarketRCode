@@ -511,7 +511,7 @@ for (iterator in seq(0, 151, by=1))
   #list_Ra<-c(t20Beta,b20Beta)
   list_upper<-c()
   list_lower<-c()
-  list_upper<-c(t20Beta)
+  list_upper<-c(t20Cum)
   list_lower<-c(b20Cum)
   list_Ra<-c(list_upper,list_lower)
   #list_Ra<-c(t20Beta)
@@ -646,6 +646,32 @@ for (iterator in seq(0, 151, by=1))
     alltr<-(c(ratr,rate))
     
     summary(alltr)
+    
+    probs=c(0,.1,.25,.5,.75,.9,1)
+    
+    all_profile<-quantile(alltr,probs, na.rm =F, names = F, type = 7)
+    
+    firstSixth = (all_profile[2]-all_profile[1])*(.1-.0)
+    secondSixth = (all_profile[3]-all_profile[2])*(.25-.1)
+    thirdSixth = (all_profile[4]-all_profile[3])*(.5-.25)
+    fourthSixth = (all_profile[5]-all_profile[4])*(.75-.5)
+    fifthSixth = (all_profile[6]-all_profile[5])*(.9-.75)
+    sixthSixth = (all_profile[7]-all_profile[6])*(1-.9)
+
+    sevenNumModSdev=firstSixth+secondSixth+thirdSixth+fourthSixth+fifthSixth+sixthSixth
+    
+    plot.new()
+    plot(x=probs,y=all_profile)
+    
+    #finally got the scatterplot working!
+    
+    for (name in t20Beta)
+    {
+      print(name)
+      plot(x=eod_ret_testing$SP500TR,y=eod_ret_testing[,name])
+    }
+    
+
     
     length(rate)
     length(ratr)
@@ -1037,21 +1063,15 @@ for (iterator in seq(0, 151, by=1))
     boxplot(upper_profile_training,lower_profile_training,horizontal=1)
     
     boxplot(upper_profile_testing,lower_profile_testing,horizontal=1)
-
-    
     
     d <- density(alltr)
     plot(d)
   
-    
     d <- density(upper)
     plot(d)
     
-    
     d <- density(lower)
     plot(d)
-
-    
     
     combinedOpt=(opt_w+opt_wpw)/2
     
@@ -1066,6 +1086,6 @@ for (iterator in seq(0, 151, by=1))
     print (paste("Beta: Iterator:[from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 test_b20", mean_acc_training_beta_t20 , mean_acc_testing_beta_t20 , mean_acc_training_beta_b20, mean_acc_testing_beta_b20))
     
     #only use with negative weights
-    print(paste("start: ", start_date, "end: ", end_date, "Markowtiz Profile & The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))          
+    print(paste("start: ", start_date, "end: ", end_date, "Markowitz Profile & The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))          
     
 }
