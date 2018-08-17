@@ -643,13 +643,14 @@ for (iterator in seq(0, 151, by=1))
     rate<-data.frame(stack(((data.frame(Ra_testing)))))$values
     brte<-data.frame(stack(((data.frame(Rb_testing)))))$values
     
-    alltr<-(c(ratr,rate))
+    #all but SP500TR
+    all_r<-(c(ratr,rate))
     
-    summary(alltr)
+    summary(all_r)
     
     probs=c(0,.1,.25,.5,.75,.9,1)
     
-    all_profile<-quantile(alltr,probs, na.rm =F, names = F, type = 7)
+    all_profile<-quantile(all_r,probs, na.rm =F, names = F, type = 7)
     
     firstSixth = (all_profile[2]-all_profile[1])*(.1-.0)
     secondSixth = (all_profile[3]-all_profile[2])*(.25-.1)
@@ -661,24 +662,41 @@ for (iterator in seq(0, 151, by=1))
     sevenNumModSdev=firstSixth+secondSixth+thirdSixth+fourthSixth+fifthSixth+sixthSixth
     
     plot.new()
-    plot(x=probs,y=all_profile)
     
     #finally got the scatterplot working!
     
-    for (name in t20Beta)
+    #d <- density(all_r)
+    #plot(d)
+    
+    jpeg(paste0(end_date,name,"retAllProbPlot.jpg"))
+    plot(x=probs,y=all_profile,type="o")
+    dev.off()
+
+    #testing    
+    for (name in c(list_upper,list_lower))
     {
       print(name)
-      plot(x=eod_ret_testing$SP500TR,y=eod_ret_testing[,name])
-    }
-    
+      jpeg(paste0(end_date,name,"betaPlot.jpg"))
+      plot(x=eod_ret_testing$SP500TR,y=eod_ret_testing[,name],ylab=name,xlab="SP500TR")
+      dev.off()
 
+      profile<-quantile(eod_ret_testing[,name],probs, na.rm =F, names = F, type = 7)
+      jpeg(paste0(end_date,name,"retProbPlot.jpg"))
+      
+      plot(x=probs,y=profile,ylab=name,type="o",xlab="Return Probability")
+      
+      dev.off()
+      
+      hist(eod_ret_testing[,name],breaks)
+      
+    }
     
     length(rate)
     length(ratr)
     
     length(rate) + length(ratr)
     
-    length(alltr)
+    length(all_r)
     
     #Ra[is.na(Ra)] <- 0
     #RaW[is.na(RaW)] <- 0
@@ -687,36 +705,36 @@ for (iterator in seq(0, 151, by=1))
     #returns assets training
       # IQR used for rounding determination and subsequent classification of returns
       
-    chart.Boxplot(alltr)
-      quantile(alltr)
-      summary(alltr)
-      write.csv(alltr,"c:/test/alltr.csv")
+    chart.Boxplot(all_r)
+      quantile(all_r)
+      summary(all_r)
+      write.csv(all_r,"c:/test/all_r.csv")
       
-      length(alltr)
+      length(all_r)
       
       
-      IQR=quantile(alltr)[3]-quantile(alltr)[2]
+      IQR=quantile(all_r)[3]-quantile(all_r)[2]
       Lhinge<-c()
-      Lhinge=quantile(alltr)[2]-IQR*1.5
+      Lhinge=quantile(all_r)[2]-IQR*1.5
     
       Uhinge<-c()
-      Uhinge=quantile(alltr)[4]+IQR*1.5
+      Uhinge=quantile(all_r)[4]+IQR*1.5
       
-      #length(ratr[which(alltr[]>=Lhinge & alltr[]<=Uhinge)])/length(alltr)      
+      #length(ratr[which(all_r[]>=Lhinge & all_r[]<=Uhinge)])/length(all_r)      
       IQRRange=Uhinge-Lhinge
       
       HingeRange=Uhinge-Lhinge
       
       #percent captured within LHinge and UHinge of Ra_training
-      length(ratr[which(alltr[]>=Lhinge & alltr[]<=Uhinge)])/length(alltr)
+      length(ratr[which(all_r[]>=Lhinge & all_r[]<=Uhinge)])/length(all_r)
       
       Lhinge+IQR*1/8
     
-      breaks=c(quantile(alltr)[1],Lhinge,Lhinge+HingeRange*1/8,Lhinge+HingeRange*2/8,Lhinge+HingeRange*3/8,Lhinge+HingeRange*4/8,Lhinge+HingeRange*5/8,Lhinge+HingeRange*6/8,Lhinge+HingeRange*7/8,Uhinge,quantile(alltr)[5])  
+      breaks=c(quantile(all_r)[1],Lhinge,Lhinge+HingeRange*1/8,Lhinge+HingeRange*2/8,Lhinge+HingeRange*3/8,Lhinge+HingeRange*4/8,Lhinge+HingeRange*5/8,Lhinge+HingeRange*6/8,Lhinge+HingeRange*7/8,Uhinge,quantile(all_r)[5])  
   
       hist(ratr,breaks)
   
-      hist(alltr,breaks)
+      hist(all_r,breaks)
     
     #returns benchmark training
     chart.Boxplot(brtr)
@@ -1051,9 +1069,6 @@ for (iterator in seq(0, 151, by=1))
     #enable for negative
     opt_w[(length(list_upper)+1):(length(list_lower)+length(list_upper))]<-negative/length(list_lower)
     
-    d <- density(alltr)
-    plot(d)
-    
     upper_profile_training<-(data.frame(stack(eod_ret_training[,list_upper]))$values)
     lower_profile_training<-(data.frame(stack(eod_ret_training[,list_lower]))$values)
 
@@ -1064,7 +1079,7 @@ for (iterator in seq(0, 151, by=1))
     
     boxplot(upper_profile_testing,lower_profile_testing,horizontal=1)
     
-    d <- density(alltr)
+    d <- density(all_r)
     plot(d)
   
     d <- density(upper)
