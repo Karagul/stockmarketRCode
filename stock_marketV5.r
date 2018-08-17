@@ -698,31 +698,32 @@ for (iterator in seq(0, 151, by=1))
       hist(hcr,breaks)
       boxplot(hcr)
     
-      lcr<-data.frame(stack(((data.frame(Ra_training)[b20Beta]))))$values
+      #disable if not using negative
+      #lcr<-data.frame(stack(((data.frame(Ra_training)[b20Beta]))))$values
       hist(lcr)
       hist(hcr, breaks)
       
       mean(hcr)
-      mean(lcr)
+      #mean(lcr)
     
     hcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[t20Beta]))))$values
-    lcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[b20Beta]))))$values
+    #lcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[b20Beta]))))$values
     
     mean(hcrT20Testing)
-    mean(lcrT20Testing)
+    #mean(lcrT20Testing)
     # Graphical Return Data Analytics -----------------------------------------
     
     #long portfolio
     hist(hcr,breaks)
     
     #short portfolio
-    hist(lcr,breaks)
+    #hist(lcr,breaks)
     
     #long testing
     hist(hcrT20Testing,breaks)
     
     #short testing
-    hist(lcrT20Testing,breaks)
+    #hist(lcrT20Testing,breaks)
     
     # Cumulative returns chart
     chart.CumReturns(Ra,legend.loc = 'topleft')
@@ -735,7 +736,7 @@ for (iterator in seq(0, 151, by=1))
     chart.Drawdown(Ra,legend.loc = 'bottomleft')
     chart.Drawdown(Ra_testing,legend.loc = 'bottomleft')
     
-    boxplot(hcr,Rb_training,lcr)
+    #boxplot(hcr,Rb_training,lcr)
     
     summary(hcr)
     StdDev(hcr)
@@ -744,20 +745,23 @@ for (iterator in seq(0, 151, by=1))
     summary(Rb_training)
     StdDev(Rb_training)
     
-    summary(lcr)
-    StdDev(lcr)
+    #summary(lcr)
+    #StdDev(lcr)
     
     #quantile(hcr,c(0,.05,.5,.95,1))
     sum(acc_Ra_training[,t20Beta])
     
     #quantile(lcr,c(0,.05,.5,.95,1))
-    sum(acc_Ra_training[,b20Beta])
+    #need to disable if not using negatives
+    #sum(acc_Ra_training[,b20Beta])
     
     #quantile(hcrT20Testing,c(0,.05,.5,.95,1))
     sum(acc_Ra_testing[,t20Beta])
     
     #quantile(lcrT20Testing,c(0,.05,.5,.95,1))
-    sum(acc_Ra_testing[,b20Beta])
+    
+    #need to disable if not using negatives
+    #sum(acc_Ra_testing[,b20Beta])
     
     #plot.new()
     
@@ -769,21 +773,22 @@ for (iterator in seq(0, 151, by=1))
     summary(Rb_testing)
     StdDev(Rb_testing)
     
-    summary(lcrT20Testing)
-    StdDev(lcrT20Testing)
+    #summary(lcrT20Testing)
+    #StdDev(lcrT20Testing)
     
-    boxplot(hcrT20Testing,Rb_testing,lcrT20Testing)
+    boxplot(hcrT20Testing,Rb_testing)
+    #boxplot(hcrT20Testing,Rb_testing,lcrT20Testing)
     
-    t.test(hcr,lcr)
-    t.test(hcrT20Testing,lcrT20Testing)
-    ttest<-t.test(hcr,lcr)
-    names(ttest)
-    ttest$statistic
+    #t.test(hcr,lcr)
+    #t.test(hcrT20Testing,lcrT20Testing)
+    #ttest<-t.test(hcr,lcr)
+    #names(ttest)
+    #ttest$statistic
   
     summary(hcrT20Testing)
     summary(Rb_testing)
     summary(Rb_training)
-    summary(lcrT20Testing)
+    #summary(lcrT20Testing)
   
   #optimize the MV (Markowitz 1950s) portfolio weights based on training
   table.AnnualizedReturns(Rb_training)
@@ -956,8 +961,8 @@ for (iterator in seq(0, 151, by=1))
     chart.CumReturns(Ra_training[,t20Beta])
     chart.CumReturns(Ra_testing[,t20Beta])
     
-    chart.CumReturns(Ra_training[,b20Beta])
-    chart.CumReturns(Ra_testing[,b20Beta])
+    #chart.CumReturns(Ra_training[,b20Beta])
+    #chart.CumReturns(Ra_testing[,b20Beta])
     
     #chart.CumReturns(Rp,legend.loc = 'topleft')
     
@@ -992,7 +997,9 @@ for (iterator in seq(0, 151, by=1))
     opt_w[1:length(t20Beta)]<-positive/length(t20Beta)
     #opt_w[1:length(t20Mix_Ra)]<-.5/length(t20Mix_Ra)
     #opt_w[1:length(list_Ra)]=1/length(list_Ra)
-    opt_w[(length(t20Beta)+1):(length(b20Beta)+length(t20Beta))]<-negative/length(b20Beta)
+    
+    #enable for negative
+    #opt_w[(length(t20Beta)+1):(length(b20Beta)+length(t20Beta))]<-negative/length(b20Beta)
     
     
     
@@ -1009,7 +1016,7 @@ for (iterator in seq(0, 151, by=1))
     print (paste("Beta: Iterator:[from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 test_b20", mean_acc_training_beta_t20 , mean_acc_testing_beta_t20 , mean_acc_training_beta_b20, mean_acc_testing_beta_b20))
     
     #only use with negative weights
-    #print(paste("start: ", start_date, "end: ", end_date, "Markowtiz Profile & The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))          
+    print(paste("start: ", start_date, "end: ", end_date, "Markowtiz Profile & The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))          
     
     #just
     
@@ -1017,7 +1024,7 @@ for (iterator in seq(0, 151, by=1))
     Rp$ptf<-Ra_testing %*% opt_wpw
     RpW$ptf<-RaW_testing %*% opt_wpw
     RpM$ptf<-RaM_testing %*% opt_wpw
-    print(paste("Mixed with 2/-1 shorted Beta's Markowtiz Profile & The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))          
+    #print(paste("Mixed with 2/-1 shorted Beta's Markowtiz Profile & The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))          
   
     #tail(eod_ret[,1:2])
 
