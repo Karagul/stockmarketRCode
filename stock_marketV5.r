@@ -508,8 +508,13 @@ for (iterator in seq(0, 151, by=1))
   
   list_Ra<-c()
   #list_Ra<-c(t20Mix_Ra,b20Mix_Ra)
-  list_Ra<-c(t20Beta,b20Beta)
-  list_Ra<-c(t20Beta)
+  #list_Ra<-c(t20Beta,b20Beta)
+  list_upper<-c()
+  list_lower<-c()
+  list_upper<-c(t20Beta)
+  list_lower<-c(b20Cum)
+  list_Ra<-c(list_upper,list_lower)
+  #list_Ra<-c(t20Beta)
   #list_Ra<-c(basedOnBetas,b20Mix_Ra)
   #list_Ra<-basedOnBetas
   #eod_ret[,list_Ra]
@@ -517,8 +522,8 @@ for (iterator in seq(0, 151, by=1))
   #list_RaW<-c(t20Mix_RaW,b20Mix_RaW)
   #list_RaM<-c(t20Mix_RaM,b20Mix_RaM)
   
-  list_RaW<-c(t20Beta,b20Beta)
-  list_RaM<-c(t20Beta,b20Beta)
+  list_RaW<-c(list_upper,list_lower)
+  list_RaM<-c(list_upper,list_lower)
   #eod_ret[,list_Ra]
   
   #based on top/bottom 20
@@ -645,7 +650,7 @@ for (iterator in seq(0, 151, by=1))
     length(rate)
     length(ratr)
     
-    length(rate) +length(ratr)
+    length(rate) + length(ratr)
     
     length(alltr)
     
@@ -694,23 +699,25 @@ for (iterator in seq(0, 151, by=1))
     
     #example, outliers are defined as 1Q-IQR*1.5 and 3Q*+IQR*1.5, why not set up a histogram that captures this.
     
-    hcr<-data.frame(stack(((data.frame(Ra_training)[t20Beta]))))$values
+    hcr<-data.frame(stack(((data.frame(Ra_training)[list_upper]))))$values
       hist(hcr,breaks)
       boxplot(hcr)
     
       #disable if not using negative
-      #lcr<-data.frame(stack(((data.frame(Ra_training)[b20Beta]))))$values
+      lcr<-data.frame(stack(((data.frame(Ra_training)[list_lower]))))$values
       hist(lcr)
       hist(hcr, breaks)
       
       mean(hcr)
-      #mean(lcr)
+      mean(lcr)
     
-    hcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[t20Beta]))))$values
-    #lcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[b20Beta]))))$values
+    hcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[list_upper]))))$values
+    
+    #disable if not using negative weights
+    lcrT20Testing<-data.frame(stack(tail((data.frame(Ra_testing)[list_lower]))))$values
     
     mean(hcrT20Testing)
-    #mean(lcrT20Testing)
+    mean(lcrT20Testing)
     # Graphical Return Data Analytics -----------------------------------------
     
     #long portfolio
@@ -723,7 +730,7 @@ for (iterator in seq(0, 151, by=1))
     hist(hcrT20Testing,breaks)
     
     #short testing
-    #hist(lcrT20Testing,breaks)
+    hist(lcrT20Testing,breaks)
     
     # Cumulative returns chart
     chart.CumReturns(Ra,legend.loc = 'topleft')
@@ -749,14 +756,14 @@ for (iterator in seq(0, 151, by=1))
     #StdDev(lcr)
     
     #quantile(hcr,c(0,.05,.5,.95,1))
-    sum(acc_Ra_training[,t20Beta])
+    sum(acc_Ra_training[,list_upper])
     
     #quantile(lcr,c(0,.05,.5,.95,1))
     #need to disable if not using negatives
     #sum(acc_Ra_training[,b20Beta])
     
     #quantile(hcrT20Testing,c(0,.05,.5,.95,1))
-    sum(acc_Ra_testing[,t20Beta])
+    sum(acc_Ra_testing[,list_upper])
     
     #quantile(lcrT20Testing,c(0,.05,.5,.95,1))
     
@@ -776,19 +783,32 @@ for (iterator in seq(0, 151, by=1))
     #summary(lcrT20Testing)
     #StdDev(lcrT20Testing)
     
-    boxplot(hcrT20Testing,Rb_testing)
-    #boxplot(hcrT20Testing,Rb_testing,lcrT20Testing)
+    #boxplot(hcrT20Testing,Rb_testing)
+    boxplot(hcrT20Testing,Rb_testing,lcrT20Testing)
     
-    #t.test(hcr,lcr)
-    #t.test(hcrT20Testing,lcrT20Testing)
-    #ttest<-t.test(hcr,lcr)
-    #names(ttest)
-    #ttest$statistic
+    t.test(hcr,lcr)
+    t.test(hcrT20Testing,lcrT20Testing)
+    ttest<-t.test(hcr,lcr)
+    names(ttest)
+    ttest$statistic
   
     summary(hcrT20Testing)
+    summary(lcrT20Testing)
+    
+    #test training
+    sum(Return.cumulative(eod_ret_training[,list_upper]))
+    sum(Return.cumulative(eod_ret_training[,list_lower]))
+
+    #test testing
+    sum(Return.cumulative(eod_ret_testing[,list_upper]))
+    sum(Return.cumulative(eod_ret_testing[,list_lower]))
+
+    #Error
+    (sum(Return.cumulative(eod_ret_training[,list_upper]))-sum(Return.cumulative(eod_ret_training[,list_lower])))*(sum(Return.cumulative(eod_ret_testing[,list_upper]))-sum(Return.cumulative(eod_ret_testing[,list_lower])))
+    
+    #test testing
     summary(Rb_testing)
     summary(Rb_training)
-    #summary(lcrT20Testing)
   
   #optimize the MV (Markowitz 1950s) portfolio weights based on training
   table.AnnualizedReturns(Rb_training)
@@ -848,11 +868,11 @@ for (iterator in seq(0, 151, by=1))
     opt_w<-c()
     #length(list_Ra)
     #opt_w[1:length(t20Mix_Ra)]<-positive/length(t20Mix_Ra)
-    opt_w[1:length(t20Beta)]<-positive/length(t20Beta)
+    opt_w[1:length(list_lower)]<-positive/length(list_upper)
     #opt_w[1:length(list_Ra)]=1/length(list_Ra)
     
     #use with negative
-    #opt_w[(length(t20Beta)+1):(length(b20Beta)+length(t20Beta))]<-negative/length(b20Beta)
+    opt_w[(length(list_upper)+1):(length(list_lower)+length(list_upper))]<-negative/length(list_lower)
     
     
     sum(opt_w)
@@ -897,17 +917,16 @@ for (iterator in seq(0, 151, by=1))
       chart.CumReturns(eod_ret_testing[,b20Beta])
 
     #graph cumulative returns by best/worst avg's before and after    
-      #chart.CumReturns(Ra_training[,t20AVGR_Ra])
-      #chart.CumReturns(Ra_testing[,t20AVGR_Ra])
+      chart.CumReturns(eod_ret_training[,t20Avg])
+      chart.CumReturns(eod_ret_testing[,t20Avg])
     
-      #chart.CumReturns(Ra_training[,b20AVGR_Ra])
-      #chart.CumReturns(Ra_testing[,b20AVGR_Ra])
+      chart.CumReturns(eod_ret_training[,b20Avg])
+      chart.CumReturns(eod_ret_testing[,b20Avg])
 
     #compare accumulated returns via means of best/worst beta's
       
       #good returns, before after, do predictions hold?
       mean_acc_training_beta_t20 <- mean(Return.cumulative(eod_ret_training[,t20Beta]))
-      
       mean_acc_testing_beta_t20 <- mean(Return.cumulative(eod_ret_testing[,t20Beta]))
       
       #bad returns, before after, do predictions hold?
@@ -917,35 +936,40 @@ for (iterator in seq(0, 151, by=1))
     #compare accumulated returns via means of best/worst avg return
       
       #good returns, before after, do predictions hold?
-      #mean_acc_training_t20 <- mean(acc_Ra_training[,t20AVGR_Ra])
-      #mean_acc_testing_t20 <- mean(acc_Ra_testing[,t20AVGR_Ra])
+      mean_acc_training_t20 <- mean(Return.cumulative(eod_ret_training[,t20Avg]))
+      mean_acc_testing_t20 <- mean(Return.cumulative(eod_ret_testing[,t20Avg]))
       
       #bad returns, before after, do predictions hold?
-      #mean_acc_training_b20 <- mean(acc_Ra_training[,b20AVGR_Ra])
-      #mean_acc_testing_b20 <- mean(acc_Ra_testing[,b20AVGR_Ra])
+      mean_acc_training_b20 <- mean(Return.cumulative(eod_ret_training[,b20Avg]))
+      mean_acc_testing_b20 <- mean(Return.cumulative(eod_ret_testing[,b20Avg]))
       
-      #print (paste("Beta: [from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 mean_acc_testing_b20", mean_acc_training_t20 , mean_acc_testing_t20 , mean_acc_training_b20, mean_acc_testing_b20))
+      print (paste("Beta: [from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 mean_acc_testing_b20", mean_acc_training_t20 , mean_acc_testing_t20 , mean_acc_training_b20, mean_acc_testing_b20))
       
     #compare accumulated returns, avg
       
       #good returns, before after, do predictions hold?
-      #mean_acc_training_t20 <- mean(acc_Ra_training[,t20AVGR_Ra])
-      #mean_acc_testing_t20 <- mean(acc_Ra_testing[,t20AVGR_Ra])
+      mean_acc_training_t20 <- mean(Return.cumulative(eod_ret_training[,t20Avg]))
+      mean_acc_testing_t20 <- mean(Return.cumulative(eod_ret_testing[,t20Avg]))
       
       #bad returns, before after, do predictions hold?
-      #mean_acc_training_b20 <- mean(acc_Ra_training[,b20AVGR_Ra])
-      #mean_acc_testing_b20 <- mean(acc_Ra_testing[,b20AVGR_Ra])
-    
-      #print (paste("Average: [from a Set of Average] Cumulative Returns: train_t20 test_t20 train_b20 test_b20", mean_acc_training_t20 , mean_acc_testing_t20 , mean_acc_training_b20, mean_acc_testing_b20))
+      mean_acc_training_b20 <- mean(Return.cumulative(eod_ret_training[,b20Avg]))
+      mean_acc_testing_b20 <- mean(Return.cumulative(eod_ret_testing[,b20Avg]))
+      
+      print (paste("Average: [from a Set of Average] Cumulative Returns: train_t20 test_t20 train_b20 test_b20", mean_acc_training_t20 , mean_acc_testing_t20 , mean_acc_training_b20, mean_acc_testing_b20))
 
     #chart.CumReturns(Ra_training[,b20AVGR_Ra])
     
     #boxplot(data.frame(stack(((data.frame(eod_ret_training[,t20AVGR_Ra])))))$values, horizontal = 1)
     #boxplot(data.frame(stack(((data.frame(eod_ret_testing[,t20AVGR_Ra])))))$values, horizontal = 1)
     
-    boxplot(data.frame(stack(((data.frame(eod_ret_training[,t20Beta])))))$values, horizontal = 1)
+    boxplot(data.frame(stack(((data.frame(eod_ret_training[,list_upper])))))$values, horizontal = 1)
     
-    boxplot(data.frame(stack(((data.frame(eod_ret_testing[,t20Beta])))))$values, horizontal = 1)
+    boxplot(data.frame(stack(((data.frame(eod_ret_testing[,list_upper])))))$values, horizontal = 1)
+    
+    boxplot(data.frame(stack(((data.frame(eod_ret_training[,list_lower])))))$values, horizontal = 1)
+    
+    boxplot(data.frame(stack(((data.frame(eod_ret_testing[,list_lower])))))$values, horizontal = 1)
+    
     
     chart.CumReturns(Rb_training)
     chart.CumReturns(Rb_testing)
@@ -958,8 +982,8 @@ for (iterator in seq(0, 151, by=1))
     #chart.CumReturns(Ra_training[,t20Mix_Ra])
     #chart.CumReturns(Ra_testing[,t20Mix_Ra])
     
-    chart.CumReturns(Ra_training[,t20Beta])
-    chart.CumReturns(Ra_testing[,t20Beta])
+    chart.CumReturns(Ra_training[,list_upper])
+    chart.CumReturns(Ra_testing[,list_upper])
     
     #chart.CumReturns(Ra_training[,b20Beta])
     #chart.CumReturns(Ra_testing[,b20Beta])
@@ -976,7 +1000,7 @@ for (iterator in seq(0, 151, by=1))
     # End of Stock Market Case Study 
     
     #don't use without shorts
-      #print(paste("start: ", start_date, "end: ", end_date, "Weights", positive, "vs", negative, "The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))      
+      print(paste("start: ", start_date, "end: ", end_date, "Weights", positive, "vs", negative, "The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))      
     #scores<-rbind(scores,Return.cumulative(Rp$ptf))
     
   }
@@ -994,13 +1018,39 @@ for (iterator in seq(0, 151, by=1))
     opt_w<-c()
     #length(list_Ra)
     #opt_w[1:length(t20Mix_Ra)]<-positive/length(t20Mix_Ra)
-    opt_w[1:length(t20Beta)]<-positive/length(t20Beta)
+    opt_w[1:length(list_upper)]<-positive/length(list_upper)
     #opt_w[1:length(t20Mix_Ra)]<-.5/length(t20Mix_Ra)
     #opt_w[1:length(list_Ra)]=1/length(list_Ra)
     
     #enable for negative
-    #opt_w[(length(t20Beta)+1):(length(b20Beta)+length(t20Beta))]<-negative/length(b20Beta)
+    opt_w[(length(list_upper)+1):(length(list_lower)+length(list_upper))]<-negative/length(list_lower)
     
+    d <- density(alltr)
+    plot(d)
+    
+    upper_profile_training<-(data.frame(stack(eod_ret_training[,list_upper]))$values)
+    lower_profile_training<-(data.frame(stack(eod_ret_training[,list_lower]))$values)
+
+    upper_profile_testing<-(data.frame(stack(eod_ret_testing[,list_upper]))$values)
+    lower_profile_testing<-(data.frame(stack(eod_ret_testing[,list_lower]))$values)
+    
+    boxplot(upper_profile_training,lower_profile_training,horizontal=1)
+    
+    boxplot(upper_profile_testing,lower_profile_testing,horizontal=1)
+
+    
+    
+    d <- density(alltr)
+    plot(d)
+  
+    
+    d <- density(upper)
+    plot(d)
+    
+    
+    d <- density(lower)
+    plot(d)
+
     
     
     combinedOpt=(opt_w+opt_wpw)/2
@@ -1018,14 +1068,4 @@ for (iterator in seq(0, 151, by=1))
     #only use with negative weights
     print(paste("start: ", start_date, "end: ", end_date, "Markowtiz Profile & The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))          
     
-    #just
-    
-    Rp$ptf <- c()
-    Rp$ptf<-Ra_testing %*% opt_wpw
-    RpW$ptf<-RaW_testing %*% opt_wpw
-    RpM$ptf<-RaM_testing %*% opt_wpw
-    #print(paste("Mixed with 2/-1 shorted Beta's Markowtiz Profile & The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))          
-  
-    #tail(eod_ret[,1:2])
-
 }
