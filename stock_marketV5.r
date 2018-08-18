@@ -1107,13 +1107,6 @@ for (iterator in seq(0, 2, by=1))
   text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)  
   dev.off()
 
-  profile<-c()
-  profile<-quantile(lower_profile_training,probs, na.rm =T, names = F, type = 7)
-  x = probs; y = profile
-  plot(x=probs,y=profile,type="o",xlab="Return Probability",ylab="lower training")
-  text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)  
-  dev.off()
-  
   #upper training/testing profile Boxplot
   jpeg(paste0("plots/",end_date,"_training_upper_BoxPlot.jpg"))
   training_upper<-data.frame(stack(((data.frame(Ra_training[,list_upper])))))$values
