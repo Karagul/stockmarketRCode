@@ -1102,8 +1102,8 @@ for (iterator in seq(0, 2, by=1))
   }
 
   jpeg(paste0("plots/",end_date,"_retAllProbPlot.jpg"))
-  x = probs; y = all_profile; xlab="Return All Probability"
-  plot(x,y,type="o",xlab)
+  x = probs; y = all_profile;
+  plot(x,y,type="o",xlab="Return All Probability")
   text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)  
   dev.off()
 
