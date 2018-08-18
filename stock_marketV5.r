@@ -1079,7 +1079,13 @@ for (iterator in seq(0, 2, by=1))
     d <- density(eod_ret_training[,name],na.rm=T)
     plot(d,ylab=name)
     dev.off()
-    
+
+    #Return Density Plot training
+    jpeg(paste0("plots/",end_date,name,"_testing_retDensPlot.jpg"))
+    d <- density(eod_ret_testing[,name],na.rm=T)
+    plot(d,ylab=name)
+    dev.off()
+        
     #... testing
     jpeg(paste0("plots/",end_date,name,"_testing_retDensPlot.jpg"))
     d <- density(eod_ret_testing[,name],na.rm=T)
