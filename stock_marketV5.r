@@ -326,8 +326,8 @@ for (iterator in seq(0, 2, by=1))
   #YOUR TURN: subset eom_ret data
   
   # Export data from R to CSV -----------------------------------------------
-  #write.csv(eod_ret,paste0('plots/',end_year,'eod_ret.csv')
-  #write.csv(eom_ret,paste0('plots/',end_year,'eom_ret.csv')
+  #write.csv(eod_ret,paste0('plots/',end_date,'_eod_ret.csv')
+  #write.csv(eom_ret,paste0('plots/',end_date,'_eom_ret.csv')
   
   # You can actually open this file in Excel!
   
@@ -488,23 +488,22 @@ for (iterator in seq(0, 2, by=1))
   #b20Mix_RaM<-unique(c(b20CR_RaM,b20AVGR_RaM))
   
   
-  write.csv(eod_ret_training[,t20Beta],"plots/Testing_T20B.csv")
-  write.csv(eod_ret_testing[,b20Beta],"plots/Testing_B20B.csv")
+  write.csv(eod_ret_training[,t20Beta],paste0("plots/",end_date,"_Testing_T20B.csv"))
+  write.csv(eod_ret_testing[,b20Beta],paste0("plots/",end_date,"_Testing_B20B.csv"))
   
-  write.csv(eod_ret_testing[,t20Avg],"plots/Testing_T20A.csv")
-  write.csv(eod_ret_testing[,b20Avg],"plots/Testing_B20A.csv")
+  write.csv(eod_ret_testing[,t20Avg],paste0("plots/",end_date,"_Testing_T20A.csv"))
+  write.csv(eod_ret_testing[,b20Avg],paste0("plots/",end_date,"_Testing_B20A.csv"))
   
-  write.csv(testingBetaSorted,"plots/testingBetaSorted.csv")
+  write.csv(testingBetaSorted,paste0("plots/",end_date,"_testingBetaSorted.csv"))
   
-  write.csv(trainingBetaSorted,"plots/trainingBetaSorted.csv")
-  write.csv(testingBetaSorted,"plots/testingBetaSorted.csv")
+  write.csv(trainingBetaSorted,paste0("plots/",end_date,"_trainingBetaSorted.csv"))
+  write.csv(testingBetaSorted,paste0("plots/",end_date,"_testingBetaSorted.csv"))
   
-  write.csv(trainingAvgSorted,"plots/trainingAvgSorted.csv")
-  write.csv(testingAvgSorted,"plots/testingAvgSorted.csv")
+  write.csv(trainingAvgSorted,paste0("plots/",end_date,"_trainingAvgSorted.csv"))
+  write.csv(testingAvgSorted,paste0("plots/",end_date,"_testingAvgSorted.csv"))
   
-  write.csv(trainingCumRetSorted,"plots/trainingCumRetSorted.csv")
-  write.csv(testingCumRetSorted,"plots/testingCumRetSorted.csv")
-  
+  write.csv(trainingCumRetSorted,paste0("plots/",end_date,"_trainingCumRetSorted.csv"))
+  write.csv(testingCumRetSorted,paste0("plots/",end_date,"_testingCumRetSorted.csv"))
   
   list_Ra<-c()
   #list_Ra<-c(t20Mix_Ra,b20Mix_Ra)
@@ -518,6 +517,9 @@ for (iterator in seq(0, 2, by=1))
   #list_Ra<-c(basedOnBetas,b20Mix_Ra)
   #list_Ra<-basedOnBetas
   #eod_ret[,list_Ra]
+  
+  write.csv(eod_ret_training[c(list_upper,list_lower)],paste0("plots/",end_date,"_listUpperLowerTrainingReturns.csv"))
+  write.csv(eod_ret_testing[c(list_upper,list_lower)],paste0("plots/",end_date,"_listUpperLowerTestingReturns.csv"))
   
   #list_RaW<-c(t20Mix_RaW,b20Mix_RaW)
   #list_RaM<-c(t20Mix_RaM,b20Mix_RaM)
@@ -665,7 +667,7 @@ for (iterator in seq(0, 2, by=1))
     chart.Boxplot(all_r)
       quantile(all_r)
       summary(all_r)
-      write.csv(all_r,"plots/all_r.csv")
+      write.csv(all_r,paste0("plots/",end_date,"_all_r.csv"))
       
       length(all_r)
       
@@ -1062,7 +1064,7 @@ for (iterator in seq(0, 2, by=1))
     
     #beta correlation plot training
     jpeg(paste0("plots/",end_date,name,"_betaTrainPlot.jpg"))
-    x=eod_ret_testing$SP500TR; y=eod_ret_training[,name]
+    x=eod_ret_training$SP500TR; y=eod_ret_training[,name]
     plot(x, y, ylab=paste("training",name),xlab="SP500TR")
     text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)   
     dev.off()
