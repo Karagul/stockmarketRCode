@@ -326,8 +326,8 @@ for (iterator in seq(0, 2, by=1))
   #YOUR TURN: subset eom_ret data
   
   # Export data from R to CSV -----------------------------------------------
-  #write.csv(eod_ret,paste0('C:/Test/',end_year,'eod_ret.csv')
-  #write.csv(eom_ret,paste0('C:/Test/',end_year,'eom_ret.csv')
+  #write.csv(eod_ret,paste0('plots/',end_year,'eod_ret.csv')
+  #write.csv(eom_ret,paste0('plots/',end_year,'eom_ret.csv')
   
   # You can actually open this file in Excel!
   
@@ -460,7 +460,7 @@ for (iterator in seq(0, 2, by=1))
   #eod_ret[,basedOnBetas]
   #basedOnBetas
   #list_Ra
-  #write.csv(eod_ret[,basedOnBetas],"c:/test/Opt_Ret_WBetas.csv")
+  #write.csv(eod_ret[,basedOnBetas],"plots/Opt_Ret_WBetas.csv")
   
   #need to rename eod to training?  no, doesn't need to be eod_ret_training because of the filter applied via []
   #why am I setting a percent here if these are not sorted... oh, the CR_Ra_training is sorted... doesn't hurt though.
@@ -488,22 +488,22 @@ for (iterator in seq(0, 2, by=1))
   #b20Mix_RaM<-unique(c(b20CR_RaM,b20AVGR_RaM))
   
   
-  write.csv(eod_ret_training[,t20Beta],"c:/test/Testing_T20B.csv")
-  write.csv(eod_ret_testing[,b20Beta],"c:/test/Testing_B20B.csv")
+  write.csv(eod_ret_training[,t20Beta],"plots/Testing_T20B.csv")
+  write.csv(eod_ret_testing[,b20Beta],"plots/Testing_B20B.csv")
   
-  write.csv(eod_ret_testing[,t20Avg],"c:/test/Testing_T20A.csv")
-  write.csv(eod_ret_testing[,b20Avg],"c:/test/Testing_B20A.csv")
+  write.csv(eod_ret_testing[,t20Avg],"plots/Testing_T20A.csv")
+  write.csv(eod_ret_testing[,b20Avg],"plots/Testing_B20A.csv")
   
-  write.csv(testingBetaSorted,"c:/test/testingBetaSorted.csv")
+  write.csv(testingBetaSorted,"plots/testingBetaSorted.csv")
   
-  write.csv(trainingBetaSorted,"c:/test/trainingBetaSorted.csv")
-  write.csv(testingBetaSorted,"c:/test/testingBetaSorted.csv")
+  write.csv(trainingBetaSorted,"plots/trainingBetaSorted.csv")
+  write.csv(testingBetaSorted,"plots/testingBetaSorted.csv")
   
-  write.csv(trainingAvgSorted,"c:/test/trainingAvgSorted.csv")
-  write.csv(testingAvgSorted,"c:/test/testingAvgSorted.csv")
+  write.csv(trainingAvgSorted,"plots/trainingAvgSorted.csv")
+  write.csv(testingAvgSorted,"plots/testingAvgSorted.csv")
   
-  write.csv(trainingCumRetSorted,"c:/test/trainingCumRetSorted.csv")
-  write.csv(testingCumRetSorted,"c:/test/testingCumRetSorted.csv")
+  write.csv(trainingCumRetSorted,"plots/trainingCumRetSorted.csv")
+  write.csv(testingCumRetSorted,"plots/testingCumRetSorted.csv")
   
   
   list_Ra<-c()
@@ -665,7 +665,7 @@ for (iterator in seq(0, 2, by=1))
     chart.Boxplot(all_r)
       quantile(all_r)
       summary(all_r)
-      write.csv(all_r,"c:/test/all_r.csv")
+      write.csv(all_r,"plots/all_r.csv")
       
       length(all_r)
       
@@ -1061,7 +1061,7 @@ for (iterator in seq(0, 2, by=1))
     mean(eod_ret_training[,name])
     
     #beta correlation plot training
-    jpeg(paste0("plots/",end_date,name,"_plots/_betaTrainPlot.jpg"))
+    jpeg(paste0("plots/",end_date,name,"_betaTrainPlot.jpg"))
     x=eod_ret_testing$SP500TR; y=eod_ret_training[,name]
     plot(x, y, ylab=paste("training",name),xlab="SP500TR")
     text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)   
@@ -1181,7 +1181,7 @@ for (iterator in seq(0, 2, by=1))
   upper_profile_testing<-(data.frame(stack(eod_ret_testing[,list_upper]))$values)
   lower_profile_testing<-(data.frame(stack(eod_ret_testing[,list_lower]))$values)
   
-  jpeg(paste0("plots/",end_date,name,"_plots/lower_training_retProbPlot.jpg"))
+  jpeg(paste0("plots/",end_date,name,"_lower_training_retProbPlot.jpg"))
   profile<-c()
   profile<-quantile(lower_profile_training,probs, na.rm =T, names = F, type = 7)
   plot(x=probs,y=profile,type="o",xlab="Return Probability",ylab="lower training")
