@@ -1023,33 +1023,33 @@ for (iterator in seq(0, 2, by=1))
   #reporting
   plot.new()
   
-  jpeg(paste0(end_date,"All","_retAllDensPlot.jpg"))
+  jpeg(paste0("plots/",end_date,"_retAllDensPlot.jpg"))
   d <- density(all_r,na.rm=T)
   plot(d)
   dev.off()
   
-  jpeg(paste0(end_date,"_retAllProbPlot.jpg"))
+  jpeg(paste0("plots/",end_date,"_retAllProbPlot.jpg"))
   plot(x=probs,y=all_profile,type="o")
   dev.off()
 
   #upper
-    jpeg(paste0(end_date,"_training_upper_BoxPlot.jpg"))
+    jpeg(paste0("plots/",end_date,"_training_upper_BoxPlot.jpg"))
     training_upper<-data.frame(stack(((data.frame(Ra_training[,list_upper])))))$values
     boxplot(training_upper,horizontal=1,xlab="training upper")
     dev.off()
     
-    jpeg(paste0(end_date,"_testing_upper_BoxPlot.jpg"))
+    jpeg(paste0("plots/",end_date,"_testing_upper_BoxPlot.jpg"))
     testing_upper<-data.frame(stack(((data.frame(Ra_testing[,list_upper])))))$value
     boxplot(testing_upper,horizontal=1,xlab="testing upper")
     dev.off()
 
   #lower  
-    jpeg(paste0(end_date,"_training_lower_BoxPlot.jpg"))
+    jpeg(paste0("plots/",end_date,"_training_lower_BoxPlot.jpg"))
     training_lower<-data.frame(stack(((data.frame(Ra_training[,list_lower])))))$values
     boxplot(training_lower,horizontal=1,xlab="training lower")
     dev.off()
     
-    jpeg(paste0(end_date,"_testing_lower_BoxPlot.jpg"))
+    jpeg(paste0("plots/",end_date,"_testing_lower_BoxPlot.jpg"))
     testing_lower<-data.frame(stack(((data.frame(Ra_testing[,list_lower])))))$value
     boxplot(testing_lower,horizontal=1,xlab="testing lower")
     dev.off()
@@ -1061,65 +1061,64 @@ for (iterator in seq(0, 2, by=1))
     mean(eod_ret_training[,name])
     
     #beta correlation plot training
-    print(name)
-    jpeg(paste0(end_date,name,"_betaTrainPlot.jpg"))
-    plot(x=eod_ret_training$SP500TR,y=eod_ret_training[,name],ylab=paste("training",name),xlab="SP500TR")
+    jpeg(paste0("plots/",end_date,name,"_plots/_betaTrainPlot.jpg"))
+    x=eod_ret_testing$SP500TR; y=eod_ret_training[,name]
+    plot(x, y, ylab=paste("training",name),xlab="SP500TR")
+    text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)   
     dev.off()
     
     #... testing
-    jpeg(paste0(end_date,name,"_betaTestPlot.jpg"))
-    plot(x=eod_ret_testing$SP500TR,y=eod_ret_testing[,name],ylab=paste("testing",name),xlab="SP500TR")
+    jpeg(paste0("plots/",end_date,name,"_betaTestPlot.jpg"))
+    x=eod_ret_testing$SP500TR; y=eod_ret_testing[,name]
+    plot(x, y, ylab=paste("testing",name),xlab="SP500TR")
+    text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)   
     dev.off()
     
     #Return probability plot training
+    jpeg(paste0("plots/",end_date,name,"_ProbTrainPlot.jpg"))
     profile<-quantile(eod_ret_training[,name],probs, na.rm =T, names = F, type = 7)
-    jpeg(paste0(end_date,name,"_trainingRetProbPlot.jpg"))
-    plot(x=probs,y=profile,ylab=name,type="o",xlab="Training Return Probability")
+    x = probs; y = profile
+    plot(x, y, ylab=name,type="o",xlab="Training Return Probability")
+    text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)   
     dev.off()
     
     #... testing
+    jpeg(paste0("plots/",end_date,name,"_ProbTestPlot.jpg"))
     profile<-quantile(eod_ret_testing[,name],probs, na.rm =T, names = F, type = 7)
-    jpeg(paste0(end_date,name,"_testingRetProbPlot.jpg"))
-    plot(x=probs,y=profile,ylab=name,,type="o",xlab="Testing Return Probability")
-    dev.off()
-    
-    profile<-quantile(eod_ret_testing[,name],probs, na.rm =T, names = F, type = 7)
-    
-    #https://stackoverflow.com/questions/1449266/display-values-in-r-plot
-
     x = probs; y = profile
     plot(x, y, ylab=name,type="o",xlab="Testing Return Probability")
     text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)   
+    dev.off()
 
     #Return Box Plot training
-    jpeg(paste0(end_date,name,"_training_retBoxPlot.jpg"))
-    boxplot(eod_ret_training[,name],horizontal=1)
+    jpeg(paste0("plots/",end_date,name,"_training_retBoxPlot.jpg"))
+    boxplot(eod_ret_training[,name],horizontal=1,ylab=name)
     dev.off()
     
     #... testing
-    jpeg(paste0(end_date,name,"_testing_retBoxPlot.jpg"))
-    boxplot(eod_ret_testing[,name],horizontal=1)
+    jpeg(paste0("plots/",end_date,name,"_testing_retBoxPlot.jpg"))
+    boxplot(eod_ret_testing[,name],horizontal=1,ylab=name)
     dev.off()
     
     #Return Density Plot training
-    jpeg(paste0(end_date,name,"_training_retDensPlot.jpg"))
+    jpeg(paste0("plots/",end_date,name,"_training_retDensPlot.jpg"))
     d <- density(eod_ret_training[,name],na.rm=T)
     plot(d,ylab=name)
     dev.off()
     
     #... testing
-    jpeg(paste0(end_date,name,"_testing_retDensPlot.jpg"))
+    jpeg(paste0("plots/",end_date,name,"_testing_retDensPlot.jpg"))
     d <- density(eod_ret_testing[,name],na.rm=T)
     plot(d,ylab=name)
     dev.off()
         
-    
-    jpeg(paste0(end_date,name,"_trainingHistPlot.jpg"))
-    hist(eod_ret_training[,name],breaks)
+    #Histogram, does it need to show mean?
+    jpeg(paste0("plots/",end_date,name,"_trainingHistPlot.jpg"))
+    hist(eod_ret_training[,name],breaks,ylab=name)
     dev.off()
     
-    jpeg(paste0(end_date,name,"_testingHistPlot.jpg"))
-    hist(eod_ret_testing[,name],breaks)
+    jpeg(paste0("plots/",end_date,name,"_testingHistPlot.jpg"))
+    hist(eod_ret_testing[,name],breaks,ylab=name)
     dev.off()
     
     #turn into gif, yes, run bat file, then delete! :
@@ -1127,19 +1126,19 @@ for (iterator in seq(0, 2, by=1))
   }
   
     
-  jpeg(paste0(end_date,"_retTrainingCumUpperProbPlot.jpg"))
+  jpeg(paste0("plots/",end_date,name,"_retTrainingCumUpperProbPlot.jpg"))
   chart.CumReturns(eod_ret_training[,list_upper])
   dev.off()
   
-  jpeg(paste0(end_date,"_retTestingCumUpperProbPlot.jpg"))
+  jpeg(paste0("plots/",end_date,name,"_retTestingCumUpperProbPlot.jpg"))
   chart.CumReturns(eod_ret_testing[,list_upper])
   dev.off()
   
-  jpeg(paste0(end_date,"_retTrainingCumLowerProbPlot.jpg"))
+  jpeg(paste0("plots/",end_date,name,"_retTrainingCumLowerProbPlot.jpg"))
   chart.CumReturns(eod_ret_training[,list_lower])
   dev.off()
   
-  jpeg(paste0(end_date,"_retTestingCumLowerProbPlot.jpg"))
+  jpeg(paste0("plots/",end_date,name,"_retTestingCumLowerProbPlot.jpg"))
   chart.CumReturns(eod_ret_testing[,list_lower])
   dev.off()
   
@@ -1182,47 +1181,47 @@ for (iterator in seq(0, 2, by=1))
   upper_profile_testing<-(data.frame(stack(eod_ret_testing[,list_upper]))$values)
   lower_profile_testing<-(data.frame(stack(eod_ret_testing[,list_lower]))$values)
   
-  jpeg(paste0(end_date,name,"lower_training_retProbPlot.jpg"))
+  jpeg(paste0("plots/",end_date,name,"_plots/lower_training_retProbPlot.jpg"))
   profile<-c()
   profile<-quantile(lower_profile_training,probs, na.rm =T, names = F, type = 7)
   plot(x=probs,y=profile,type="o",xlab="Return Probability",ylab="lower training")
   dev.off()
   
-  jpeg(paste0(end_date,name,"lower_testing_retProbPlot.jpg"))
+  jpeg(paste0("plots/",end_date,name,"_lower_testing_retProbPlot.jpg"))
   profile<-c()
   profile<-quantile(lower_profile_testing,probs, na.rm =T, names = F, type = 7)
   plot(x=probs,y=profile,type="o",xlab="Return Probability",ylab="lower testing")
   dev.off()
   
-  jpeg(paste0(end_date,name,"upper_training_retProbPlot.jpg"))
+  jpeg(paste0("plots/",end_date,name,"_upper_training_retProbPlot.jpg"))
   profile<-c()
   profile<-quantile(upper_profile_training,probs, na.rm =T, names = F, type = 7)
   plot(x=probs,y=profile,type="o",xlab="Return Probability",ylab="upper training")
   dev.off()
   
-  jpeg(paste0(end_date,name,"upper_testing_retProbPlot.jpg"))
+  jpeg(paste0("plots/",end_date,name,"_upper_testing_retProbPlot.jpg"))
   profile<-c()
   profile<-quantile(upper_profile_testing,probs, na.rm =T, names = F, type = 7)
   plot(x=probs,y=profile,type="o",xlab="Return Probability",ylab="upper testing")
   dev.off()
   
-  jpeg(paste0(end_date,name,"_allDensPlot.jpg"))
+  jpeg(paste0("plots/",end_date,name,"_allDensPlot.jpg"))
   d <- density(all_r,na.rm=T)
   plot(d)
 
-  jpeg(paste0(end_date,name,"_upper_training_densPlot.jpg"))
+  jpeg(paste0("plots/",end_date,name,"_upper_training_densPlot.jpg"))
   d <- density(upper_profile_training,na.rm=T)
   plot(d)
   
-  jpeg(paste0(end_date,name,"_upper_testing_densPlot.jpg"))
+  jpeg(paste0("plots/",end_date,name,"_upper_testing_densPlot.jpg"))
   d <- density(upper_profile_testing,na.rm=T)
   plot(d)
   
-  jpeg(paste0(end_date,name,"_lower_training_densPlot.jpg"))
+  jpeg(paste0("plots/",end_date,name,"_lower_training_densPlot.jpg"))
   d <- density(lower_profile_training,na.rm=T)
   plot(d)
   
-  jpeg(paste0(end_date,name,"_lower_testing_densPlot.jpg"))
+  jpeg(paste0("plots/",end_date,name,"_lower_testing_densPlot.jpg"))
   d <- density(lower_profile_testing,na.rm=T)
   plot(d)
   
