@@ -1294,13 +1294,13 @@ for (iterator in seq(0, 0, by=1))
   
   #Return Density Plot training SP500TR
   jpeg(paste0("plots/",end_date,"_SP500TR_training_retDensPlot.jpg"))
-  d <- density(eod_ret_training,na.rm=T)
+  d <- density(eod_ret_training$SP500TR,na.rm=T)
   plot(d,ylab=name)
   dev.off()
   
   #Return Density Plot testing SP500TR
   jpeg(paste0("plots/",end_date,"_SP500TR_testing_retDensPlot.jpg"))
-  d <- density(eod_ret_testing,na.rm=T)
+  d <- density(eod_ret_testing$SP500TR,na.rm=T)
   plot(d,ylab=name)
   dev.off()
   
@@ -1314,14 +1314,12 @@ for (iterator in seq(0, 0, by=1))
   plot(d)
   dev.off()  
 
-  #dev.off()
-  #dev.off()
-  #dev.off()
-  #dev.off()
-  #dev.off()
-  #dev.off()
-  graphics.off()
-  #graphics.on()
+  #buffer flush for any pending writes  
+  for(i in 1:length(dev.list()))
+  {
+    dev.off()
+  }
+  
   command <- paste0("magick convert -delay 100 -loop 0 ","plots/*Plot.jpg ","plots/",end_date,"_aggregate_Plots.gif")
   system(command, intern = TRUE)
   #when using erase, states command not found
