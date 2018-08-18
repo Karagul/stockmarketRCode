@@ -83,7 +83,7 @@ for (iterator in seq(0, 2, by=1))
   library(mondate)
   end_date <-as.Date(mondate(as.Date(todayIs)) - iterator)
   
-  start_date <- as.Date(mondate(end_date)-24)
+  start_date <-as.Date(mondate(end_date) - 24)
   
   days=252
   weeks=52
@@ -1099,7 +1099,7 @@ for (iterator in seq(0, 2, by=1))
     
     #... testing
     jpeg(paste0("plots/",end_date,name,"_testing_retBoxPlot.jpg"))
-    boxplot(eod_ret_testing[,name],horizontal=1,ylab=namexlab="testing")
+    boxplot(eod_ret_testing[,name],horizontal=1,ylab=name,xlab="testing")
     dev.off()
     
     #Return Density Plot training
@@ -1189,8 +1189,8 @@ for (iterator in seq(0, 2, by=1))
   
   jpeg(paste0("plots/",end_date,name,"_lower_training_retProbPlot.jpg"))
   profile<-c()
-  x = probs; y = profile
   profile<-quantile(lower_profile_training,probs, na.rm =T, names = F, type = 7)
+  x = probs; y = profile
   plot(x=probs,y=profile,type="o",xlab="Return Probability",ylab="lower training")
   text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)  
   dev.off()
@@ -1239,7 +1239,6 @@ for (iterator in seq(0, 2, by=1))
   d <- density(lower_profile_testing,na.rm=T)
   plot(d)
   
-  
   combinedOpt=(opt_w+opt_wpw)/2
   
   sum(combinedOpt)
@@ -1253,6 +1252,6 @@ for (iterator in seq(0, 2, by=1))
   print (paste("Beta: Iterator:[from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 test_b20", mean_acc_training_beta_t20 , mean_acc_testing_beta_t20 , mean_acc_training_beta_b20, mean_acc_testing_beta_b20))
   
   #only use with negative weights
-  print(paste("start: ", start_date, "end: ", end_date, "Markowitz Profile & The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))          
+  print(paste("start: ", start_date, "end: ", end_date, "Markowitz Profile & The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))
   
 }
