@@ -1305,12 +1305,12 @@ for (iterator in seq(0, 0, by=1))
   dev.off()
   
   jpeg(paste0("plots/",end_date,"_SP500TR_retTrainingPlot.jpg"))
-  d<-chart.CumReturns(eod_ret_training$SP500TR)
+  d<-chart.CumReturns(eod_ret_training$SP500TR,na.rm=T)
   plot(d)
   dev.off()
   
   jpeg(paste0("plots/",end_date,"_SP500TR_retTestingPlot.jpg"))
-  d<-chart.CumReturns(eod_ret_testing$SP500TR)
+  d<-chart.CumReturns(eod_ret_testing$SP500TR,na.rm=T)
   plot(d)
   dev.off()  
 
