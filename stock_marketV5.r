@@ -78,7 +78,7 @@ iterator=0
 }
 
 iterator=0
-for (iterator in seq(0, 2, by=1))
+for (iterator in seq(0, 0, by=1))
 {
 
   #set # of years back here.
@@ -1284,23 +1284,23 @@ for (iterator in seq(0, 2, by=1))
 
   #boxplot Returns Training SP500TR
   jpeg(paste0("plots/",end_date,"_training_retBoxPlot_SP500TR.jpg"))
-  boxplot(eod_ret_training$SP500TR,horizontal=1,ylab=name,xlab="SP500TR training")
+  boxplot(eod_ret_training$SP500TR,horizontal=1,xlab="SP500TR training")
   dev.off()
     
   #... testing SP500TR
   jpeg(paste0("plots/",end_date,"_testing_retBoxPlot_SP500TR.jpg"))
-  boxplot(eod_ret_testing$SP500TR,horizontal=1,ylab=name,xlab="SP500TR testing")
+  boxplot(eod_ret_testing$SP500TR,horizontal=1,xlab="SP500TR testing")
   dev.off()
   
   #Return Density Plot training SP500TR
   jpeg(paste0("plots/",end_date,"_training_retDensPlot_SP500TR.jpg"))
-  d <- density(eod_ret_training[,name],na.rm=T)
+  d <- density(eod_ret_training,na.rm=T)
   plot(d,ylab=name)
   dev.off()
   
   #Return Density Plot testing SP500TR
   jpeg(paste0("plots/",end_date,"_testing_retDensPlot_SP500TR.jpg"))
-  d <- density(eod_ret_testing[,name],na.rm=T)
+  d <- density(eod_ret_testing,na.rm=T)
   plot(d,ylab=name)
   dev.off()
   
