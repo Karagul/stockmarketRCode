@@ -1134,22 +1134,22 @@ for (iterator in seq(0, 2, by=1))
   dev.off()
   
     
-  jpeg(paste0("plots/",end_date,name,"_retTrainingCumUpperProbPlot.jpg"))
+  jpeg(paste0("plots/",end_date,"_retTrainingCumUpperProbPlot.jpg"))
   d<-chart.CumReturns(eod_ret_training[,list_upper])
   plot(d)
   dev.off()
   
-  jpeg(paste0("plots/",end_date,name,"_retTestingCumUpperProbPlot.jpg"))
+  jpeg(paste0("plots/",end_date,"_retTestingCumUpperProbPlot.jpg"))
   d<-chart.CumReturns(eod_ret_testing[,list_upper])
   plot(d)
   dev.off()
   
-  jpeg(paste0("plots/",end_date,name,"_retTrainingCumLowerProbPlot.jpg"))
+  jpeg(paste0("plots/",end_date,"_retTrainingCumLowerProbPlot.jpg"))
   d<-chart.CumReturns(eod_ret_training[,list_lower])
   plot(d)
   dev.off()
   
-  jpeg(paste0("plots/",end_date,name,"_retTestingCumLowerProbPlot.jpg"))
+  jpeg(paste0("plots/",end_date,"_retTestingCumLowerProbPlot.jpg"))
   d<-chart.CumReturns(eod_ret_testing[,list_lower])
   plot(d)
   dev.off()
