@@ -21,10 +21,12 @@ conn = dbConnect(drv=pg
 qry='SELECT * FROM custom_calendar ORDER by date'
 ccal<-dbGetQuery(conn,qry)
 
-end_date<-dbGetQuery(conn,"select max(timestamp) from etf_bond_facts")
-end_date$max
+end_date_Pre<-dbGetQuery(conn,"select max(timestamp) from etf_bond_facts")
+#end_date$max
 #end_date<-todayIs
 dbDisconnect(conn)
+
+end_date2<-as.Date(end_date_Pre$max)
 
 #have to reference $max else it returns a data.frame of a unix timetsamp vs a dereferenced string date
 conn = dbConnect(drv=pg, user="readyloop", password="read123", host="localhost", port=5432, dbname="readyloop")
@@ -81,7 +83,10 @@ for (iterator in seq(0, 2, by=1))
 
   #set # of years back here.
   library(mondate)
-  end_date <-as.Date(mondate(as.Date(todayIs)) - iterator)
+  class(todayIs)
+  class(end_date_Pre)
+  #end_date <-as.Date(mondate(as.Date(todayIs)) - iterator)
+  end_date <-as.Date(mondate(as.Date(end_date2)) - iterator)
   print(paste("End Date: ",end_date))
   
   start_date <-as.Date(mondate(end_date) - 24)
