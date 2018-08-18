@@ -1314,6 +1314,12 @@ for (iterator in seq(0, 0, by=1))
   plot(d)
   dev.off()  
   
+  command <- paste0("magick convert -delay 100 -loop 0 ","plots/*Plot.jpg ","plots/",end_date,"_aggregate_Plots.gif")
+  system(command, intern = TRUE)
+  #when using erase, states command not found
+  command <- paste0("rm ","plots/",end_date,name,"*Plot.jpg -f")
+  system(command, intern = TRUE)
+  
   combinedOpt=(opt_w+opt_wpw)/2
   
   sum(combinedOpt)
