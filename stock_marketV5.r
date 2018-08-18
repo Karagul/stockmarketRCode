@@ -664,7 +664,7 @@ for (iterator in seq(0, 2, by=1))
     #returns assets training
       # IQR used for rounding determination and subsequent classification of returns
       
-    chart.Boxplot(all_r)
+    chart.Boxplot(all_r,xlab="all returns training")
       quantile(all_r)
       summary(all_r)
       write.csv(all_r,paste0("plots/",end_date,"_all_r.csv"))
@@ -696,7 +696,7 @@ for (iterator in seq(0, 2, by=1))
       hist(all_r,breaks)
     
     #returns benchmark training
-    chart.Boxplot(brtr)
+    chart.Boxplot(brtr,xlab="S&P500TR training")
     
     #returns assets
     
@@ -1066,14 +1066,14 @@ for (iterator in seq(0, 2, by=1))
     jpeg(paste0("plots/",end_date,name,"_betaTrainPlot.jpg"))
     x=eod_ret_training$SP500TR; y=eod_ret_training[,name]
     plot(x, y, ylab=paste("training",name),xlab="SP500TR")
-    text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)   
+    #text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)   
     dev.off()
     
     #... testing
     jpeg(paste0("plots/",end_date,name,"_betaTestPlot.jpg"))
     x=eod_ret_testing$SP500TR; y=eod_ret_testing[,name]
     plot(x, y, ylab=paste("testing",name),xlab="SP500TR")
-    text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)   
+    #text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)   
     dev.off()
     
     #Return probability plot training
@@ -1094,12 +1094,12 @@ for (iterator in seq(0, 2, by=1))
 
     #Return Box Plot training
     jpeg(paste0("plots/",end_date,name,"_training_retBoxPlot.jpg"))
-    boxplot(eod_ret_training[,name],horizontal=1,ylab=name)
+    boxplot(eod_ret_training[,name],horizontal=1,ylab=name,xlab="training")
     dev.off()
     
     #... testing
     jpeg(paste0("plots/",end_date,name,"_testing_retBoxPlot.jpg"))
-    boxplot(eod_ret_testing[,name],horizontal=1,ylab=name)
+    boxplot(eod_ret_testing[,name],horizontal=1,ylab=namexlab="testing")
     dev.off()
     
     #Return Density Plot training
@@ -1129,19 +1129,23 @@ for (iterator in seq(0, 2, by=1))
   
     
   jpeg(paste0("plots/",end_date,name,"_retTrainingCumUpperProbPlot.jpg"))
-  chart.CumReturns(eod_ret_training[,list_upper])
+  d<-chart.CumReturns(eod_ret_training[,list_upper])
+  plot(d)
   dev.off()
   
   jpeg(paste0("plots/",end_date,name,"_retTestingCumUpperProbPlot.jpg"))
-  chart.CumReturns(eod_ret_testing[,list_upper])
+  d<-chart.CumReturns(eod_ret_testing[,list_upper])
+  plot(d)
   dev.off()
   
   jpeg(paste0("plots/",end_date,name,"_retTrainingCumLowerProbPlot.jpg"))
-  chart.CumReturns(eod_ret_training[,list_lower])
+  d<-chart.CumReturns(eod_ret_training[,list_lower])
+  plot(d)
   dev.off()
   
   jpeg(paste0("plots/",end_date,name,"_retTestingCumLowerProbPlot.jpg"))
-  chart.CumReturns(eod_ret_testing[,list_lower])
+  d<-chart.CumReturns(eod_ret_testing[,list_lower])
+  plot(d)
   dev.off()
   
   opt_wp<-optimize.portfolio(R=Ra_training,portfolio=pspec,optimize_method = 'ROI')
@@ -1185,26 +1189,34 @@ for (iterator in seq(0, 2, by=1))
   
   jpeg(paste0("plots/",end_date,name,"_lower_training_retProbPlot.jpg"))
   profile<-c()
+  x = probs; y = profile
   profile<-quantile(lower_profile_training,probs, na.rm =T, names = F, type = 7)
   plot(x=probs,y=profile,type="o",xlab="Return Probability",ylab="lower training")
+  text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)  
   dev.off()
   
   jpeg(paste0("plots/",end_date,name,"_lower_testing_retProbPlot.jpg"))
   profile<-c()
+  x = probs; y = profile
   profile<-quantile(lower_profile_testing,probs, na.rm =T, names = F, type = 7)
   plot(x=probs,y=profile,type="o",xlab="Return Probability",ylab="lower testing")
+  text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)  
   dev.off()
   
   jpeg(paste0("plots/",end_date,name,"_upper_training_retProbPlot.jpg"))
   profile<-c()
+  x = probs; y = profile
   profile<-quantile(upper_profile_training,probs, na.rm =T, names = F, type = 7)
   plot(x=probs,y=profile,type="o",xlab="Return Probability",ylab="upper training")
+  text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)  
   dev.off()
   
   jpeg(paste0("plots/",end_date,name,"_upper_testing_retProbPlot.jpg"))
   profile<-c()
+  x = probs; y = profile
   profile<-quantile(upper_profile_testing,probs, na.rm =T, names = F, type = 7)
   plot(x=probs,y=profile,type="o",xlab="Return Probability",ylab="upper testing")
+  text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)
   dev.off()
   
   jpeg(paste0("plots/",end_date,name,"_allDensPlot.jpg"))
