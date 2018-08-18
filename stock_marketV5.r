@@ -1142,22 +1142,22 @@ for (iterator in seq(0, 0, by=1))
   dev.off()
   
     
-  jpeg(paste0("plots/",end_date,"_retTrainingCumUpperProbPlot.jpg"))
+  jpeg(paste0("plots/",end_date,"_retTrainingCumUpperPlot.jpg"))
   d<-chart.CumReturns(eod_ret_training[,list_upper])
   plot(d)
   dev.off()
   
-  jpeg(paste0("plots/",end_date,"_retTestingCumUpperProbPlot.jpg"))
+  jpeg(paste0("plots/",end_date,"_retTestingCumUpperPlot.jpg"))
   d<-chart.CumReturns(eod_ret_testing[,list_upper])
   plot(d)
   dev.off()
   
-  jpeg(paste0("plots/",end_date,"_retTrainingCumLowerProbPlot.jpg"))
+  jpeg(paste0("plots/",end_date,"_retTrainingCumLowerPlot.jpg"))
   d<-chart.CumReturns(eod_ret_training[,list_lower])
   plot(d)
   dev.off()
   
-  jpeg(paste0("plots/",end_date,"_retTestingCumLowerProbPlot.jpg"))
+  jpeg(paste0("plots/",end_date,"_retTestingCumLowerPlot.jpg"))
   d<-chart.CumReturns(eod_ret_testing[,list_lower])
   plot(d)
   dev.off()
@@ -1265,7 +1265,7 @@ for (iterator in seq(0, 0, by=1))
   plot(d)
   
   #Return probability Plot SP500TR training
-  jpeg(paste0("plots/",end_date,"_training_retProbPlot_SP500TR.jpg"))
+  jpeg(paste0("plots/",end_date,"_SP500TR_training_retProbPlot.jpg"))
   profile<-c()
   profile<-quantile(eod_ret_training$SP500TR,probs, na.rm =T, names = F, type = 7)
   x = probs; y = profile
@@ -1274,7 +1274,7 @@ for (iterator in seq(0, 0, by=1))
   dev.off()
   
   #... testing
-  jpeg(paste0("plots/",end_date,"_testing_retProbPlot_SP500TR.jpg"))
+  jpeg(paste0("plots/",end_date,"_SP500TR_testing_retProbPlot.jpg"))
   profile<-c()
   profile<-quantile(eod_ret_testing$SP500TR,probs, na.rm =T, names = F, type = 7)
   x = probs; y = profile
@@ -1283,26 +1283,36 @@ for (iterator in seq(0, 0, by=1))
   dev.off()
 
   #boxplot Returns Training SP500TR
-  jpeg(paste0("plots/",end_date,"_training_retBoxPlot_SP500TR.jpg"))
+  jpeg(paste0("plots/",end_date,"_SP500TR_training_retBoxPlot.jpg"))
   boxplot(eod_ret_training$SP500TR,horizontal=1,xlab="SP500TR training")
   dev.off()
     
   #... testing SP500TR
-  jpeg(paste0("plots/",end_date,"_testing_retBoxPlot_SP500TR.jpg"))
+  jpeg(paste0("plots/",end_date,"_SP500TR_testing_retBoxPlot.jpg"))
   boxplot(eod_ret_testing$SP500TR,horizontal=1,xlab="SP500TR testing")
   dev.off()
   
   #Return Density Plot training SP500TR
-  jpeg(paste0("plots/",end_date,"_training_retDensPlot_SP500TR.jpg"))
+  jpeg(paste0("plots/",end_date,"_SP500TR_training_retDensPlot.jpg"))
   d <- density(eod_ret_training,na.rm=T)
   plot(d,ylab=name)
   dev.off()
   
   #Return Density Plot testing SP500TR
-  jpeg(paste0("plots/",end_date,"_testing_retDensPlot_SP500TR.jpg"))
+  jpeg(paste0("plots/",end_date,"_SP500TR_testing_retDensPlot.jpg"))
   d <- density(eod_ret_testing,na.rm=T)
   plot(d,ylab=name)
   dev.off()
+  
+  jpeg(paste0("plots/",end_date,"_SP500TR_retTrainingPlot.jpg"))
+  d<-chart.CumReturns(eod_ret_training$SP500TR)
+  plot(d)
+  dev.off()
+  
+  jpeg(paste0("plots/",end_date,"_SP500TR_retTestingPlot.jpg"))
+  d<-chart.CumReturns(eod_ret_testing$SP500TR)
+  plot(d)
+  dev.off()  
   
   combinedOpt=(opt_w+opt_wpw)/2
   
