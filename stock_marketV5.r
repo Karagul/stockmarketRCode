@@ -1297,23 +1297,25 @@ for (iterator in seq(0, 0, by=1))
   d <- density(eod_ret_training$SP500TR,na.rm=T)
   plot(d,ylab=name)
   dev.off()
-  
+
   #Return Density Plot testing SP500TR
   jpeg(paste0("plots/",end_date,"_SP500TR_testing_retDensPlot.jpg"))
   d <- density(eod_ret_testing$SP500TR,na.rm=T)
   plot(d,ylab=name)
   dev.off()
   
+  #Cumulative Return SP500TR Training
   jpeg(paste0("plots/",end_date,"_SP500TR_retTrainingPlot.jpg"))
-  d<-chart.CumReturns(eod_ret_training$SP500TR,na.rm=T)
+  d<-chart.CumReturns(as.xts(eod_ret_training[,'SP500TR',drop=F]))
   plot(d)
   dev.off()
   
+  #...testing
   jpeg(paste0("plots/",end_date,"_SP500TR_retTestingPlot.jpg"))
-  d<-chart.CumReturns(eod_ret_testing$SP500TR,na.rm=T)
+  d<-chart.CumReturns(as.xts(eod_ret_testing[,'SP500TR',drop=F]))
   plot(d)
-  dev.off()  
-
+  dev.off()
+  
   #buffer flush for any pending writes  
   for(i in 1:length(dev.list()))
   {
