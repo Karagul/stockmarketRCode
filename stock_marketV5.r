@@ -949,7 +949,19 @@ for (iterator in seq(0, 2, by=1))
       #bad returns, before after, do predictions hold?
       mean_acc_training_beta_b20 <- mean(Return.cumulative(eod_ret_training[,b20Beta]))
       mean_acc_testing_beta_b20 <- mean(Return.cumulative(eod_ret_testing[,b20Beta]))
+
+    #compare accumulated returns via means of best/worst average cumulative return
       
+      #good returns, before after, do predictions hold?
+      mean_acc_training_t20 <- mean(Return.cumulative(eod_ret_training[,t20Cum]))
+      mean_acc_testing_t20 <- mean(Return.cumulative(eod_ret_testing[,t20Cum]))
+      
+      #bad returns, before after, do predictions hold?
+      mean_acc_training_b20 <- mean(Return.cumulative(eod_ret_training[,b20Cum]))
+      mean_acc_testing_b20 <- mean(Return.cumulative(eod_ret_testing[,b20Cum]))
+      
+      print (paste("Beta: [from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 mean_acc_testing_b20", mean_acc_training_t20 , mean_acc_testing_t20 , mean_acc_training_b20, mean_acc_testing_b20))
+            
     #compare accumulated returns via means of best/worst avg return
       
       #good returns, before after, do predictions hold?
@@ -1012,7 +1024,7 @@ for (iterator in seq(0, 2, by=1))
   plot.new()
   
   jpeg(paste0(end_date,"All","_retAllDensPlot.jpg"))
-  d <- density(all_r)
+  d <- density(all_r,na.rm=T)
   plot(d)
   dev.off()
   
@@ -1046,43 +1058,68 @@ for (iterator in seq(0, 2, by=1))
   for (name in c(list_upper,list_lower))
   {
     
+    mean(eod_ret_training[,name])
+    
+    #beta correlation plot training
     print(name)
     jpeg(paste0(end_date,name,"_betaTrainPlot.jpg"))
     plot(x=eod_ret_training$SP500TR,y=eod_ret_training[,name],ylab=paste("training",name),xlab="SP500TR")
     dev.off()
     
-    print(name)
+    #... testing
     jpeg(paste0(end_date,name,"_betaTestPlot.jpg"))
     plot(x=eod_ret_testing$SP500TR,y=eod_ret_testing[,name],ylab=paste("testing",name),xlab="SP500TR")
     dev.off()
-
     
+    #Return probability plot training
     profile<-quantile(eod_ret_training[,name],probs, na.rm =T, names = F, type = 7)
     jpeg(paste0(end_date,name,"_trainingRetProbPlot.jpg"))
     plot(x=probs,y=profile,ylab=name,type="o",xlab="Training Return Probability")
     dev.off()
     
-    
+    #... testing
     profile<-quantile(eod_ret_testing[,name],probs, na.rm =T, names = F, type = 7)
     jpeg(paste0(end_date,name,"_testingRetProbPlot.jpg"))
-    plot(x=probs,y=profile,ylab=name,type="o",xlab="Testing Return Probability")
+    plot(x=probs,y=profile,ylab=name,,type="o",xlab="Testing Return Probability")
     dev.off()
     
-    jpeg(paste0(end_date,name,"_retBoxPlot.jpg"))
+    profile<-quantile(eod_ret_testing[,name],probs, na.rm =T, names = F, type = 7)
+    
+    #https://stackoverflow.com/questions/1449266/display-values-in-r-plot
+
+    x = probs; y = profile
+    plot(x, y, ylab=name,type="o",xlab="Testing Return Probability")
+    text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)   
+
+    #Return Box Plot training
+    jpeg(paste0(end_date,name,"_training_retBoxPlot.jpg"))
+    boxplot(eod_ret_training[,name],horizontal=1)
+    dev.off()
+    
+    #... testing
+    jpeg(paste0(end_date,name,"_testing_retBoxPlot.jpg"))
     boxplot(eod_ret_testing[,name],horizontal=1)
     dev.off()
     
-    jpeg(paste0(end_date,name,"_retDensPlot.jpg"))
-    d <- density(eod_ret_testing[,name])
+    #Return Density Plot training
+    jpeg(paste0(end_date,name,"_training_retDensPlot.jpg"))
+    d <- density(eod_ret_training[,name],na.rm=T)
     plot(d,ylab=name)
     dev.off()
+    
+    #... testing
+    jpeg(paste0(end_date,name,"_testing_retDensPlot.jpg"))
+    d <- density(eod_ret_testing[,name],na.rm=T)
+    plot(d,ylab=name)
+    dev.off()
+        
     
     jpeg(paste0(end_date,name,"_trainingHistPlot.jpg"))
     hist(eod_ret_training[,name],breaks)
     dev.off()
     
     jpeg(paste0(end_date,name,"_testingHistPlot.jpg"))
-    hist(eod_ret_training[,name],breaks)
+    hist(eod_ret_testing[,name],breaks)
     dev.off()
     
     #turn into gif, yes, run bat file, then delete! :
@@ -1110,7 +1147,6 @@ for (iterator in seq(0, 2, by=1))
   
   opt_wpw<-opt_wp$weights
 
-  
   #sum(combinedOpt)
 
   positive=2
@@ -1122,6 +1158,20 @@ for (iterator in seq(0, 2, by=1))
   opt_w[1:length(list_upper)]<-positive/length(list_upper)
   #opt_w[1:length(t20Mix_Ra)]<-.5/length(t20Mix_Ra)
   #opt_w[1:length(list_Ra)]=1/length(list_Ra)
+  
+  mean_acc_training_upper_t20 <- mean(Return.cumulative(eod_ret_training[,list_upper]))
+  mean_acc_training_lower_t20 <- mean(Return.cumulative(eod_ret_training[,list_lower]))
+
+  mean_acc_testing_upper_t20 <- mean(Return.cumulative(eod_ret_testing[,list_upper]))
+  mean_acc_testing_lower_t20 <- mean(Return.cumulative(eod_ret_testing[,list_lower]))
+    
+  mean_training_upper_t20 <- sum(eod_ret_training[,list_upper])/(length(eod_ret_training[,list_upper])*count(eod_ret_training[,list_upper]))
+  mean_training_lower_t20 <- sum(eod_ret_training[,list_lower])/(length(eod_ret_training[,list_lower])*count(eod_ret_training[,list_lower]))
+
+  mean_testing_upper_t20 <- sum(eod_ret_testing[,list_upper])/(length(eod_ret_testing[,list_upper])*count(eod_ret_testing[,list_upper]))
+  mean_testing_lower_t20 <- sum(eod_ret_testing[,list_lower])/(length(eod_ret_testing[,list_lower])*count(eod_ret_testing[,list_lower]))
+
+  mean(all_r)
   
   #enable for negative
   opt_w[(length(list_upper)+1):(length(list_lower)+length(list_upper))]<-negative/length(list_lower)
@@ -1156,14 +1206,26 @@ for (iterator in seq(0, 2, by=1))
   plot(x=probs,y=profile,type="o",xlab="Return Probability",ylab="upper testing")
   dev.off()
   
-  d <- density(all_r)
+  jpeg(paste0(end_date,name,"_allDensPlot.jpg"))
+  d <- density(all_r,na.rm=T)
   plot(d)
 
-  #d <- density(upper)
-  #plot(d)
+  jpeg(paste0(end_date,name,"_upper_training_densPlot.jpg"))
+  d <- density(upper_profile_training,na.rm=T)
+  plot(d)
   
-  #d <- density(lower)
-  #plot(d)
+  jpeg(paste0(end_date,name,"_upper_testing_densPlot.jpg"))
+  d <- density(upper_profile_testing,na.rm=T)
+  plot(d)
+  
+  jpeg(paste0(end_date,name,"_lower_training_densPlot.jpg"))
+  d <- density(lower_profile_training,na.rm=T)
+  plot(d)
+  
+  jpeg(paste0(end_date,name,"_lower_testing_densPlot.jpg"))
+  d <- density(lower_profile_testing,na.rm=T)
+  plot(d)
+  
   
   combinedOpt=(opt_w+opt_wpw)/2
   
