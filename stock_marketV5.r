@@ -1102,7 +1102,16 @@ for (iterator in seq(0, 2, by=1))
   }
 
   jpeg(paste0("plots/",end_date,"_retAllProbPlot.jpg"))
-  plot(x=probs,y=all_profile,type="o")
+  x = probs; y = all_profile; xlab="Return All Probability"
+  plot(x,y,type="o",xlab)
+  text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)  
+  dev.off()
+
+  profile<-c()
+  profile<-quantile(lower_profile_training,probs, na.rm =T, names = F, type = 7)
+  x = probs; y = profile
+  plot(x=probs,y=profile,type="o",xlab="Return Probability",ylab="lower training")
+  text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)  
   dev.off()
   
   #upper training/testing profile Boxplot
