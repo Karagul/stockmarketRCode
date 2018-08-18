@@ -1100,13 +1100,7 @@ for (iterator in seq(0, 2, by=1))
     #turn into gif, yes, run bat file, then delete! :
     
   }
-  
-  #density all (training/testing)
-  jpeg(paste0("plots/",end_date,"_retAllDensPlot.jpg"))
-  d <- density(all_r,na.rm=T)
-  plot(d)
-  dev.off()
-  
+
   jpeg(paste0("plots/",end_date,"_retAllProbPlot.jpg"))
   plot(x=probs,y=all_profile,type="o")
   dev.off()
