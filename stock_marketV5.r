@@ -82,6 +82,7 @@ for (iterator in seq(0, 2, by=1))
   #set # of years back here.
   library(mondate)
   end_date <-as.Date(mondate(as.Date(todayIs)) - iterator)
+  print(paste("End Date: ",end_date))
   
   start_date <-as.Date(mondate(end_date) - 24)
   
@@ -1197,24 +1198,24 @@ for (iterator in seq(0, 2, by=1))
   
   jpeg(paste0("plots/",end_date,name,"_lower_testing_retProbPlot.jpg"))
   profile<-c()
-  x = probs; y = profile
   profile<-quantile(lower_profile_testing,probs, na.rm =T, names = F, type = 7)
+  x = probs; y = profile
   plot(x=probs,y=profile,type="o",xlab="Return Probability",ylab="lower testing")
   text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)  
   dev.off()
   
   jpeg(paste0("plots/",end_date,name,"_upper_training_retProbPlot.jpg"))
   profile<-c()
-  x = probs; y = profile
   profile<-quantile(upper_profile_training,probs, na.rm =T, names = F, type = 7)
+  x = probs; y = profile
   plot(x=probs,y=profile,type="o",xlab="Return Probability",ylab="upper training")
   text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)  
   dev.off()
   
   jpeg(paste0("plots/",end_date,name,"_upper_testing_retProbPlot.jpg"))
   profile<-c()
-  x = probs; y = profile
   profile<-quantile(upper_profile_testing,probs, na.rm =T, names = F, type = 7)
+  x = probs; y = profile
   plot(x=probs,y=profile,type="o",xlab="Return Probability",ylab="upper testing")
   text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)
   dev.off()
