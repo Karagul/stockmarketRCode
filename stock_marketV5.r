@@ -1196,6 +1196,7 @@ for (iterator in seq(0, 2, by=1))
   upper_profile_testing<-(data.frame(stack(eod_ret_testing[,list_upper]))$values)
   lower_profile_testing<-(data.frame(stack(eod_ret_testing[,list_lower]))$values)
   
+  #Return Probability Lower Training
   jpeg(paste0("plots/",end_date,name,"_lower_training_retProbPlot.jpg"))
   profile<-c()
   profile<-quantile(lower_profile_training,probs, na.rm =T, names = F, type = 7)
@@ -1204,6 +1205,7 @@ for (iterator in seq(0, 2, by=1))
   text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)  
   dev.off()
   
+  #... testing
   jpeg(paste0("plots/",end_date,name,"_lower_testing_retProbPlot.jpg"))
   profile<-c()
   profile<-quantile(lower_profile_testing,probs, na.rm =T, names = F, type = 7)
@@ -1212,6 +1214,7 @@ for (iterator in seq(0, 2, by=1))
   text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)  
   dev.off()
   
+  #... upper training
   jpeg(paste0("plots/",end_date,name,"_upper_training_retProbPlot.jpg"))
   profile<-c()
   profile<-quantile(upper_profile_training,probs, na.rm =T, names = F, type = 7)
@@ -1220,6 +1223,7 @@ for (iterator in seq(0, 2, by=1))
   text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)  
   dev.off()
   
+  #... testing
   jpeg(paste0("plots/",end_date,name,"_upper_testing_retProbPlot.jpg"))
   profile<-c()
   profile<-quantile(upper_profile_testing,probs, na.rm =T, names = F, type = 7)
@@ -1228,25 +1232,70 @@ for (iterator in seq(0, 2, by=1))
   text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)
   dev.off()
   
+  #Density plot all returns - SP500TR
   jpeg(paste0("plots/",end_date,name,"_allDensPlot.jpg"))
   d <- density(all_r,na.rm=T)
   plot(d)
 
+  #density plot returns training upper
   jpeg(paste0("plots/",end_date,name,"_upper_training_densPlot.jpg"))
   d <- density(upper_profile_training,na.rm=T)
   plot(d)
   
+  # ...testing upper
   jpeg(paste0("plots/",end_date,name,"_upper_testing_densPlot.jpg"))
   d <- density(upper_profile_testing,na.rm=T)
   plot(d)
   
+  # ...lower training
   jpeg(paste0("plots/",end_date,name,"_lower_training_densPlot.jpg"))
   d <- density(lower_profile_training,na.rm=T)
   plot(d)
   
+  #... lower testing
   jpeg(paste0("plots/",end_date,name,"_lower_testing_densPlot.jpg"))
   d <- density(lower_profile_testing,na.rm=T)
   plot(d)
+  
+  #Return probability Plot SP500TR training
+  jpeg(paste0("plots/",end_date,name,"_training_retProbPlot_SP500TR.jpg"))
+  profile<-c()
+  profile<-quantile(eod_ret_training$SP500TR,probs, na.rm =T, names = F, type = 7)
+  x = probs; y = profile
+  plot(x=probs,y=profile,type="o",xlab="Return Probability",ylab="SP500TR training")
+  text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)
+  dev.off()
+  
+  #... testing
+  jpeg(paste0("plots/",end_date,name,"_testing_retProbPlot_SP500TR.jpg"))
+  profile<-c()
+  profile<-quantile(eod_ret_testing$SP500TR,probs, na.rm =T, names = F, type = 7)
+  x = probs; y = profile
+  plot(x=probs,y=profile,type="o",xlab="Return Probability",ylab="SP500TR testing")
+  text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)
+  dev.off()
+
+  #boxplot Returns Training SP500TR
+  jpeg(paste0("plots/",end_date,name,"_training_retBoxPlot_SP500TR.jpg"))
+  boxplot(eod_ret_training$SP500TR,horizontal=1,ylab=name,xlab="SP500TR training")
+  dev.off()
+    
+  #... testing SP500TR
+  jpeg(paste0("plots/",end_date,name,"_testing_retBoxPlot_SP500TR.jpg"))
+  boxplot(eod_ret_testing$SP500TR,horizontal=1,ylab=name,xlab="SP500TR testing")
+  dev.off()
+  
+  #Return Density Plot training SP500TR
+  jpeg(paste0("plots/",end_date,name,"_training_retDensPlot_SP500TR.jpg"))
+  d <- density(eod_ret_training[,name],na.rm=T)
+  plot(d,ylab=name)
+  dev.off()
+  
+  #Return Density Plot testing SP500TR
+  jpeg(paste0("plots/",end_date,name,"_testing_retDensPlot_SP500TR.jpg"))
+  d <- density(eod_ret_testing[,name],na.rm=T)
+  plot(d,ylab=name)
+  dev.off()
   
   combinedOpt=(opt_w+opt_wpw)/2
   
