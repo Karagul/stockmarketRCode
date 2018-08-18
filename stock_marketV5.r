@@ -1027,39 +1027,6 @@ for (iterator in seq(0, 2, by=1))
   }
   
   #reporting
-  plot.new()
-  
-  #density all (training/testing)
-  jpeg(paste0("plots/",end_date,"_retAllDensPlot.jpg"))
-  d <- density(all_r,na.rm=T)
-  plot(d)
-  dev.off()
-  
-  jpeg(paste0("plots/",end_date,"_retAllProbPlot.jpg"))
-  plot(x=probs,y=all_profile,type="o")
-  dev.off()
-
-  #upper training/testing profile Boxplot
-    jpeg(paste0("plots/",end_date,"_training_upper_BoxPlot.jpg"))
-    training_upper<-data.frame(stack(((data.frame(Ra_training[,list_upper])))))$values
-    boxplot(training_upper,horizontal=1,xlab="training upper")
-    dev.off()
-    
-    jpeg(paste0("plots/",end_date,"_testing_upper_BoxPlot.jpg"))
-    testing_upper<-data.frame(stack(((data.frame(Ra_testing[,list_upper])))))$value
-    boxplot(testing_upper,horizontal=1,xlab="testing upper")
-    dev.off()
-
-  #lower training/testing profile Boxplot
-    jpeg(paste0("plots/",end_date,"_training_lower_BoxPlot.jpg"))
-    training_lower<-data.frame(stack(((data.frame(Ra_training[,list_lower])))))$values
-    boxplot(training_lower,horizontal=1,xlab="training lower")
-    dev.off()
-    
-    jpeg(paste0("plots/",end_date,"_testing_lower_BoxPlot.jpg"))
-    testing_lower<-data.frame(stack(((data.frame(Ra_testing[,list_lower])))))$value
-    boxplot(testing_lower,horizontal=1,xlab="testing lower")
-    dev.off()
   
   #testing
   for (name in c(list_upper,list_lower))
@@ -1133,6 +1100,38 @@ for (iterator in seq(0, 2, by=1))
     #turn into gif, yes, run bat file, then delete! :
     
   }
+  
+  #density all (training/testing)
+  jpeg(paste0("plots/",end_date,"_retAllDensPlot.jpg"))
+  d <- density(all_r,na.rm=T)
+  plot(d)
+  dev.off()
+  
+  jpeg(paste0("plots/",end_date,"_retAllProbPlot.jpg"))
+  plot(x=probs,y=all_profile,type="o")
+  dev.off()
+  
+  #upper training/testing profile Boxplot
+  jpeg(paste0("plots/",end_date,"_training_upper_BoxPlot.jpg"))
+  training_upper<-data.frame(stack(((data.frame(Ra_training[,list_upper])))))$values
+  boxplot(training_upper,horizontal=1,xlab="training upper")
+  dev.off()
+  
+  jpeg(paste0("plots/",end_date,"_testing_upper_BoxPlot.jpg"))
+  testing_upper<-data.frame(stack(((data.frame(Ra_testing[,list_upper])))))$value
+  boxplot(testing_upper,horizontal=1,xlab="testing upper")
+  dev.off()
+  
+  #lower training/testing profile Boxplot
+  jpeg(paste0("plots/",end_date,"_training_lower_BoxPlot.jpg"))
+  training_lower<-data.frame(stack(((data.frame(Ra_training[,list_lower])))))$values
+  boxplot(training_lower,horizontal=1,xlab="training lower")
+  dev.off()
+  
+  jpeg(paste0("plots/",end_date,"_testing_lower_BoxPlot.jpg"))
+  testing_lower<-data.frame(stack(((data.frame(Ra_testing[,list_lower])))))$value
+  boxplot(testing_lower,horizontal=1,xlab="testing lower")
+  dev.off()
   
     
   jpeg(paste0("plots/",end_date,name,"_retTrainingCumUpperProbPlot.jpg"))
