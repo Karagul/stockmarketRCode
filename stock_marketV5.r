@@ -496,9 +496,7 @@ for (iterator in seq(0, 2, by=1))
   write.csv(eod_ret_testing[,b20Avg],paste0("plots/",end_date,"_Testing_B20A.csv"))
   
   write.csv(testingBetaSorted,paste0("plots/",end_date,"_testingBetaSorted.csv"))
-  
   write.csv(trainingBetaSorted,paste0("plots/",end_date,"_trainingBetaSorted.csv"))
-  write.csv(testingBetaSorted,paste0("plots/",end_date,"_testingBetaSorted.csv"))
   
   write.csv(trainingAvgSorted,paste0("plots/",end_date,"_trainingAvgSorted.csv"))
   write.csv(testingAvgSorted,paste0("plots/",end_date,"_testingAvgSorted.csv"))
@@ -1026,6 +1024,7 @@ for (iterator in seq(0, 2, by=1))
   #reporting
   plot.new()
   
+  #density all (training/testing)
   jpeg(paste0("plots/",end_date,"_retAllDensPlot.jpg"))
   d <- density(all_r,na.rm=T)
   plot(d)
@@ -1035,7 +1034,7 @@ for (iterator in seq(0, 2, by=1))
   plot(x=probs,y=all_profile,type="o")
   dev.off()
 
-  #upper
+  #upper training/testing profile Boxplot
     jpeg(paste0("plots/",end_date,"_training_upper_BoxPlot.jpg"))
     training_upper<-data.frame(stack(((data.frame(Ra_training[,list_upper])))))$values
     boxplot(training_upper,horizontal=1,xlab="training upper")
@@ -1046,7 +1045,7 @@ for (iterator in seq(0, 2, by=1))
     boxplot(testing_upper,horizontal=1,xlab="testing upper")
     dev.off()
 
-  #lower  
+  #lower training/testing profile Boxplot
     jpeg(paste0("plots/",end_date,"_training_lower_BoxPlot.jpg"))
     training_lower<-data.frame(stack(((data.frame(Ra_training[,list_lower])))))$values
     boxplot(training_lower,horizontal=1,xlab="training lower")
@@ -1116,10 +1115,12 @@ for (iterator in seq(0, 2, by=1))
     dev.off()
         
     #Histogram, does it need to show mean?
+    #training
     jpeg(paste0("plots/",end_date,name,"_trainingHistPlot.jpg"))
     hist(eod_ret_training[,name],breaks,ylab=name)
     dev.off()
     
+    #...testing
     jpeg(paste0("plots/",end_date,name,"_testingHistPlot.jpg"))
     hist(eod_ret_testing[,name],breaks,ylab=name)
     dev.off()
@@ -1180,7 +1181,9 @@ for (iterator in seq(0, 2, by=1))
   mean(all_r)
   
   #enable for negative
-  opt_w[(length(list_upper)+1):(length(list_lower)+length(list_upper))]<-negative/length(list_lower)
+  opt_p<-optimize.portfolio(R=Ra_training,portfolio=pspec,optimize_method = 'ROI')
+  opt_w<-opt_p$weights
+  #opt_w[(length(list_upper)+1):(length(list_lower)+length(list_upper))]<-negative/length(list_lower)
 
   upper_profile_training<-(data.frame(stack(eod_ret_training[,list_upper]))$values)
   lower_profile_training<-(data.frame(stack(eod_ret_training[,list_lower]))$values)
