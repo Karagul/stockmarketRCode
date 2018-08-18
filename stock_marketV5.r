@@ -1322,19 +1322,6 @@ for (iterator in seq(0, 0, by=1))
     dev.off()
   }
   
-  command <- paste0("magick convert -delay 100 -loop 0 ","plots/*Plot.jpg ","plots/",end_date,"_aggregate_Plots.gif")
-  system(command, intern = TRUE)
-  #when using erase, states command not found
-  command <- paste0("rm ","plots/",end_date,name,"*Plot.jpg -f")
-  system(command, intern = TRUE)
-
-  
-  command <- paste0("7z a plots/",end_date,"_ReturnAggregates.zip plots/*.csv")
-  system(command, intern = TRUE)
-  #when using erase, states command not found
-  command <- paste0("rm ","plots/*.csv -f")
-  system(command, intern = TRUE)
-    
   combinedOpt=(opt_w+opt_wpw)/2
   
   sum(combinedOpt)
@@ -1351,3 +1338,31 @@ for (iterator in seq(0, 0, by=1))
   print(paste("start: ", start_date, "end: ", end_date, "Markowitz Profile & The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))
   
 }
+
+#zip up reports
+
+command <- paste0("magick convert -delay 100 -loop 0 plots/*lot.jpg ","plots/",end_date,"_aggregate_Plots.gif")
+system(command, intern = TRUE)
+#when using erase, states command not found
+command <- paste0("mv ","plots/",end_date,"_aggregate_Plots.gif ","plots/",end_date,"_aggregate_Plots.bak")
+system(command, intern = TRUE)
+command <- paste0("rm ","plots/*Plot.jpg -f")
+system(command, intern = TRUE)
+
+
+command <- paste0("7z a plots/",end_date,"_ReturnAggregates.zip plots/*.csv")
+system(command, intern = TRUE)
+#when using erase, states command not found
+command <- paste0("rm ","plots/*.csv -f")
+system(command, intern = TRUE)
+
+command <- paste0("7z a plots/",end_date,"_ReturnUpperLowerHighlights.zip plots/*.gif")
+system(command, intern = TRUE)
+#when using erase, states command not found
+command <- paste0("rm ","plots/*.gif -f")
+system(command, intern = TRUE)
+command <- paste0("cp plots/",end_date,"_aggregate_Plots.bak plots/",end_date,"_aggregate_Plots.gif")
+system(command, intern = TRUE)
+command <- paste0("rm plots/*.bak -f")
+system(command, intern = TRUE)
+
