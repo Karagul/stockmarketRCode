@@ -1105,6 +1105,12 @@ for (iterator in seq(0, 2, by=1))
     
     #turn into gif, yes, run bat file, then delete! :
     
+    command <- paste0("magick convert -delay 100 -loop 0 ","plots/",end_date,name,"*.jpg ","plots/",end_date,name,".gif")
+    system(command, intern = TRUE)
+    #when using erase, states command not found
+    command <- paste0("rm ","plots/",end_date,name,"*.jpg -f")
+    system(command, intern = TRUE)
+    
   }
 
   jpeg(paste0("plots/",end_date,"_retAllProbPlot.jpg"))
