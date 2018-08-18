@@ -1313,13 +1313,28 @@ for (iterator in seq(0, 0, by=1))
   d<-chart.CumReturns(eod_ret_testing$SP500TR)
   plot(d)
   dev.off()  
-  
+
+  #dev.off()
+  #dev.off()
+  #dev.off()
+  #dev.off()
+  #dev.off()
+  #dev.off()
+  graphics.off()
+  #graphics.on()
   command <- paste0("magick convert -delay 100 -loop 0 ","plots/*Plot.jpg ","plots/",end_date,"_aggregate_Plots.gif")
   system(command, intern = TRUE)
   #when using erase, states command not found
   command <- paste0("rm ","plots/",end_date,name,"*Plot.jpg -f")
   system(command, intern = TRUE)
+
   
+  command <- paste0("7z a plots/",end_date,"_ReturnAggregates.zip plots/*.csv")
+  system(command, intern = TRUE)
+  #when using erase, states command not found
+  command <- paste0("rm ","plots/*.csv -f")
+  system(command, intern = TRUE)
+    
   combinedOpt=(opt_w+opt_wpw)/2
   
   sum(combinedOpt)
