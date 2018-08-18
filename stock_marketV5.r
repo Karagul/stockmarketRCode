@@ -76,7 +76,7 @@ iterator=0
 }
 
 iterator=0
-for (iterator in seq(0, 151, by=1))
+for (iterator in seq(0, 2, by=1))
 {
 
   #set # of years back here.
@@ -647,50 +647,7 @@ for (iterator in seq(0, 151, by=1))
     all_r<-(c(ratr,rate))
     
     summary(all_r)
-    
-    probs=c(0,.1,.25,.5,.75,.9,1)
-    
-    all_profile<-quantile(all_r,probs, na.rm =F, names = F, type = 7)
-    
-    firstSixth = (all_profile[2]-all_profile[1])*(.1-.0)
-    secondSixth = (all_profile[3]-all_profile[2])*(.25-.1)
-    thirdSixth = (all_profile[4]-all_profile[3])*(.5-.25)
-    fourthSixth = (all_profile[5]-all_profile[4])*(.75-.5)
-    fifthSixth = (all_profile[6]-all_profile[5])*(.9-.75)
-    sixthSixth = (all_profile[7]-all_profile[6])*(1-.9)
-
-    sevenNumModSdev=firstSixth+secondSixth+thirdSixth+fourthSixth+fifthSixth+sixthSixth
-    
-    plot.new()
-    
-    #finally got the scatterplot working!
-    
-    #d <- density(all_r)
-    #plot(d)
-    
-    jpeg(paste0(end_date,name,"retAllProbPlot.jpg"))
-    plot(x=probs,y=all_profile,type="o")
-    dev.off()
-
-    #testing    
-    for (name in c(list_upper,list_lower))
-    {
-      print(name)
-      jpeg(paste0(end_date,name,"betaPlot.jpg"))
-      plot(x=eod_ret_testing$SP500TR,y=eod_ret_testing[,name],ylab=name,xlab="SP500TR")
-      dev.off()
-
-      profile<-quantile(eod_ret_testing[,name],probs, na.rm =F, names = F, type = 7)
-      jpeg(paste0(end_date,name,"retProbPlot.jpg"))
-      
-      plot(x=probs,y=profile,ylab=name,type="o",xlab="Return Probability")
-      
-      dev.off()
-      
-      hist(eod_ret_testing[,name],breaks)
-      
-    }
-    
+  
     length(rate)
     length(ratr)
     
@@ -904,6 +861,22 @@ for (iterator in seq(0, 151, by=1))
   #keep this above the print statements
   print(paste("iterator", iterator))
   
+  #reporting
+  
+  #finally got the scatterplot working!
+  probs=c(0,.1,.25,.5,.75,.9,1)
+  
+  all_profile<-quantile(all_r,probs, na.rm =T, names = F, type = 7)
+  
+  firstSixth = (all_profile[2]-all_profile[1])*(.1-.0)
+  secondSixth = (all_profile[3]-all_profile[2])*(.25-.1)
+  thirdSixth = (all_profile[4]-all_profile[3])*(.5-.25)
+  fourthSixth = (all_profile[5]-all_profile[4])*(.75-.5)
+  fifthSixth = (all_profile[6]-all_profile[5])*(.9-.75)
+  sixthSixth = (all_profile[7]-all_profile[6])*(1-.9)
+  
+  sevenNumModSdev=firstSixth+secondSixth+thirdSixth+fourthSixth+fifthSixth+sixthSixth
+  
   for (weight in 2:5)
   {
     positive=weight
@@ -1006,31 +979,17 @@ for (iterator in seq(0, 151, by=1))
     #boxplot(data.frame(stack(((data.frame(eod_ret_training[,t20AVGR_Ra])))))$values, horizontal = 1)
     #boxplot(data.frame(stack(((data.frame(eod_ret_testing[,t20AVGR_Ra])))))$values, horizontal = 1)
     
-    boxplot(data.frame(stack(((data.frame(eod_ret_training[,list_upper])))))$values, horizontal = 1)
-    
-    boxplot(data.frame(stack(((data.frame(eod_ret_testing[,list_upper])))))$values, horizontal = 1)
-    
-    boxplot(data.frame(stack(((data.frame(eod_ret_training[,list_lower])))))$values, horizontal = 1)
-    
-    boxplot(data.frame(stack(((data.frame(eod_ret_testing[,list_lower])))))$values, horizontal = 1)
-    
     
     chart.CumReturns(Rb_training)
     chart.CumReturns(Rb_testing)
 
     # Chart Hypothetical Portfolio Returns ------------------------------------
    
-    jpeg(paste0(end_date,"rplot.jpg"))
-    dev.off()
+    #jpeg(paste0(end_date,"rplot.jpg"))
+    #dev.off()
     
     #chart.CumReturns(Ra_training[,t20Mix_Ra])
     #chart.CumReturns(Ra_testing[,t20Mix_Ra])
-    
-    chart.CumReturns(Ra_training[,list_upper])
-    chart.CumReturns(Ra_testing[,list_upper])
-    
-    #chart.CumReturns(Ra_training[,b20Beta])
-    #chart.CumReturns(Ra_testing[,b20Beta])
     
     #chart.CumReturns(Rp,legend.loc = 'topleft')
     
@@ -1049,58 +1008,176 @@ for (iterator in seq(0, 151, by=1))
     
   }
   
-    opt_wp<-optimize.portfolio(R=Ra_training,portfolio=pspec,optimize_method = 'ROI')
-    
-    opt_wpw<-opt_wp$weights
-
-    
-    #sum(combinedOpt)
-
-    positive=2
-    negative=-1
-    
-    opt_w<-c()
-    #length(list_Ra)
-    #opt_w[1:length(t20Mix_Ra)]<-positive/length(t20Mix_Ra)
-    opt_w[1:length(list_upper)]<-positive/length(list_upper)
-    #opt_w[1:length(t20Mix_Ra)]<-.5/length(t20Mix_Ra)
-    #opt_w[1:length(list_Ra)]=1/length(list_Ra)
-    
-    #enable for negative
-    opt_w[(length(list_upper)+1):(length(list_lower)+length(list_upper))]<-negative/length(list_lower)
-    
-    upper_profile_training<-(data.frame(stack(eod_ret_training[,list_upper]))$values)
-    lower_profile_training<-(data.frame(stack(eod_ret_training[,list_lower]))$values)
-
-    upper_profile_testing<-(data.frame(stack(eod_ret_testing[,list_upper]))$values)
-    lower_profile_testing<-(data.frame(stack(eod_ret_testing[,list_lower]))$values)
-    
-    boxplot(upper_profile_training,lower_profile_training,horizontal=1)
-    
-    boxplot(upper_profile_testing,lower_profile_testing,horizontal=1)
-    
-    d <- density(all_r)
-    plot(d)
+  #reporting
+  plot.new()
   
-    d <- density(upper)
-    plot(d)
+  jpeg(paste0(end_date,"All","_retAllDensPlot.jpg"))
+  d <- density(all_r)
+  plot(d)
+  dev.off()
+  
+  jpeg(paste0(end_date,"_retAllProbPlot.jpg"))
+  plot(x=probs,y=all_profile,type="o")
+  dev.off()
+
+  #upper
+    jpeg(paste0(end_date,"_training_upper_BoxPlot.jpg"))
+    training_upper<-data.frame(stack(((data.frame(Ra_training[,list_upper])))))$values
+    boxplot(training_upper,horizontal=1,xlab="training upper")
+    dev.off()
     
-    d <- density(lower)
-    plot(d)
+    jpeg(paste0(end_date,"_testing_upper_BoxPlot.jpg"))
+    testing_upper<-data.frame(stack(((data.frame(Ra_testing[,list_upper])))))$value
+    boxplot(testing_upper,horizontal=1,xlab="testing upper")
+    dev.off()
+
+  #lower  
+    jpeg(paste0(end_date,"_training_lower_BoxPlot.jpg"))
+    training_lower<-data.frame(stack(((data.frame(Ra_training[,list_lower])))))$values
+    boxplot(training_lower,horizontal=1,xlab="training lower")
+    dev.off()
     
-    combinedOpt=(opt_w+opt_wpw)/2
+    jpeg(paste0(end_date,"_testing_lower_BoxPlot.jpg"))
+    testing_lower<-data.frame(stack(((data.frame(Ra_testing[,list_lower])))))$value
+    boxplot(testing_lower,horizontal=1,xlab="testing lower")
+    dev.off()
+  
+  #testing
+  for (name in c(list_upper,list_lower))
+  {
     
-    sum(combinedOpt)
-        
-    #just beta's
-    Rp$ptf<-c()
-    Rp$ptf<-Ra_testing %*% opt_w
-    RpW$ptf<-RaW_testing %*% opt_w
-    RpM$ptf<-RaM_testing %*% opt_w
+    print(name)
+    jpeg(paste0(end_date,name,"_betaTrainPlot.jpg"))
+    plot(x=eod_ret_training$SP500TR,y=eod_ret_training[,name],ylab=paste("training",name),xlab="SP500TR")
+    dev.off()
     
-    print (paste("Beta: Iterator:[from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 test_b20", mean_acc_training_beta_t20 , mean_acc_testing_beta_t20 , mean_acc_training_beta_b20, mean_acc_testing_beta_b20))
+    print(name)
+    jpeg(paste0(end_date,name,"_betaTestPlot.jpg"))
+    plot(x=eod_ret_testing$SP500TR,y=eod_ret_testing[,name],ylab=paste("testing",name),xlab="SP500TR")
+    dev.off()
+
     
-    #only use with negative weights
-    print(paste("start: ", start_date, "end: ", end_date, "Markowitz Profile & The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))          
+    profile<-quantile(eod_ret_training[,name],probs, na.rm =T, names = F, type = 7)
+    jpeg(paste0(end_date,name,"_trainingRetProbPlot.jpg"))
+    plot(x=probs,y=profile,ylab=name,type="o",xlab="Training Return Probability")
+    dev.off()
     
+    
+    profile<-quantile(eod_ret_testing[,name],probs, na.rm =T, names = F, type = 7)
+    jpeg(paste0(end_date,name,"_testingRetProbPlot.jpg"))
+    plot(x=probs,y=profile,ylab=name,type="o",xlab="Testing Return Probability")
+    dev.off()
+    
+    jpeg(paste0(end_date,name,"_retBoxPlot.jpg"))
+    boxplot(eod_ret_testing[,name],horizontal=1)
+    dev.off()
+    
+    jpeg(paste0(end_date,name,"_retDensPlot.jpg"))
+    d <- density(eod_ret_testing[,name])
+    plot(d,ylab=name)
+    dev.off()
+    
+    jpeg(paste0(end_date,name,"_trainingHistPlot.jpg"))
+    hist(eod_ret_training[,name],breaks)
+    dev.off()
+    
+    jpeg(paste0(end_date,name,"_testingHistPlot.jpg"))
+    hist(eod_ret_training[,name],breaks)
+    dev.off()
+    
+    #turn into gif, yes, run bat file, then delete! :
+    
+  }
+  
+    
+  jpeg(paste0(end_date,"_retTrainingCumUpperProbPlot.jpg"))
+  chart.CumReturns(eod_ret_training[,list_upper])
+  dev.off()
+  
+  jpeg(paste0(end_date,"_retTestingCumUpperProbPlot.jpg"))
+  chart.CumReturns(eod_ret_testing[,list_upper])
+  dev.off()
+  
+  jpeg(paste0(end_date,"_retTrainingCumLowerProbPlot.jpg"))
+  chart.CumReturns(eod_ret_training[,list_lower])
+  dev.off()
+  
+  jpeg(paste0(end_date,"_retTestingCumLowerProbPlot.jpg"))
+  chart.CumReturns(eod_ret_testing[,list_lower])
+  dev.off()
+  
+  opt_wp<-optimize.portfolio(R=Ra_training,portfolio=pspec,optimize_method = 'ROI')
+  
+  opt_wpw<-opt_wp$weights
+
+  
+  #sum(combinedOpt)
+
+  positive=2
+  negative=-1
+  
+  opt_w<-c()
+  #length(list_Ra)
+  #opt_w[1:length(t20Mix_Ra)]<-positive/length(t20Mix_Ra)
+  opt_w[1:length(list_upper)]<-positive/length(list_upper)
+  #opt_w[1:length(t20Mix_Ra)]<-.5/length(t20Mix_Ra)
+  #opt_w[1:length(list_Ra)]=1/length(list_Ra)
+  
+  #enable for negative
+  opt_w[(length(list_upper)+1):(length(list_lower)+length(list_upper))]<-negative/length(list_lower)
+
+  upper_profile_training<-(data.frame(stack(eod_ret_training[,list_upper]))$values)
+  lower_profile_training<-(data.frame(stack(eod_ret_training[,list_lower]))$values)
+
+  upper_profile_testing<-(data.frame(stack(eod_ret_testing[,list_upper]))$values)
+  lower_profile_testing<-(data.frame(stack(eod_ret_testing[,list_lower]))$values)
+  
+  jpeg(paste0(end_date,name,"lower_training_retProbPlot.jpg"))
+  profile<-c()
+  profile<-quantile(lower_profile_training,probs, na.rm =T, names = F, type = 7)
+  plot(x=probs,y=profile,type="o",xlab="Return Probability",ylab="lower training")
+  dev.off()
+  
+  jpeg(paste0(end_date,name,"lower_testing_retProbPlot.jpg"))
+  profile<-c()
+  profile<-quantile(lower_profile_testing,probs, na.rm =T, names = F, type = 7)
+  plot(x=probs,y=profile,type="o",xlab="Return Probability",ylab="lower testing")
+  dev.off()
+  
+  jpeg(paste0(end_date,name,"upper_training_retProbPlot.jpg"))
+  profile<-c()
+  profile<-quantile(upper_profile_training,probs, na.rm =T, names = F, type = 7)
+  plot(x=probs,y=profile,type="o",xlab="Return Probability",ylab="upper training")
+  dev.off()
+  
+  jpeg(paste0(end_date,name,"upper_testing_retProbPlot.jpg"))
+  profile<-c()
+  profile<-quantile(upper_profile_testing,probs, na.rm =T, names = F, type = 7)
+  plot(x=probs,y=profile,type="o",xlab="Return Probability",ylab="upper testing")
+  dev.off()
+  
+  d <- density(all_r)
+  plot(d)
+
+  #d <- density(upper)
+  #plot(d)
+  
+  #d <- density(lower)
+  #plot(d)
+  
+  combinedOpt=(opt_w+opt_wpw)/2
+  
+  sum(combinedOpt)
+      
+  #just beta's
+  Rp$ptf<-c()
+  Rp$ptf<-Ra_testing %*% opt_w
+  RpW$ptf<-RaW_testing %*% opt_w
+  RpM$ptf<-RaM_testing %*% opt_w
+  
+  print (paste("Beta: Iterator:[from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 test_b20", mean_acc_training_beta_t20 , mean_acc_testing_beta_t20 , mean_acc_training_beta_b20, mean_acc_testing_beta_b20))
+  
+  #only use with negative weights
+  print(paste("start: ", start_date, "end: ", end_date, "Markowitz Profile & The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))          
+  
 }
