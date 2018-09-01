@@ -1,5 +1,5 @@
 
-#dp<-read.csv('d:/quantshare/quotes.csv') # no arguments
+#dp<-read.csv('c:/test/share/quantshare/quotes.csv') # no arguments
 
 library(Rserve);
 require(Rserve);
