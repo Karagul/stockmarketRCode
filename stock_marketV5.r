@@ -1,5 +1,5 @@
 
-#dp<-read.csv('d:/quantshare/quotes.csv') # no arguments
+#dp<-read.csv('c:/test/share/quantshare/quotes.csv',header = FALSE) # no arguments
 
 library(Rserve);
 require(Rserve);
@@ -38,8 +38,9 @@ qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM etf_bond_facts WHERE ti
 qry3=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date2,"'")
 qry4=paste0("SELECT symbol,timestamp,adjusted_close FROM other_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date2,"'")
 #qry5=paste0("SELECT symbol,timestamp,close FROM qs_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date$max,"'")
-eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry2,'UNION',qry3,'UNION',qry4))
-#eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry5))
+qry5=paste0("SELECT symbol,timestamp,close FROM mv_qs_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date2,"'")
+#eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry2,'UNION',qry3,'UNION',qry4))
+eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry5))
 #QSSymbols<-dbGetQuery(conn,paste(qryQSCount))
   #QSSymbolCount<-nrow(QSSymbols)
 
@@ -65,6 +66,8 @@ eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry2,'UNION',qry3,'UNION',qry4))
 dbDisconnect(conn)
 
 eodOutside<-na.omit(eodwNA)
+eodOutside<-na.omit(dp[which(dp$date>=start_date & dp$date <= end_date),,drop=F])
+eod <<- eodOutside[which(eodOutside$date>=start_date & eodOutside$date <= end_date),,drop=F]
 
 nrow(eodOutside)
 
@@ -179,7 +182,9 @@ for (iterator in seq(0, 3, by=1))
   #Hint: which(ccal$trading==1 & ccal$eom==1)
   
   # Transform (Pivot) -------------------------------------------------------
-  
+  #library(reshape2)
+  #install.packages("stringi",type="win.binary")
+  require(stringi)
   require(reshape2) #did you install this package?
   eod_pvtwNA<-dcast(eod_completewNA, date ~ symbol,value.var='adj_close',fun.aggregate = mean, fill=NULL)
   
@@ -321,6 +326,13 @@ for (iterator in seq(0, 3, by=1))
   eow_ret<-eow_ret[,which(colnames(eow_ret) %in% selected_symbols_daily3)]
   eom_ret<-eom_ret[,which(colnames(eom_ret) %in% selected_symbols_daily3)]
   
+  library(imputeTS)
+  
+  eod_ret <- na.replace(eod_ret, 0)
+  table(is.na(eod_ret))
+  
+  #y2 <- na.replace(y, 0)  
+  
   (eod_ret[!complete.cases(eod_pvt), ][1:5])
   
   #check
@@ -342,7 +354,7 @@ for (iterator in seq(0, 3, by=1))
   
   # We will select 'SP500TR' and c('AEGN','AAON','AMSC','ALCO','AGNC','AREX','ABCB','ABMD','ACTG','ADTN','AAPL','AAL')
   # We need to convert data frames to xts (extensible time series)
-  source("C:/Users/user/Documents/alphaAdvantageApi/stockmarketR/stockmarketRCode/colSortAndFilter.R")
+  source("C:/Users/user/Documents/alphaAdvantageApi/stockmarketRCode/colSortAndFilter.R")
   
   eod_ret_training<-head(eod_ret,-days)
   #View(eod_ret_training[,1:4])
@@ -374,26 +386,29 @@ for (iterator in seq(0, 3, by=1))
   #tail(x)  
   
   y <- RA4LM
+  
+  #replace na with 0
+  #https://stackoverflow.com/questions/8161836/how-do-i-replace-na-values-with-zeros-in-an-r-dataframe
+  
+  library(imputeTS)
+  
+  x2 <- na.replace(x, 0)
+  y2 <- na.replace(y, 0)
+  
   nrow(y)
   
   #head
-  xtr<-head(x,-days)
-  ytr<-head(y,-days)
+  xtr<-head(x2,-days)
+  ytr<-head(y2,-days)
   
   nrow(xtr)
   nrow(ytr)
   
   #tail
-  xtst<-tail(x,days)
-  ytst<-tail(y,days)
+  xtst<-tail(x2,days)
+  ytst<-tail(y2,days)
   
-  #y <- eod_ret[,which(names(eod)=="SP500TR")]
-  
-  #y <- eod_ret[which(eod_ret)
-  
-  #need to base it on how Ra_training is created, and recreate it here.
-  
-  linearModTotal <- lm(y~x)
+  linearModTotal <- lm(y2~x2)
   linearModTraining <- lm(ytr~xtr)
   
   linearModTesting <- lm(ytst~xtst)
