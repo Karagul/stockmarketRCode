@@ -179,7 +179,9 @@ for (iterator in seq(0, 0, by=1))
   #Hint: which(ccal$trading==1 & ccal$eom==1)
   
   # Transform (Pivot) -------------------------------------------------------
-  
+  #library(reshape2)
+  install.packages("stringi",type="win.binary")
+  require(stringi)
   require(reshape2) #did you install this package?
   eod_pvtwNA<-dcast(eod_completewNA, date ~ symbol,value.var='adj_close',fun.aggregate = mean, fill=NULL)
   
