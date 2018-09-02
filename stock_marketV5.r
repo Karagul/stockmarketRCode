@@ -180,7 +180,7 @@ for (iterator in seq(0, 0, by=1))
   
   # Transform (Pivot) -------------------------------------------------------
   #library(reshape2)
-  install.packages("stringi",type="win.binary")
+  #install.packages("stringi",type="win.binary")
   require(stringi)
   require(reshape2) #did you install this package?
   eod_pvtwNA<-dcast(eod_completewNA, date ~ symbol,value.var='adj_close',fun.aggregate = mean, fill=NULL)
@@ -344,7 +344,7 @@ for (iterator in seq(0, 0, by=1))
   
   # We will select 'SP500TR' and c('AEGN','AAON','AMSC','ALCO','AGNC','AREX','ABCB','ABMD','ACTG','ADTN','AAPL','AAL')
   # We need to convert data frames to xts (extensible time series)
-  source("C:/Users/user/Documents/alphaAdvantageApi/stockmarketR/stockmarketRCode/colSortAndFilter.R")
+  source("C:/Users/user/Documents/alphaAdvantageApi/stockmarketRCode/colSortAndFilter.R")
   
   eod_ret_training<-head(eod_ret,-days)
   #View(eod_ret_training[,1:4])
