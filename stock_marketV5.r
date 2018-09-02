@@ -326,6 +326,13 @@ for (iterator in seq(0, 0, by=1))
   eow_ret<-eow_ret[,which(colnames(eow_ret) %in% selected_symbols_daily3)]
   eom_ret<-eom_ret[,which(colnames(eom_ret) %in% selected_symbols_daily3)]
   
+  library(imputeTS)
+  
+  eod_ret <- na.replace(eod_ret, 0)
+  table(is.na(eod_ret))
+  
+  #y2 <- na.replace(y, 0)  
+  
   (eod_ret[!complete.cases(eod_pvt), ][1:5])
   
   #check
