@@ -1258,26 +1258,31 @@ for (iterator in seq(0, 0, by=1))
   jpeg(paste0("plots/",end_date,"_allDensPlot.jpg"))
   d <- density(all_r,na.rm=T)
   plot(d)
+  dev.off()
 
   #density plot returns training upper
   jpeg(paste0("plots/",end_date,"_upper_training_densPlot.jpg"))
   d <- density(upper_profile_training,na.rm=T)
   plot(d)
+  dev.off()
   
   # ...testing upper
   jpeg(paste0("plots/",end_date,"_upper_testing_densPlot.jpg"))
   d <- density(upper_profile_testing,na.rm=T)
   plot(d)
+  dev.off()
   
   # ...lower training
   jpeg(paste0("plots/",end_date,"_lower_training_densPlot.jpg"))
   d <- density(lower_profile_training,na.rm=T)
   plot(d)
+  dev.off()
   
   #... lower testing
   jpeg(paste0("plots/",end_date,"_lower_testing_densPlot.jpg"))
   d <- density(lower_profile_testing,na.rm=T)
   plot(d)
+  dev.off()
   
   #Return probability Plot SP500TR training
   jpeg(paste0("plots/",end_date,"_SP500TR_training_retProbPlot.jpg"))
