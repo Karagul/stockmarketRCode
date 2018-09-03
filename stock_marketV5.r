@@ -38,9 +38,9 @@ qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM etf_bond_facts WHERE ti
 qry3=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date2,"'")
 qry4=paste0("SELECT symbol,timestamp,adjusted_close FROM other_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date2,"'")
 #qry5=paste0("SELECT symbol,timestamp,close FROM qs_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date$max,"'")
-qry5=paste0("SELECT symbol,timestamp,close FROM mv_qs_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date2,"'")
-#eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry2,'UNION',qry3,'UNION',qry4))
-eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry5))
+#qry5=paste0("SELECT symbol,timestamp,close FROM mv_qs_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date2,"'")
+eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry2,'UNION',qry3,'UNION',qry4))
+#eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry5))
 #QSSymbols<-dbGetQuery(conn,paste(qryQSCount))
   #QSSymbolCount<-nrow(QSSymbols)
 
@@ -495,7 +495,14 @@ for (iterator in seq(0, 100, by=1))
   #if shorting, negative beta's doesn't do any good.
   #note, tails isn't necessarily in reverse order, just so happens I'm only grabbing the last few #'s...
   t20Beta<-head(colnames(data.frame((eod_ret_training)[trainingBetaSorted$colname])),setPercent)
-  b20Beta<-tail(colnames(data.frame((eod_ret_training)[trainingBetaSorted$colname])),setPercent)
+  
+  #filter to non negative
+  #length(ratr[which(all_r[]>=Lhinge & all_r[]<=Uhinge)])/length(all_r)  
+  #head(eod[which(eod$symbol=='SP500TR'),])
+  
+  #View((eod_ret_training)[trainingBetaSorted[which(trainingBetaSorted$mean>=0),]$colname])
+  b20Beta<-tail(colnames(data.frame((eod_ret_training)[trainingBetaSorted[which(trainingBetaSorted$mean>=0),]$colname])),setPercent)
+  #b20Beta<-tail(colnames(data.frame((eod_ret_training)[trainingBetaSorted$colname])),setPercent)
   
   t20Avg<-head(colnames(data.frame((eod_ret_training)[trainingAvgSorted$colname])),setPercent)
   b20Avg<-tail(colnames(data.frame((eod_ret_training)[trainingAvgSorted$colname])),setPercent)
@@ -534,6 +541,7 @@ for (iterator in seq(0, 100, by=1))
   list_lower<-c()
   list_upper<-c(t20Beta)
   list_lower<-c(b20Beta)
+  #View(b20Beta)
   list_Ra<-c(list_upper,list_lower)
   #list_Ra<-c(t20Beta)
   #list_Ra<-c(basedOnBetas,b20Mix_Ra)
