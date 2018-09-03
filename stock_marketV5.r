@@ -39,8 +39,8 @@ qry3=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE time
 qry4=paste0("SELECT symbol,timestamp,adjusted_close FROM other_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date2,"'")
 #qry5=paste0("SELECT symbol,timestamp,close FROM qs_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date$max,"'")
 qry5=paste0("SELECT symbol,timestamp,close FROM mv_qs_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date2,"'")
-#eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry2,'UNION',qry3,'UNION',qry4))
-eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry5))
+eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry2,'UNION',qry3,'UNION',qry4))
+#eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry5))
 #QSSymbols<-dbGetQuery(conn,paste(qryQSCount))
   #QSSymbolCount<-nrow(QSSymbols)
 
@@ -259,9 +259,12 @@ for (iterator in seq(0, 3, by=1))
   # Let's say no more than 3 in a row...
   #strips it here
   require(zoo)
-  eod_pvt_complete<-na.locf(eod_pvt_complete,na.rm=F,fromLast=F,maxgap=3)
-  eow_pvt_complete<-na.locf(eow_pvt_complete,na.rm=F,fromLast=F,maxgap=3)
-  eom_pvt_complete<-na.locf(eom_pvt_complete,na.rm=F,fromLast=F,maxgap=3)
+  #eod_pvt_complete<-na.locf(eod_pvt_complete,na.rm=F,fromLast=F,maxgap=3)
+  eod_pvt_complete<-na.locf(eod_pvt_complete)
+  #eow_pvt_complete<-na.locf(eow_pvt_complete,na.rm=F,fromLast=F,maxgap=3)
+  eow_pvt_complete<-na.locf(eow_pvt_complete)
+  #eom_pvt_complete<-na.locf(eom_pvt_complete,na.rm=F,fromLast=F,maxgap=3)
+  eom_pvt_complete<-na.locf(eom_pvt_complete)
   #View(((eod_pvt_complete[c('SP500TR')])))
   #cut it here, see the true#  noo!!!
   
@@ -1356,33 +1359,34 @@ for (iterator in seq(0, 3, by=1))
   
   #only use with negative weights
   print(paste("start: ", start_date, "end: ", end_date, "Markowitz Profile & The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))
+
+  #zip up reports
+  
+  command <- paste0("magick convert -delay 100 -loop 0 plots/*lot.jpg ","plots/",end_date,"_aggregate_Plots.gif")
+  system(command, intern = TRUE)
+  #when using erase, states command not found
+  command <- paste0("mv ","plots/",end_date,"_aggregate_Plots.gif ","plots/",end_date,"_aggregate_Plots.bak")
+  system(command, intern = TRUE)
+  command <- paste0("rm ","plots/*Plot.jpg -f")
+  system(command, intern = TRUE)
+  
+  
+  command <- paste0("7z a plots/",end_date,"_ReturnAggregates.zip plots/*.csv")
+  system(command, intern = TRUE)
+  #when using erase, states command not found
+  command <- paste0("rm ","plots/*.csv -f")
+  system(command, intern = TRUE)
+  
+  command <- paste0("7z a plots/",end_date,"_ReturnUpperLowerHighlights.zip plots/*.gif")
+  system(command, intern = TRUE)
+  #when using erase, states command not found
+  command <- paste0("rm ","plots/*.gif -f")
+  system(command, intern = TRUE)
+  command <- paste0("cp plots/",end_date,"_aggregate_Plots.bak plots/",end_date,"_aggregate_Plots.gif")
+  system(command, intern = TRUE)
+  command <- paste0("rm plots/*.bak -f")
+  system(command, intern = TRUE)
+  
   
 }
-
-#zip up reports
-
-command <- paste0("magick convert -delay 100 -loop 0 plots/*lot.jpg ","plots/",end_date,"_aggregate_Plots.gif")
-system(command, intern = TRUE)
-#when using erase, states command not found
-command <- paste0("mv ","plots/",end_date,"_aggregate_Plots.gif ","plots/",end_date,"_aggregate_Plots.bak")
-system(command, intern = TRUE)
-command <- paste0("rm ","plots/*Plot.jpg -f")
-system(command, intern = TRUE)
-
-
-command <- paste0("7z a plots/",end_date,"_ReturnAggregates.zip plots/*.csv")
-system(command, intern = TRUE)
-#when using erase, states command not found
-command <- paste0("rm ","plots/*.csv -f")
-system(command, intern = TRUE)
-
-command <- paste0("7z a plots/",end_date,"_ReturnUpperLowerHighlights.zip plots/*.gif")
-system(command, intern = TRUE)
-#when using erase, states command not found
-command <- paste0("rm ","plots/*.gif -f")
-system(command, intern = TRUE)
-command <- paste0("cp plots/",end_date,"_aggregate_Plots.bak plots/",end_date,"_aggregate_Plots.gif")
-system(command, intern = TRUE)
-command <- paste0("rm plots/*.bak -f")
-system(command, intern = TRUE)
 
