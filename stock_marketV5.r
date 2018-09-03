@@ -39,8 +39,8 @@ qry3=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE time
 qry4=paste0("SELECT symbol,timestamp,adjusted_close FROM other_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date2,"'")
 #qry5=paste0("SELECT symbol,timestamp,close FROM qs_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date$max,"'")
 qry5=paste0("SELECT symbol,timestamp,close FROM mv_qs_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date2,"'")
-eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry2,'UNION',qry3,'UNION',qry4))
-#eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry5))
+#eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry2,'UNION',qry3,'UNION',qry4))
+eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry5))
 #QSSymbols<-dbGetQuery(conn,paste(qryQSCount))
   #QSSymbolCount<-nrow(QSSymbols)
 
@@ -81,7 +81,7 @@ iterator=0
 }
 
 iterator=0
-for (iterator in seq(0, 3, by=1))
+for (iterator in seq(0, 100, by=1))
 {
 
   #set # of years back here.
@@ -532,8 +532,8 @@ for (iterator in seq(0, 3, by=1))
   #list_Ra<-c(t20Beta,b20Beta)
   list_upper<-c()
   list_lower<-c()
-  list_upper<-c(t20Cum)
-  list_lower<-c(b20Cum)
+  list_upper<-c(t20Beta)
+  list_lower<-c(b20Beta)
   list_Ra<-c(list_upper,list_lower)
   #list_Ra<-c(t20Beta)
   #list_Ra<-c(basedOnBetas,b20Mix_Ra)
@@ -1340,10 +1340,7 @@ for (iterator in seq(0, 3, by=1))
   dev.off()
   
   #buffer flush for any pending writes  
-  for(i in 1:length(dev.list()))
-  {
-    dev.off()
-  }
+  #for(i in 1:length(dev.list())) { dev.off() }
   
   combinedOpt=(opt_w+opt_wpw)/2
   
@@ -1384,9 +1381,10 @@ for (iterator in seq(0, 3, by=1))
   system(command, intern = TRUE)
   command <- paste0("cp plots/",end_date,"_aggregate_Plots.bak plots/",end_date,"_aggregate_Plots.gif")
   system(command, intern = TRUE)
-  command <- paste0("rm plots/*.bak -f")
-  system(command, intern = TRUE)
+  #command <- paste0("rm plots/*.bak -f")
+  #system(command, intern = TRUE)
   
   
 }
-
+command <- paste0("rename plots/*.bak plots/*.gif")
+system(command, intern = TRUE)
