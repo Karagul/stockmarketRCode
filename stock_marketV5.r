@@ -1386,5 +1386,5 @@ for (iterator in seq(0, 100, by=1))
   
   
 }
-command <- paste0("rename plots/*.bak plots/*.gif")
+command <- paste0("ren plots/*.bak plots/*.gif")
 system(command, intern = TRUE)
