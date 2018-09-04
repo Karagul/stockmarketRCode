@@ -80,8 +80,8 @@ iterator=0
   print(paste("iterator", iterator))
 }
 
-iterator=0
-for (iterator in seq(0, 200, by=3))
+iterator=99
+for (iterator in seq(99, 200, by=3))
 {
 
   #set # of years back here.
@@ -856,7 +856,10 @@ for (iterator in seq(0, 200, by=3))
     sum(Return.cumulative(eod_ret_testing[,list_lower]))
 
     #Error
-    (sum(Return.cumulative(eod_ret_training[,list_upper]))-sum(Return.cumulative(eod_ret_training[,list_lower])))*(sum(Return.cumulative(eod_ret_testing[,list_upper]))-sum(Return.cumulative(eod_ret_testing[,list_lower])))
+    (sum(Return.cumulative(eod_ret_training[,list_upper]))-sum(Return.cumulative(eod_ret_training[,list_lower])))
+    
+    #Error 2
+    (sum(Return.cumulative(eod_ret_testing[,list_upper]))-sum(Return.cumulative(eod_ret_testing[,list_lower])))
     
     #test testing
     summary(Rb_testing)
@@ -1188,22 +1191,23 @@ for (iterator in seq(0, 200, by=3))
   
     
   jpeg(paste0("plots/",end_date,"_retTrainingCumUpperPlot.jpg"))
-  d<-chart.CumReturns(eod_ret_training[,list_upper])
+  d<-chart.CumReturns(eod_ret_training[list_upper])
+  #View(eod_ret_training[,list_upper])
   plot(d)
   dev.off()
   
   jpeg(paste0("plots/",end_date,"_retTestingCumUpperPlot.jpg"))
-  d<-chart.CumReturns(eod_ret_testing[,list_upper])
+  d<-chart.CumReturns(eod_ret_testing[list_upper])
   plot(d)
   dev.off()
   
   jpeg(paste0("plots/",end_date,"_retTrainingCumLowerPlot.jpg"))
-  d<-chart.CumReturns(eod_ret_training[,list_lower])
+  d<-chart.CumReturns(eod_ret_training[list_lower])
   plot(d)
   dev.off()
   
   jpeg(paste0("plots/",end_date,"_retTestingCumLowerPlot.jpg"))
-  d<-chart.CumReturns(eod_ret_testing[,list_lower])
+  d<-chart.CumReturns(eod_ret_testing[list_lower])
   plot(d)
   dev.off()
   
