@@ -1080,25 +1080,25 @@ for (iterator in seq(99, 200, by=3))
   for (name in c(list_upper,list_lower))
   {
     
-    mean(eod_ret_training[name])
+    mean(eod_ret_training[,name])
     
     #beta correlation plot training
     jpeg(paste0("plots/",end_date,name,"_betaTrainPlot.jpg"))
-    x=eod_ret_training$SP500TR; y=eod_ret_training[name]
+    x=eod_ret_training$SP500TR; y=eod_ret_training[,name]
     plot(x, y, ylab=paste("training",name),xlab="SP500TR")
     #text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)   
     dev.off()
     
     #... testing
     jpeg(paste0("plots/",end_date,name,"_betaTestPlot.jpg"))
-    x=eod_ret_testing$SP500TR; y=eod_ret_testing[name]
+    x=eod_ret_testing$SP500TR; y=eod_ret_testing[,name]
     plot(x, y, ylab=paste("testing",name),xlab="SP500TR")
     #text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)   
     dev.off()
     
     #Return probability plot training
     jpeg(paste0("plots/",end_date,name,"_ProbTrainPlot.jpg"))
-    profile<-quantile(eod_ret_training[name],probs, na.rm =T, names = F, type = 7)
+    profile<-quantile(eod_ret_training[,name],probs, na.rm =T, names = F, type = 7)
     x = probs; y = profile
     plot(x, y, ylab=name,type="o",xlab="Training Return Probability")
     text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)   
@@ -1106,7 +1106,7 @@ for (iterator in seq(99, 200, by=3))
     
     #... testing
     jpeg(paste0("plots/",end_date,name,"_ProbTestPlot.jpg"))
-    profile<-quantile(eod_ret_testing[name],probs, na.rm =T, names = F, type = 7)
+    profile<-quantile(eod_ret_testing[,name],probs, na.rm =T, names = F, type = 7)
     x = probs; y = profile
     plot(x, y, ylab=name,type="o",xlab="Testing Return Probability")
     text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)   
@@ -1114,41 +1114,41 @@ for (iterator in seq(99, 200, by=3))
 
     #Return Box Plot training
     jpeg(paste0("plots/",end_date,name,"_training_retBoxPlot.jpg"))
-    boxplot(eod_ret_training[name],horizontal=1,ylab=name,xlab="training")
+    boxplot(eod_ret_training[,name],horizontal=1,ylab=name,xlab="training")
     dev.off()
     
     #... testing
     jpeg(paste0("plots/",end_date,name,"_testing_retBoxPlot.jpg"))
-    boxplot(eod_ret_testing[name],horizontal=1,ylab=name,xlab="testing")
+    boxplot(eod_ret_testing[,name],horizontal=1,ylab=name,xlab="testing")
     dev.off()
     
     #Return Density Plot training
     jpeg(paste0("plots/",end_date,name,"_training_retDensPlot.jpg"))
-    d <- density(eod_ret_training[name],na.rm=T)
+    d <- density(eod_ret_training[,name],na.rm=T)
     plot(d,ylab=name)
     dev.off()
 
     #Return Density Plot training
     jpeg(paste0("plots/",end_date,name,"_testing_retDensPlot.jpg"))
-    d <- density(eod_ret_testing[name],na.rm=T)
+    d <- density(eod_ret_testing[,name],na.rm=T)
     plot(d,ylab=name)
     dev.off()
         
     #... testing
     jpeg(paste0("plots/",end_date,name,"_testing_retDensPlot.jpg"))
-    d <- density(eod_ret_testing[name],na.rm=T)
+    d <- density(eod_ret_testing[,name],na.rm=T)
     plot(d,ylab=name)
     dev.off()
         
     #Histogram, does it need to show mean?
     #training
     jpeg(paste0("plots/",end_date,name,"_trainingHistPlot.jpg"))
-    hist(eod_ret_training[name],breaks,ylab=name)
+    hist(eod_ret_training[,name],breaks,ylab=name)
     dev.off()
     
     #...testing
     jpeg(paste0("plots/",end_date,name,"_testingHistPlot.jpg"))
-    hist(eod_ret_testing[name],breaks,ylab=name)
+    hist(eod_ret_testing[,name],breaks,ylab=name)
     dev.off()
     
     #turn into gif, yes, run bat file, then delete! :
