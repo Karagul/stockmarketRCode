@@ -38,9 +38,9 @@ qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM etf_bond_facts WHERE ti
 qry3=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date2,"'")
 qry4=paste0("SELECT symbol,timestamp,adjusted_close FROM other_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date2,"'")
 #qry5=paste0("SELECT symbol,timestamp,close FROM qs_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date$max,"'")
-#qry5=paste0("SELECT symbol,timestamp,close FROM mv_qs_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date2,"'")
-eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry2,'UNION',qry3,'UNION',qry4))
-#eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry5))
+qry5=paste0("SELECT symbol,timestamp,close FROM mv_qs_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date2,"'")
+#eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry2,'UNION',qry3,'UNION',qry4))
+eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry5))
 #QSSymbols<-dbGetQuery(conn,paste(qryQSCount))
   #QSSymbolCount<-nrow(QSSymbols)
 
@@ -343,11 +343,13 @@ for (iterator in seq(0, 200, by=3))
   #ncol(eod_ret)
   #ncol(eod_ret[,!apply(eod_ret, 2, function(c)sum(c==0)/(days*2))>.66])
   #nrow(eod_ret[,!apply(eod_ret, 2, function(c)sum(c==0)/(days*2))>.66])
-  eod_ret <- eod_ret[,!apply(eod_ret, 2, function(c)sum(c==0)/(days*2))>.5]
+  ncol(eod_ret)
+  eod_ret <- eod_ret[,!apply(eod_ret, 2, function(c)sum(c==0)/(days*2))>.10]
   
-  eow_ret <- eow_ret[,!apply(eow_ret, 2, function(c)sum(c==0)/(weeks*2))>.5]
-  eom_ret <- eom_ret[,!apply(eom_ret, 2, function(c)sum(c==0)/(months*2))>.5]
-  
+  #eod on purpose
+  eow_ret <- eow_ret[,!apply(eod_ret, 2, function(c)sum(c==0)/(days*2))>.10]
+  eom_ret <- eom_ret[,!apply(eod_ret, 2, function(c)sum(c==0)/(days*2))>.10]
+  ncol(eod_ret)
   #nrow(eod_ret["XSD"])
   
   #apply(eod_ret, 2, function(c)sum(c!=0))
@@ -494,7 +496,7 @@ for (iterator in seq(0, 200, by=3))
   
   #chart.Boxplot(eod_ret[t20CR])
   #top/bottom 2.5%
-  setPercent=round(length(colnames(eod_pvt_complete))*.05,0)
+  setPercent=round(length(colnames(eod_pvt_complete))*.25,0)
   if(setPercent<=4)
   {setPercent=5}
   
@@ -934,7 +936,7 @@ for (iterator in seq(0, 200, by=3))
   
   sevenNumModSdev=firstSixth+secondSixth+thirdSixth+fourthSixth+fifthSixth+sixthSixth
   
-  for (weight in 2:5)
+  for (weight in 2:3)
   {
     positive=weight
     negative=abs((positive)-1)*-1
@@ -1422,5 +1424,5 @@ for (iterator in seq(0, 200, by=3))
 }
 command <- paste0("cp plots/*.bak plots/*.gif")
 system(command, intern = TRUE)
-command <- paste0("rm -f plots/*.bak")
-system(command, intern = TRUE)
+#command <- paste0("rm -f plots/*.bak")
+#system(command, intern = TRUE)
