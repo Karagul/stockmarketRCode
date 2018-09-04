@@ -379,8 +379,8 @@ for (iterator in seq(99, 200, by=3))
   source("C:/Users/user/Documents/alphaAdvantageApi/stockmarketRCode/colSortAndFilter.R")
   
   eod_ret_training<-head(eod_ret,-days)
-  #View(eod_ret_training[,1:4])
-  #View(eod_ret_testing[,1:4])
+  #View(eod_ret_training[1:4])
+  #View(eod_ret_testing[1:4])
   eow_ret_training<-head(eow_ret,-weeks)
   eom_ret_training<-head(eom_ret,-months)
   
@@ -397,8 +397,8 @@ for (iterator in seq(99, 200, by=3))
   RB4LM<-as.xts(eod_ret[,'SP500TR',drop=F]) #benchmark
   
   #[,-which(names(tail(eod_ret,days)) == "SP500TR")]) #colSortAndFilter.R
-  #RATestingPre<-as.xts(eod_ret_training[,-which(names(eod_ret) == "SP500TR")]) #colSortAndFilter.R
-  #RBTestingPre<-as.xts(eod_ret_training[,-which(names(eod_ret) == "SP500TR")]) #colSortAndFilter.R
+  #RATestingPre<-as.xts(eod_ret_training[-which(names(eod_ret) == "SP500TR")]) #colSortAndFilter.R
+  #RBTestingPre<-as.xts(eod_ret_training[-which(names(eod_ret) == "SP500TR")]) #colSortAndFilter.R
   
   #head(Rb,-days)
   
@@ -538,11 +538,11 @@ for (iterator in seq(99, 200, by=3))
   #b20Mix_RaM<-unique(c(b20CR_RaM,b20AVGR_RaM))
   
   
-  write.csv(eod_ret_training[,t20Beta],paste0("plots/",end_date,"_Testing_T20B.csv"))
-  write.csv(eod_ret_testing[,b20Beta],paste0("plots/",end_date,"_Testing_B20B.csv"))
+  write.csv(eod_ret_training[t20Beta],paste0("plots/",end_date,"_Testing_T20B.csv"))
+  write.csv(eod_ret_testing[b20Beta],paste0("plots/",end_date,"_Testing_B20B.csv"))
   
-  write.csv(eod_ret_testing[,t20Avg],paste0("plots/",end_date,"_Testing_T20A.csv"))
-  write.csv(eod_ret_testing[,b20Avg],paste0("plots/",end_date,"_Testing_B20A.csv"))
+  write.csv(eod_ret_testing[t20Avg],paste0("plots/",end_date,"_Testing_T20A.csv"))
+  write.csv(eod_ret_testing[b20Avg],paste0("plots/",end_date,"_Testing_B20A.csv"))
   
   write.csv(testingBetaSorted,paste0("plots/",end_date,"_testingBetaSorted.csv"))
   write.csv(trainingBetaSorted,paste0("plots/",end_date,"_trainingBetaSorted.csv"))
@@ -848,18 +848,18 @@ for (iterator in seq(99, 200, by=3))
     summary(lcrT20Testing)
     
     #test training
-    sum(Return.cumulative(eod_ret_training[,list_upper]))
-    sum(Return.cumulative(eod_ret_training[,list_lower]))
+    sum(Return.cumulative(eod_ret_training[list_upper]))
+    sum(Return.cumulative(eod_ret_training[list_lower]))
 
     #test testing
-    sum(Return.cumulative(eod_ret_testing[,list_upper]))
-    sum(Return.cumulative(eod_ret_testing[,list_lower]))
+    sum(Return.cumulative(eod_ret_testing[list_upper]))
+    sum(Return.cumulative(eod_ret_testing[list_lower]))
 
     #Error
-    (sum(Return.cumulative(eod_ret_training[,list_upper]))-sum(Return.cumulative(eod_ret_training[,list_lower])))
+    (sum(Return.cumulative(eod_ret_training[list_upper]))-sum(Return.cumulative(eod_ret_training[list_lower])))
     
     #Error 2
-    (sum(Return.cumulative(eod_ret_testing[,list_upper]))-sum(Return.cumulative(eod_ret_testing[,list_lower])))
+    (sum(Return.cumulative(eod_ret_testing[list_upper]))-sum(Return.cumulative(eod_ret_testing[list_lower])))
     
     #test testing
     summary(Rb_testing)
@@ -981,69 +981,69 @@ for (iterator in seq(99, 200, by=3))
     #need to extract these as names for this next step.
     
     #graph cumulative returns by best/worst beta's before and after
-      chart.CumReturns(eod_ret_training[,t20Beta])
-      chart.CumReturns(eod_ret_testing[,t20Beta])
+      chart.CumReturns(eod_ret_training[t20Beta])
+      chart.CumReturns(eod_ret_testing[t20Beta])
       
-      chart.CumReturns(eod_ret_training[,b20Beta])
-      chart.CumReturns(eod_ret_testing[,b20Beta])
+      chart.CumReturns(eod_ret_training[b20Beta])
+      chart.CumReturns(eod_ret_testing[b20Beta])
 
     #graph cumulative returns by best/worst avg's before and after    
-      chart.CumReturns(eod_ret_training[,t20Avg])
-      chart.CumReturns(eod_ret_testing[,t20Avg])
+      chart.CumReturns(eod_ret_training[t20Avg])
+      chart.CumReturns(eod_ret_testing[t20Avg])
     
-      chart.CumReturns(eod_ret_training[,b20Avg])
-      chart.CumReturns(eod_ret_testing[,b20Avg])
+      chart.CumReturns(eod_ret_training[b20Avg])
+      chart.CumReturns(eod_ret_testing[b20Avg])
 
     #compare accumulated returns via means of best/worst beta's
       
       #good returns, before after, do predictions hold?
-      mean_acc_training_beta_t20 <- mean(Return.cumulative(eod_ret_training[,t20Beta]))
-      mean_acc_testing_beta_t20 <- mean(Return.cumulative(eod_ret_testing[,t20Beta]))
+      mean_acc_training_beta_t20 <- mean(Return.cumulative(eod_ret_training[t20Beta]))
+      mean_acc_testing_beta_t20 <- mean(Return.cumulative(eod_ret_testing[t20Beta]))
       
       #bad returns, before after, do predictions hold?
-      mean_acc_training_beta_b20 <- mean(Return.cumulative(eod_ret_training[,b20Beta]))
-      mean_acc_testing_beta_b20 <- mean(Return.cumulative(eod_ret_testing[,b20Beta]))
+      mean_acc_training_beta_b20 <- mean(Return.cumulative(eod_ret_training[b20Beta]))
+      mean_acc_testing_beta_b20 <- mean(Return.cumulative(eod_ret_testing[b20Beta]))
 
     #compare accumulated returns via means of best/worst average cumulative return
       
       #good returns, before after, do predictions hold?
-      mean_acc_training_t20 <- mean(Return.cumulative(eod_ret_training[,t20Cum]))
-      mean_acc_testing_t20 <- mean(Return.cumulative(eod_ret_testing[,t20Cum]))
+      mean_acc_training_t20 <- mean(Return.cumulative(eod_ret_training[t20Cum]))
+      mean_acc_testing_t20 <- mean(Return.cumulative(eod_ret_testing[t20Cum]))
       
       #bad returns, before after, do predictions hold?
-      mean_acc_training_b20 <- mean(Return.cumulative(eod_ret_training[,b20Cum]))
-      mean_acc_testing_b20 <- mean(Return.cumulative(eod_ret_testing[,b20Cum]))
+      mean_acc_training_b20 <- mean(Return.cumulative(eod_ret_training[b20Cum]))
+      mean_acc_testing_b20 <- mean(Return.cumulative(eod_ret_testing[b20Cum]))
       
       print (paste("Beta: [from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 mean_acc_testing_b20", mean_acc_training_t20 , mean_acc_testing_t20 , mean_acc_training_b20, mean_acc_testing_b20))
             
     #compare accumulated returns via means of best/worst avg return
       
       #good returns, before after, do predictions hold?
-      mean_acc_training_t20 <- mean(Return.cumulative(eod_ret_training[,t20Avg]))
-      mean_acc_testing_t20 <- mean(Return.cumulative(eod_ret_testing[,t20Avg]))
+      mean_acc_training_t20 <- mean(Return.cumulative(eod_ret_training[t20Avg]))
+      mean_acc_testing_t20 <- mean(Return.cumulative(eod_ret_testing[t20Avg]))
       
       #bad returns, before after, do predictions hold?
-      mean_acc_training_b20 <- mean(Return.cumulative(eod_ret_training[,b20Avg]))
-      mean_acc_testing_b20 <- mean(Return.cumulative(eod_ret_testing[,b20Avg]))
+      mean_acc_training_b20 <- mean(Return.cumulative(eod_ret_training[b20Avg]))
+      mean_acc_testing_b20 <- mean(Return.cumulative(eod_ret_testing[b20Avg]))
       
       print (paste("Beta: [from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 mean_acc_testing_b20", mean_acc_training_t20 , mean_acc_testing_t20 , mean_acc_training_b20, mean_acc_testing_b20))
       
     #compare accumulated returns, avg
       
       #good returns, before after, do predictions hold?
-      mean_acc_training_t20 <- mean(Return.cumulative(eod_ret_training[,t20Avg]))
-      mean_acc_testing_t20 <- mean(Return.cumulative(eod_ret_testing[,t20Avg]))
+      mean_acc_training_t20 <- mean(Return.cumulative(eod_ret_training[t20Avg]))
+      mean_acc_testing_t20 <- mean(Return.cumulative(eod_ret_testing[t20Avg]))
       
       #bad returns, before after, do predictions hold?
-      mean_acc_training_b20 <- mean(Return.cumulative(eod_ret_training[,b20Avg]))
-      mean_acc_testing_b20 <- mean(Return.cumulative(eod_ret_testing[,b20Avg]))
+      mean_acc_training_b20 <- mean(Return.cumulative(eod_ret_training[b20Avg]))
+      mean_acc_testing_b20 <- mean(Return.cumulative(eod_ret_testing[b20Avg]))
       
       print (paste("Average: [from a Set of Average] Cumulative Returns: train_t20 test_t20 train_b20 test_b20", mean_acc_training_t20 , mean_acc_testing_t20 , mean_acc_training_b20, mean_acc_testing_b20))
 
     #chart.CumReturns(Ra_training[,b20AVGR_Ra])
     
-    #boxplot(data.frame(stack(((data.frame(eod_ret_training[,t20AVGR_Ra])))))$values, horizontal = 1)
-    #boxplot(data.frame(stack(((data.frame(eod_ret_testing[,t20AVGR_Ra])))))$values, horizontal = 1)
+    #boxplot(data.frame(stack(((data.frame(eod_ret_training[t20AVGR_Ra])))))$values, horizontal = 1)
+    #boxplot(data.frame(stack(((data.frame(eod_ret_testing[t20AVGR_Ra])))))$values, horizontal = 1)
     
     
     chart.CumReturns(Rb_training)
@@ -1080,25 +1080,25 @@ for (iterator in seq(99, 200, by=3))
   for (name in c(list_upper,list_lower))
   {
     
-    mean(eod_ret_training[,name])
+    mean(eod_ret_training[name])
     
     #beta correlation plot training
     jpeg(paste0("plots/",end_date,name,"_betaTrainPlot.jpg"))
-    x=eod_ret_training$SP500TR; y=eod_ret_training[,name]
+    x=eod_ret_training$SP500TR; y=eod_ret_training[name]
     plot(x, y, ylab=paste("training",name),xlab="SP500TR")
     #text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)   
     dev.off()
     
     #... testing
     jpeg(paste0("plots/",end_date,name,"_betaTestPlot.jpg"))
-    x=eod_ret_testing$SP500TR; y=eod_ret_testing[,name]
+    x=eod_ret_testing$SP500TR; y=eod_ret_testing[name]
     plot(x, y, ylab=paste("testing",name),xlab="SP500TR")
     #text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)   
     dev.off()
     
     #Return probability plot training
     jpeg(paste0("plots/",end_date,name,"_ProbTrainPlot.jpg"))
-    profile<-quantile(eod_ret_training[,name],probs, na.rm =T, names = F, type = 7)
+    profile<-quantile(eod_ret_training[name],probs, na.rm =T, names = F, type = 7)
     x = probs; y = profile
     plot(x, y, ylab=name,type="o",xlab="Training Return Probability")
     text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)   
@@ -1106,7 +1106,7 @@ for (iterator in seq(99, 200, by=3))
     
     #... testing
     jpeg(paste0("plots/",end_date,name,"_ProbTestPlot.jpg"))
-    profile<-quantile(eod_ret_testing[,name],probs, na.rm =T, names = F, type = 7)
+    profile<-quantile(eod_ret_testing[name],probs, na.rm =T, names = F, type = 7)
     x = probs; y = profile
     plot(x, y, ylab=name,type="o",xlab="Testing Return Probability")
     text(x, y, paste(round(x, 2), round(y, 3), sep=", "), cex=1.1) # for (x, y)   
@@ -1114,41 +1114,41 @@ for (iterator in seq(99, 200, by=3))
 
     #Return Box Plot training
     jpeg(paste0("plots/",end_date,name,"_training_retBoxPlot.jpg"))
-    boxplot(eod_ret_training[,name],horizontal=1,ylab=name,xlab="training")
+    boxplot(eod_ret_training[name],horizontal=1,ylab=name,xlab="training")
     dev.off()
     
     #... testing
     jpeg(paste0("plots/",end_date,name,"_testing_retBoxPlot.jpg"))
-    boxplot(eod_ret_testing[,name],horizontal=1,ylab=name,xlab="testing")
+    boxplot(eod_ret_testing[name],horizontal=1,ylab=name,xlab="testing")
     dev.off()
     
     #Return Density Plot training
     jpeg(paste0("plots/",end_date,name,"_training_retDensPlot.jpg"))
-    d <- density(eod_ret_training[,name],na.rm=T)
+    d <- density(eod_ret_training[name],na.rm=T)
     plot(d,ylab=name)
     dev.off()
 
     #Return Density Plot training
     jpeg(paste0("plots/",end_date,name,"_testing_retDensPlot.jpg"))
-    d <- density(eod_ret_testing[,name],na.rm=T)
+    d <- density(eod_ret_testing[name],na.rm=T)
     plot(d,ylab=name)
     dev.off()
         
     #... testing
     jpeg(paste0("plots/",end_date,name,"_testing_retDensPlot.jpg"))
-    d <- density(eod_ret_testing[,name],na.rm=T)
+    d <- density(eod_ret_testing[name],na.rm=T)
     plot(d,ylab=name)
     dev.off()
         
     #Histogram, does it need to show mean?
     #training
     jpeg(paste0("plots/",end_date,name,"_trainingHistPlot.jpg"))
-    hist(eod_ret_training[,name],breaks,ylab=name)
+    hist(eod_ret_training[name],breaks,ylab=name)
     dev.off()
     
     #...testing
     jpeg(paste0("plots/",end_date,name,"_testingHistPlot.jpg"))
-    hist(eod_ret_testing[,name],breaks,ylab=name)
+    hist(eod_ret_testing[name],breaks,ylab=name)
     dev.off()
     
     #turn into gif, yes, run bat file, then delete! :
@@ -1192,7 +1192,7 @@ for (iterator in seq(99, 200, by=3))
     
   jpeg(paste0("plots/",end_date,"_retTrainingCumUpperPlot.jpg"))
   d<-chart.CumReturns(eod_ret_training[list_upper])
-  #View(eod_ret_training[,list_upper])
+  #View(eod_ret_training[list_upper])
   plot(d)
   dev.off()
   
@@ -1227,17 +1227,17 @@ for (iterator in seq(99, 200, by=3))
   #opt_w[1:length(t20Mix_Ra)]<-.5/length(t20Mix_Ra)
   #opt_w[1:length(list_Ra)]=1/length(list_Ra)
   
-  mean_acc_training_upper_t20 <- mean(Return.cumulative(eod_ret_training[,list_upper]))
-  mean_acc_training_lower_t20 <- mean(Return.cumulative(eod_ret_training[,list_lower]))
+  mean_acc_training_upper_t20 <- mean(Return.cumulative(eod_ret_training[list_upper]))
+  mean_acc_training_lower_t20 <- mean(Return.cumulative(eod_ret_training[list_lower]))
 
-  mean_acc_testing_upper_t20 <- mean(Return.cumulative(eod_ret_testing[,list_upper]))
-  mean_acc_testing_lower_t20 <- mean(Return.cumulative(eod_ret_testing[,list_lower]))
+  mean_acc_testing_upper_t20 <- mean(Return.cumulative(eod_ret_testing[list_upper]))
+  mean_acc_testing_lower_t20 <- mean(Return.cumulative(eod_ret_testing[list_lower]))
     
-  mean_training_upper_t20 <- sum(eod_ret_training[,list_upper])/(length(eod_ret_training[,list_upper])*count(eod_ret_training[,list_upper]))
-  mean_training_lower_t20 <- sum(eod_ret_training[,list_lower])/(length(eod_ret_training[,list_lower])*count(eod_ret_training[,list_lower]))
+  mean_training_upper_t20 <- sum(eod_ret_training[list_upper])/(length(eod_ret_training[list_upper])*count(eod_ret_training[list_upper]))
+  mean_training_lower_t20 <- sum(eod_ret_training[list_lower])/(length(eod_ret_training[list_lower])*count(eod_ret_training[list_lower]))
 
-  mean_testing_upper_t20 <- sum(eod_ret_testing[,list_upper])/(length(eod_ret_testing[,list_upper])*count(eod_ret_testing[,list_upper]))
-  mean_testing_lower_t20 <- sum(eod_ret_testing[,list_lower])/(length(eod_ret_testing[,list_lower])*count(eod_ret_testing[,list_lower]))
+  mean_testing_upper_t20 <- sum(eod_ret_testing[list_upper])/(length(eod_ret_testing[list_upper])*count(eod_ret_testing[list_upper]))
+  mean_testing_lower_t20 <- sum(eod_ret_testing[list_lower])/(length(eod_ret_testing[list_lower])*count(eod_ret_testing[list_lower]))
 
   mean(all_r)
   
@@ -1246,11 +1246,11 @@ for (iterator in seq(99, 200, by=3))
   opt_w<-opt_p$weights
   #opt_w[(length(list_upper)+1):(length(list_lower)+length(list_upper))]<-negative/length(list_lower)
 
-  upper_profile_training<-(data.frame(stack(eod_ret_training[,list_upper]))$values)
-  lower_profile_training<-(data.frame(stack(eod_ret_training[,list_lower]))$values)
+  upper_profile_training<-(data.frame(stack(eod_ret_training[list_upper]))$values)
+  lower_profile_training<-(data.frame(stack(eod_ret_training[list_lower]))$values)
 
-  upper_profile_testing<-(data.frame(stack(eod_ret_testing[,list_upper]))$values)
-  lower_profile_testing<-(data.frame(stack(eod_ret_testing[,list_lower]))$values)
+  upper_profile_testing<-(data.frame(stack(eod_ret_testing[list_upper]))$values)
+  lower_profile_testing<-(data.frame(stack(eod_ret_testing[list_lower]))$values)
   
   #Return Probability Lower Training
   jpeg(paste0("plots/",end_date,"_lower_training_retProbPlot.jpg"))
@@ -1360,13 +1360,13 @@ for (iterator in seq(99, 200, by=3))
   
   #Cumulative Return SP500TR Training
   jpeg(paste0("plots/",end_date,"_SP500TR_retTrainingPlot.jpg"))
-  d<-chart.CumReturns(as.xts(eod_ret_training[,'SP500TR',drop=F]))
+  d<-chart.CumReturns(as.xts(eod_ret_training['SP500TR',drop=F]))
   plot(d)
   dev.off()
   
   #...testing
   jpeg(paste0("plots/",end_date,"_SP500TR_retTestingPlot.jpg"))
-  d<-chart.CumReturns(as.xts(eod_ret_testing[,'SP500TR',drop=F]))
+  d<-chart.CumReturns(as.xts(eod_ret_testing['SP500TR',drop=F]))
   plot(d)
   dev.off()
   
