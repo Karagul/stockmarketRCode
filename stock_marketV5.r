@@ -80,8 +80,8 @@ iterator=0
   print(paste("iterator", iterator))
 }
 
-iterator=99
-for (iterator in seq(99, 200, by=3))
+iterator=0
+for (iterator in seq(0, 200, by=3))
 {
 
   #set # of years back here.
@@ -494,6 +494,8 @@ for (iterator in seq(99, 200, by=3))
   #chart.Boxplot(eod_ret[t20CR])
   #top/bottom 2.5%
   setPercent=round(length(colnames(eod_pvt_complete))*.025,0)
+  if(setPercent<=4)
+  {setPercent=5}
   
   #goal should be hold based on beta's, but not shorts
   #t20Beta<-trainingBetaSorted[,1:setPercent]
