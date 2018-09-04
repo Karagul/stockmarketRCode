@@ -81,7 +81,7 @@ iterator=0
 }
 
 iterator=0
-for (iterator in seq(0, 100, by=1))
+for (iterator in seq(0, 200, by=3))
 {
 
   #set # of years back here.
@@ -92,11 +92,11 @@ for (iterator in seq(0, 100, by=1))
   end_date <-as.Date(mondate(as.Date(end_date2)) - iterator)
   print(paste("End Date: ",end_date))
   
-  start_date <-as.Date(mondate(end_date) - 24)
+  days=252/4
+  weeks=52/4
+  months=12/4
   
-  days=252
-  weeks=52
-  months=12
+  start_date <-as.Date(mondate(end_date) - (months*2))
   
   eod <<- eodOutside[which(eodOutside$date>=start_date & eodOutside$date <= end_date),,drop=F]
   nrow(eod)
@@ -295,6 +295,7 @@ for (iterator in seq(0, 100, by=1))
   eod_ret[1:10,1:5] #first 10 rows and first 5 columns 
   ncol(eod_ret)
   nrow(eod_ret)
+  #View(eod_ret)
   
   #remove the first row
   eod_ret<-tail(eod_ret,-1) #use tail with a negative value
@@ -333,6 +334,24 @@ for (iterator in seq(0, 100, by=1))
   
   eod_ret <- na.replace(eod_ret, 0)
   table(is.na(eod_ret))
+  
+  # eod_ret[, colSums(eod_ret) != 0]
+  
+  sum(eod_ret == 0)
+  
+  apply(eod_ret, 2, function(c)sum(c==0)/(days*2))
+  #ncol(eod_ret)
+  #ncol(eod_ret[,!apply(eod_ret, 2, function(c)sum(c==0)/(days*2))>.5])
+  eod_ret <- eod_ret[,!apply(eod_ret, 2, function(c)sum(c==0)/(days*2))>.5]
+  
+  eow_ret <- eow_ret[,!apply(eow_ret, 2, function(c)sum(c==0)/(weeks*2))>.5]
+  eom_ret <- eom_ret[,!apply(eom_ret, 2, function(c)sum(c==0)/(months*2))>.5]
+  
+  #nrow(eod_ret["XSD"])
+  
+  #apply(eod_ret, 2, function(c)sum(c!=0))
+  
+  # x[,!(colSums(abs(x)) == 0)] 
   
   #y2 <- na.replace(y, 0)  
   
@@ -1394,5 +1413,7 @@ for (iterator in seq(0, 100, by=1))
   
   
 }
-command <- paste0("ren plots/*.bak plots/*.gif")
+command <- paste0("cp plots/*.bak plots/*.gif")
+system(command, intern = TRUE)
+command <- paste0("rm -f plots/*.bak")
 system(command, intern = TRUE)
