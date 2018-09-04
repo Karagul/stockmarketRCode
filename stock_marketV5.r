@@ -341,7 +341,8 @@ for (iterator in seq(0, 200, by=3))
   
   apply(eod_ret, 2, function(c)sum(c==0)/(days*2))
   #ncol(eod_ret)
-  #ncol(eod_ret[,!apply(eod_ret, 2, function(c)sum(c==0)/(days*2))>.5])
+  #ncol(eod_ret[,!apply(eod_ret, 2, function(c)sum(c==0)/(days*2))>.66])
+  #nrow(eod_ret[,!apply(eod_ret, 2, function(c)sum(c==0)/(days*2))>.66])
   eod_ret <- eod_ret[,!apply(eod_ret, 2, function(c)sum(c==0)/(days*2))>.5]
   
   eow_ret <- eow_ret[,!apply(eow_ret, 2, function(c)sum(c==0)/(weeks*2))>.5]
