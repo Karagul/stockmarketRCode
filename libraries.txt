@@ -1,0 +1,9 @@
+RPostgreSQL data.table xts tidyquant zoo pipeR dplyr magrittr ggplot2 gridExtra grid ggplot2 lattice readr FactoMineR devtools factoextra factoextra corrplot PerformanceAnalytics BatchGetSymbols XML RCurl mondate reshape2 imputeTS ggplot2 dplyr tidyverse
+
+gapminder
+
+
+apt-get update
+
+apt-get install libghc-postgresql-libpq-dev 
+
