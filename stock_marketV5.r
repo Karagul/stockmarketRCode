@@ -29,7 +29,7 @@ dbDisconnect(conn)
 end_date2<-as.Date(end_date_Pre$max)
 
 #have to reference $max else it returns a data.frame of a unix timetsamp vs a dereferenced string date
-conn = dbConnect(drv=pg, user="readyloop", password="read123", host, port=5432, dbname="readyloop")
+
 #eod prices and indices
 qry1=paste0("SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '1999-12-30' AND '",end_date2,"'")
 #qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
