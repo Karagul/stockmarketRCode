@@ -13,7 +13,8 @@ days=252/4
 weeks=52/4
 months=12/4
 
-start_date <-as.Date(mondate(end_date) - (months*8))
+#grab a year earlier just in case I haven't reran it in a while (hence x12 vs x8)
+start_date <-as.Date(mondate(end_date) - (months*12))
 
 require(RPostgreSQL) # did you install this package?
 require(DBI)
@@ -32,7 +33,12 @@ conn = dbConnect(drv=pg
 qry=paste0("SELECT * FROM custom_calendar WHERE date BETWEEN '", start_date, "' AND '",end_date2,"' ORDER by date")
 ccal<-dbGetQuery(conn,qry)
 
-end_date_Pre<-dbGetQuery(conn,"select max(timestamp) from qs_facts")
+#2nd time in case end_date (today) is greater than data set
+end_date_Pre<-dbGetQuery(conn,"select max(timestamp) from mv_qs_facts")
+
+end_date = end_date_Pre
+start_date = end_date - (months*8)
+
 #end_date$max
 #end_date<-todayIs
 dbDisconnect(conn)
