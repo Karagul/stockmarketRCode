@@ -2,6 +2,7 @@
 #dp<-read.csv('c:/test/share/quantshare/quotes.csv',header = FALSE) # no arguments
 
 library(Rserve);
+library(mondate);
 require(Rserve);
 
 todayIs <- as.Date(as.POSIXlt(as.Date(Sys.Date())))
@@ -27,18 +28,30 @@ end_date_Pre<-dbGetQuery(conn,"select max(timestamp) from qs_facts")
 dbDisconnect(conn)
 
 end_date2<-as.Date(end_date_Pre$max)
+iterator=0
+class(todayIs)
+class(end_date_Pre)
+#end_date <-as.Date(mondate(as.Date(todayIs)) - iterator)
+end_date <-as.Date(mondate(as.Date(end_date2)) - iterator)
+print(paste("End Date: ",end_date))
+
+days=252/4
+weeks=52/4
+months=12/4
+
+start_date <-as.Date(mondate(end_date) - (months*8))
 
 #have to reference $max else it returns a data.frame of a unix timetsamp vs a dereferenced string date
-
+#conn = dbConnect(drv=pg, user="readyloop", password="read123", host="192.168.1.50", port=5432, dbname="readyloop")
 #eod prices and indices
-qry1=paste0("SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '1999-12-30' AND '",end_date2,"'")
+qry1=paste0("SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '", start_date, "' AND '",end_date2,"'")
 #qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
 #qryQSCount=("select symbol from mv_qs_symbols")
-qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM etf_bond_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date2,"'")
-qry3=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date2,"'")
-qry4=paste0("SELECT symbol,timestamp,adjusted_close FROM other_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date2,"'")
-#qry5=paste0("SELECT symbol,timestamp,close FROM qs_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date$max,"'")
-qry5=paste0("SELECT symbol,timestamp,close FROM mv_qs_facts WHERE timestamp BETWEEN '1999-12-30' AND '",end_date2,"'")
+qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM etf_bond_facts WHERE timestamp BETWEEN '", start_date, "' AND '",end_date2,"'")
+qry3=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '", start_date, "' AND '",end_date2,"'")
+qry4=paste0("SELECT symbol,timestamp,adjusted_close FROM other_facts WHERE timestamp BETWEEN '", start_date, "' AND '",end_date2,"'")
+#qry5=paste0("SELECT symbol,timestamp,close FROM qs_facts WHERE timestamp BETWEEN '", start_date, "' AND '",end_date2,"'")
+qry5=paste0("SELECT symbol,timestamp,close FROM mv_qs_facts WHERE timestamp BETWEEN '", start_date, "' AND '",end_date2,"'")
 #eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry2,'UNION',qry3,'UNION',qry4))
 eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry5))
 #QSSymbols<-dbGetQuery(conn,paste(qryQSCount))
@@ -85,19 +98,7 @@ for (iterator in seq(0, 200, by=3))
 {
   
   #set # of years back here.
-  library(mondate)
-  class(todayIs)
-  class(end_date_Pre)
-  #end_date <-as.Date(mondate(as.Date(todayIs)) - iterator)
-  end_date <-as.Date(mondate(as.Date(end_date2)) - iterator)
-  print(paste("End Date: ",end_date))
-  
-  days=252/4
-  weeks=52/4
-  months=12/4
-  
-  start_date <-as.Date(mondate(end_date) - (months*2))
-  
+
   eod <<- eodOutside[which(eodOutside$date>=start_date & eodOutside$date <= end_date),,drop=F]
   nrow(eod)
   
