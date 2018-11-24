@@ -7,6 +7,14 @@ require(Rserve);
 
 todayIs <- as.Date(as.POSIXlt(as.Date(Sys.Date())))
 
+end_date <-as.Date(mondate(as.Date(todayIs)) - iterator)
+
+days=252/4
+weeks=52/4
+months=12/4
+
+start_date <-as.Date(mondate(end_date) - (months*8))
+
 require(RPostgreSQL) # did you install this package?
 require(DBI)
 pg = dbDriver("PostgreSQL")
@@ -34,14 +42,9 @@ iterator=0
 class(todayIs)
 class(end_date_Pre)
 #end_date <-as.Date(mondate(as.Date(todayIs)) - iterator)
-end_date <-as.Date(mondate(as.Date(end_date2)) - iterator)
+
 print(paste("End Date: ",end_date))
 
-days=252/4
-weeks=52/4
-months=12/4
-
-start_date <-as.Date(mondate(end_date) - (months*8))
 
 #have to reference $max else it returns a data.frame of a unix timetsamp vs a dereferenced string date
 #conn = dbConnect(drv=pg, user="readyloop", password="read123", host="192.168.1.50", port=5432, dbname="readyloop")
