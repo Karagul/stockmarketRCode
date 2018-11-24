@@ -19,7 +19,9 @@ conn = dbConnect(drv=pg
 )
 
 #custom calendar
-qry='SELECT * FROM custom_calendar ORDER by date'
+#qry='SELECT * FROM custom_calendar ORDER by date'
+#qry='SELECT * FROM custom_calendar ORDER by date'
+qry=paste0("SELECT * FROM custom_calendar WHERE date BETWEEN '", start_date, "' AND '",end_date2,"' ORDER by date")
 ccal<-dbGetQuery(conn,qry)
 
 end_date_Pre<-dbGetQuery(conn,"select max(timestamp) from qs_facts")
