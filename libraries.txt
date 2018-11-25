@@ -1,8 +1,7 @@
-RPostgreSQL data.table xts tidyquant zoo pipeR dplyr magrittr ggplot2 gridExtra grid ggplot2 lattice readr FactoMineR devtools factoextra factoextra corrplot PerformanceAnalytics BatchGetSymbols XML RCurl mondate reshape2 imputeTS ggplot2 dplyr tidyverse
+RPostgreSQL data.table xts tidyquant zoo pipeR dplyr magrittr ggplot2 gridExtra grid ggplot2 lattice readr FactoMineR devtools factoextra factoextra corrplot PerformanceAnalytics BatchGetSymbols XML RCurl mondate reshape2 imputeTS ggplot2 dplyr haven rvest xml2 tidyverse
 
 gapminder
 
-
 apt-get update
 
-apt-get install libghc-postgresql-libpq-dev 
+apt-get install p7zip-full libghc-postgresql-libpq-dev imagemagick libz-dev libxml2-dev

@@ -390,7 +390,7 @@ for (iterator in seq(0, 200, by=3))
   
   # We will select 'SP500TR' and c('AEGN','AAON','AMSC','ALCO','AGNC','AREX','ABCB','ABMD','ACTG','ADTN','AAPL','AAL')
   # We need to convert data frames to xts (extensible time series)
-  source("C:/Users/user/Documents/alphaAdvantageApi/stockmarketRCode/colSortAndFilter.R")
+  source("colSortAndFilter.R")
   
   eod_ret_training<-head(eod_ret,-days)
   #View(eod_ret_training[1:4])
@@ -1169,7 +1169,7 @@ for (iterator in seq(0, 200, by=3))
     
     #turn into gif, yes, run bat file, then delete! :
     
-    command <- paste0("magick convert -delay 100 -loop 0 ","plots/",end_date,name,"*.jpg ","plots/",end_date,"_",name,".gif")
+    command <- paste0("convert -delay 100 -loop 0 ","plots/",end_date,name,"*.jpg ","plots/",end_date,"_",name,".gif")
     system(command, intern = TRUE)
     #when using erase, states command not found
     command <- paste0("rm ","plots/",end_date,name,"*.jpg -f")
@@ -1406,7 +1406,7 @@ for (iterator in seq(0, 200, by=3))
   
   #zip up reports
   
-  command <- paste0("magick convert -delay 100 -loop 0 plots/*lot.jpg ","plots/",end_date,"_aggregate_Plots.gif")
+  command <- paste0("convert -delay 100 -loop 0 plots/*lot.jpg ","plots/",end_date,"_aggregate_Plots.gif")
   system(command, intern = TRUE)
   #when using erase, states command not found
   command <- paste0("mv ","plots/",end_date,"_aggregate_Plots.gif ","plots/",end_date,"_aggregate_Plots.bak")
