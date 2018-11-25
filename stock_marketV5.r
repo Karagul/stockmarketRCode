@@ -34,7 +34,7 @@ start_date = (end_date - 730)
 
 end_date = end_date$max
 start_date = start_date$max
-mondate(end_date$max)
+
 dbDisconnect(conn)
 
 iterator=0
@@ -43,7 +43,6 @@ class(end_date_Pre)
 #end_date <-as.Date(mondate(as.Date(todayIs)) - iterator)
 
 print(paste("End Date: ",end_date))
-
 
 #have to reference $max else it returns a data.frame of a unix timetsamp vs a dereferenced string date
 
