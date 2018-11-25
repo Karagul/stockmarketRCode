@@ -5,16 +5,15 @@ library(Rserve);
 library(mondate);
 require(Rserve);
 
-todayIs <- as.Date(as.POSIXlt(as.Date(Sys.Date())))
-
-end_date <-as.Date(mondate(as.Date(todayIs)) - iterator)
+#todayIs <- as.Date(as.POSIXlt(as.Date(Sys.Date())))
+#redundant, but included for usefulness
+#end_date <-as.Date(mondate(as.Date(todayIs)) - iterator)
 
 days=252/4
 weeks=52/4
 months=12/4
 
 #grab a year earlier just in case I haven't reran it in a while (hence x12 vs x8)
-start_date <-as.Date(mondate(end_date) - (months*8))
 
 require(RPostgreSQL) # did you install this package?
 require(DBI)
@@ -29,8 +28,13 @@ conn = dbConnect(drv=pg
 
 
 #max date is already stored on db creation
-end_date<-dbGetQuery(conn,"select max(max) from qs_max_date")
+end_date = dbGetQuery(conn,"select max(max) from qs_max_date")
+#2 years = 365*2 = 730
+start_date = (end_date - 730)
 
+end_date = end_date$max
+start_date = start_date$max
+mondate(end_date$max)
 dbDisconnect(conn)
 
 iterator=0
