@@ -53,7 +53,8 @@ print(paste("End Date: ",end_date))
 
 
 #have to reference $max else it returns a data.frame of a unix timetsamp vs a dereferenced string date
-#conn = dbConnect(drv=pg, user="readyloop", password="read123", host="192.168.1.50", port=5432, dbname="readyloop")
+
+conn = dbConnect(drv=pg, user="postgres", password="Read1234", host="192.168.1.5", port=5432, dbname="readyloop")
 #eod prices and indices
 qry1=paste0("SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '", start_date, "' AND '",end_date2,"'")
 #qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
