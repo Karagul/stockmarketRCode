@@ -27,23 +27,12 @@ conn = dbConnect(drv=pg
                  ,dbname="readyloop"
 )
 
-#custom calendar
-#qry='SELECT * FROM custom_calendar ORDER by date'
-#qry='SELECT * FROM custom_calendar ORDER by date'
-qry=paste0("SELECT * FROM custom_calendar WHERE date BETWEEN '", start_date, "' AND '",end_date,"' ORDER by date")
-ccal<-dbGetQuery(conn,qry)
 
-#2nd time in case end_date (today) is greater than data set
-end_date_Pre<-dbGetQuery(conn,"select max(max) from qs_max_date")
+#max date is already stored on db creation
+end_date<-dbGetQuery(conn,"select max(max) from qs_max_date")
 
-#end_date <- end_date_Pre
-#start_date <- (end_date_Pre - 24)
-
-#end_date$max
-#end_date<-todayIs
 dbDisconnect(conn)
 
-end_date2<-as.Date(end_date_Pre$max)
 iterator=0
 class(todayIs)
 class(end_date_Pre)
@@ -56,14 +45,17 @@ print(paste("End Date: ",end_date))
 
 conn = dbConnect(drv=pg, user="postgres", password="Read1234", host="192.168.1.5", port=5432, dbname="readyloop")
 #eod prices and indices
-qry1=paste0("SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '", start_date, "' AND '",end_date2,"'")
+qry=paste0("SELECT * FROM custom_calendar WHERE date BETWEEN '", start_date, "' AND '",end_date,"' ORDER by date")
+ccal<-dbGetQuery(conn,qry)
+
+qry1=paste0("SELECT symbol,date,adj_close FROM eod_indices WHERE date BETWEEN '", start_date, "' AND '",end_date,"'")
 #qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '",start_date,"' AND '",end_date,"'")
 #qryQSCount=("select symbol from mv_qs_symbols")
-qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM etf_bond_facts WHERE timestamp BETWEEN '", start_date, "' AND '",end_date2,"'")
-qry3=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '", start_date, "' AND '",end_date2,"'")
-qry4=paste0("SELECT symbol,timestamp,adjusted_close FROM other_facts WHERE timestamp BETWEEN '", start_date, "' AND '",end_date2,"'")
-#qry5=paste0("SELECT symbol,timestamp,close FROM qs_facts WHERE timestamp BETWEEN '", start_date, "' AND '",end_date2,"'")
-qry5=paste0("SELECT symbol,timestamp,close FROM mv_qs_facts WHERE timestamp BETWEEN '", start_date, "' AND '",end_date2,"'")
+qry2=paste0("SELECT symbol,timestamp,adjusted_close FROM etf_bond_facts WHERE timestamp BETWEEN '", start_date, "' AND '",end_date,"'")
+qry3=paste0("SELECT symbol,timestamp,adjusted_close FROM nasdaq_facts WHERE timestamp BETWEEN '", start_date, "' AND '",end_date,"'")
+qry4=paste0("SELECT symbol,timestamp,adjusted_close FROM other_facts WHERE timestamp BETWEEN '", start_date, "' AND '",end_date,"'")
+#qry5=paste0("SELECT symbol,timestamp,close FROM qs_facts WHERE timestamp BETWEEN '", start_date, "' AND '",end_date,"'")
+qry5=paste0("SELECT symbol,timestamp,close FROM mv_qs_facts WHERE timestamp BETWEEN '", start_date, "' AND '",end_date,"'")
 #eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry2,'UNION',qry3,'UNION',qry4))
 eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry5))
 #QSSymbols<-dbGetQuery(conn,paste(qryQSCount))
@@ -91,7 +83,9 @@ eodwNA<-dbGetQuery(conn,paste(qry1,'UNION',qry5))
 dbDisconnect(conn)
 
 eodOutside<-na.omit(eodwNA)
-eodOutside<-na.omit(dp[which(dp$date>=start_date & dp$date <= end_date),,drop=F])
+
+#if file exists, will overwrite with file, else error
+#eodOutside<-na.omit(dp[which(dp$date>=start_date & dp$date <= end_date),,drop=F])
 eod <<- eodOutside[which(eodOutside$date>=start_date & eodOutside$date <= end_date),,drop=F]
 
 nrow(eodOutside)
