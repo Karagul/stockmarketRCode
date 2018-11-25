@@ -6,4 +6,3 @@ gapminder
 apt-get update
 
 apt-get install libghc-postgresql-libpq-dev 
-
