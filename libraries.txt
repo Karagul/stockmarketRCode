@@ -1,4 +1,4 @@
-RPostgreSQL data.table xts tidyquant zoo pipeR dplyr magrittr ggplot2 gridExtra grid ggplot2 lattice readr FactoMineR devtools factoextra factoextra corrplot PerformanceAnalytics BatchGetSymbols XML RCurl mondate reshape2 imputeTS ggplot2 dplyr haven rvest xml2 tidyverse
+RPostgreSQL data.table xts tidyquant zoo pipeR dplyr magrittr ggplot2 gridExtra grid ggplot2 lattice readr FactoMineR devtools factoextra factoextra corrplot PerformanceAnalytics BatchGetSymbols XML RCurl mondate reshape2 imputeTS ggplot2 dplyr haven rvest xml2 tidyverse PortfolioAnalytics ROI ROI.plugin.quadprof foreach DEoptim iterators fGarch Rglpk quadprog ROI ROI.plugin.glpk ROI.plugin.quadprog ROI.plugin.symphony pso GenSA corpcor testthat nloptr MASS robustbase
 
 gapminder
 

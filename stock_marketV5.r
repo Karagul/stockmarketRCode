@@ -506,7 +506,7 @@ for (iterator in seq(0, 200, by=3))
   
   #chart.Boxplot(eod_ret[t20CR])
   #top/bottom 2.5%
-  setPercent=round(length(colnames(eod_pvt_complete))*.25,0)
+  setPercent=round(length(colnames(eod_pvt_complete))*.025,0)
   if(setPercent<=4)
   {setPercent=5}
   
@@ -945,7 +945,7 @@ for (iterator in seq(0, 200, by=3))
   sixthSixth = (all_profile[7]-all_profile[6])*(1-.9)
   
   sevenNumModSdev=firstSixth+secondSixth+thirdSixth+fourthSixth+fifthSixth+sixthSixth
-  
+  weight=2
   for (weight in 2:3)
   {
     positive=weight
@@ -986,8 +986,8 @@ for (iterator in seq(0, 200, by=3))
     #b20AVGR_Ra is b20AVGR_Ra_training, I just didn't name b20AVGR_Ra correctly, but the [filter] in b20AVGR_Ra specifies names sourced from training data.    
     #what is the average
     
-    t20Beta <- head(trainingBetaSorted,setPercent)[,1]$colname
-    b20Beta <- tail(trainingBetaSorted,setPercent)[,1]$colname
+    t20Beta <- head(trainingBetaSorted,setPercent)[,1]
+    b20Beta <- tail(trainingBetaSorted,setPercent)[,1]
     
     #class(t20Beta)
     
