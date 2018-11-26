@@ -436,8 +436,10 @@ for (iterator in seq(0, 9, by=3))
   nrow(y)
   
   #head
-  xtr<-head(x2,-days)
-  ytr<-head(y2,-days)
+  #xtr<-head(x2,-days)
+  xtr<-head(x2)
+  #ytr<-head(y2,-days)
+  ytr<-head(y2)
   
   nrow(xtr)
   nrow(ytr)
@@ -675,21 +677,21 @@ for (iterator in seq(0, 9, by=3))
   #trick: re-apply same list/weights to a portfolio that covers twice the distance to determine future success over similar distance (going to want a bandwidth)
   # withold the last 252 trading days
   #Ra_training<-head(Ra,-days)
-  Ra_training<-head(Ra)
+  Ra_training<-(Ra)
   #Rb_training<-head(Rb,-days)
-  Rb_training<-head(Rb)
+  Rb_training<-(Rb)
   
   #all but 13 weeks
   #RaW_training<-head(RaW,-weeks)
-  RaW_training<-head(RaW)
+  RaW_training<-(RaW)
   #RbW_training<-head(RbW,-weeks)
-  RbW_training<-head(RbW)
+  RbW_training<-(RbW)
   
   
   #all but 3 months
-  RaM_training<-head(RaM)
+  RaM_training<-(RaM)
   #RaM_training<-head(RaM,-months)
-  RbM_training<-head(RbM)
+  RbM_training<-(RbM)
   #RbM_training<-head(RbM,-months)
   
   # use the last 21 trading days for testing
