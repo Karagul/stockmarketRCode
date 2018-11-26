@@ -103,7 +103,7 @@ iterator=0
 }
 
 iterator=0
-for (iterator in seq(0, 200, by=3))
+for (iterator in seq(0, 9, by=3))
 {
   
   #set # of years back here.
@@ -1204,23 +1204,23 @@ for (iterator in seq(0, 200, by=3))
   boxplot(testing_lower,horizontal=1,xlab="testing lower")
   dev.off()
   
-  
+  #17
   jpeg(paste0("plots/",end_date,"_retTrainingCumUpperPlot.jpg"))
   d<-chart.CumReturns(eod_ret_training[list_upper])
   #View(eod_ret_training[list_upper])
   plot(d)
   dev.off()
-  
+  #15
   jpeg(paste0("plots/",end_date,"_retTestingCumUpperPlot.jpg"))
   d<-chart.CumReturns(eod_ret_testing[list_upper])
   plot(d)
   dev.off()
-  
+  #16
   jpeg(paste0("plots/",end_date,"_retTrainingCumLowerPlot.jpg"))
   d<-chart.CumReturns(eod_ret_training[list_lower])
   plot(d)
   dev.off()
-  
+  #14
   jpeg(paste0("plots/",end_date,"_retTestingCumLowerPlot.jpg"))
   d<-chart.CumReturns(eod_ret_testing[list_lower])
   plot(d)
