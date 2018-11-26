@@ -30,7 +30,7 @@ conn = dbConnect(drv=pg
 #max date is already stored on db creation
 end_date = dbGetQuery(conn,"select max(max) from qs_max_date")
 #2 years = 365*2 = 730
-start_date = (end_date - 730)
+start_date = (end_date - 365)
 
 end_date = end_date$max
 start_date = start_date$max
@@ -391,11 +391,14 @@ for (iterator in seq(0, 9, by=3))
   # We need to convert data frames to xts (extensible time series)
   source("colSortAndFilter.R")
   
-  eod_ret_training<-head(eod_ret,-days)
+  #eod_ret_training<-head(eod_ret,-days)
+  eod_ret_training<-(eod_ret)
   #View(eod_ret_training[1:4])
   #View(eod_ret_testing[1:4])
-  eow_ret_training<-head(eow_ret,-weeks)
-  eom_ret_training<-head(eom_ret,-months)
+  #eow_ret_training<-head(eow_ret,-weeks)
+  eow_ret_training<-(eow_ret)
+  #eom_ret_training<-head(eom_ret,-months)
+  eom_ret_training<-(eom_ret)
   
   eod_ret_testing<-tail(eod_ret,days)
   eow_ret_testing<-tail(eow_ret,weeks)
@@ -552,6 +555,10 @@ for (iterator in seq(0, 9, by=3))
   #b20Mix_RaW<-unique(c(b20CR_RaW,b20AVGR_RaW))
   #b20Mix_RaM<-unique(c(b20CR_RaM,b20AVGR_RaM))
   
+  
+  write.csv(Rb_training,"plots/rb_Training.csv")
+  write.csv(Rb_testing,"plots/rb_Testing.csv")
+
   write.csv(eod_ret_training[t20Beta],paste0("plots/",end_date,"_Training_T20B.csv"))
   write.csv(eod_ret_testing[t20Beta],paste0("plots/",end_date,"_Testing_T20B.csv"))
   
@@ -667,16 +674,23 @@ for (iterator in seq(0, 9, by=3))
   # MV Portfolio Optimization -----------------------------------------------
   #trick: re-apply same list/weights to a portfolio that covers twice the distance to determine future success over similar distance (going to want a bandwidth)
   # withold the last 252 trading days
-  Ra_training<-head(Ra,-days)
-  Rb_training<-head(Rb,-days)
+  #Ra_training<-head(Ra,-days)
+  Ra_training<-head(Ra)
+  #Rb_training<-head(Rb,-days)
+  Rb_training<-head(Rb)
   
   #all but 13 weeks
-  RaW_training<-head(RaW,-weeks)
-  RbW_training<-head(RbW,-weeks)
+  #RaW_training<-head(RaW,-weeks)
+  RaW_training<-head(RaW)
+  #RbW_training<-head(RbW,-weeks)
+  RbW_training<-head(RbW)
+  
   
   #all but 3 months
-  RaM_training<-head(RaM,-months)
-  RbM_training<-head(RbM,-months)
+  RaM_training<-head(RaM)
+  #RaM_training<-head(RaM,-months)
+  RbM_training<-head(RbM)
+  #RbM_training<-head(RbM,-months)
   
   # use the last 21 trading days for testing
   Ra_testing<-tail(Ra,days)
