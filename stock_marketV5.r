@@ -552,15 +552,20 @@ for (iterator in seq(0, 9, by=3))
   #b20Mix_RaW<-unique(c(b20CR_RaW,b20AVGR_RaW))
   #b20Mix_RaM<-unique(c(b20CR_RaM,b20AVGR_RaM))
   
+  write.csv(eod_ret_training[t20Beta],paste0("plots/",end_date,"_Training_T20B.csv"))
+  write.csv(eod_ret_testing[t20Beta],paste0("plots/",end_date,"_Testing_T20B.csv"))
   
-  write.csv(eod_ret_training[t20Beta],paste0("plots/",end_date,"_Testing_T20B.csv"))
+  write.csv(eod_ret_training[b20Beta],paste0("plots/",end_date,"_Training_B20B.csv"))
   write.csv(eod_ret_testing[b20Beta],paste0("plots/",end_date,"_Testing_B20B.csv"))
   
+  write.csv(eod_ret_training[t20Avg],paste0("plots/",end_date,"_Training_T20A.csv"))
   write.csv(eod_ret_testing[t20Avg],paste0("plots/",end_date,"_Testing_T20A.csv"))
+
+  write.csv(eod_ret_training[b20Avg],paste0("plots/",end_date,"_Training_B20A.csv"))
   write.csv(eod_ret_testing[b20Avg],paste0("plots/",end_date,"_Testing_B20A.csv"))
   
-  write.csv(testingBetaSorted,paste0("plots/",end_date,"_testingBetaSorted.csv"))
   write.csv(trainingBetaSorted,paste0("plots/",end_date,"_trainingBetaSorted.csv"))
+  write.csv(testingBetaSorted,paste0("plots/",end_date,"_testingBetaSorted.csv"))
   
   write.csv(trainingAvgSorted,paste0("plots/",end_date,"_trainingAvgSorted.csv"))
   write.csv(testingAvgSorted,paste0("plots/",end_date,"_testingAvgSorted.csv"))
