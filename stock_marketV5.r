@@ -563,31 +563,6 @@ for (iterator in seq(0, 9, by=3))
   #b20Mix_RaW<-unique(c(b20CR_RaW,b20AVGR_RaW))
   #b20Mix_RaM<-unique(c(b20CR_RaM,b20AVGR_RaM))
   
-  
-  write.csv(Rb_training,"plots/rb_Training.csv")
-  write.csv(Rb_testing,"plots/rb_Testing.csv")
-
-  write.csv(eod_ret_training[t20Beta],paste0("plots/",end_date,"_Training_T20B.csv"))
-  write.csv(eod_ret_testing[t20Beta],paste0("plots/",end_date,"_Testing_T20B.csv"))
-  
-  write.csv(eod_ret_training[b20Beta],paste0("plots/",end_date,"_Training_B20B.csv"))
-  write.csv(eod_ret_testing[b20Beta],paste0("plots/",end_date,"_Testing_B20B.csv"))
-  
-  write.csv(eod_ret_training[t20Avg],paste0("plots/",end_date,"_Training_T20A.csv"))
-  write.csv(eod_ret_testing[t20Avg],paste0("plots/",end_date,"_Testing_T20A.csv"))
-
-  write.csv(eod_ret_training[b20Avg],paste0("plots/",end_date,"_Training_B20A.csv"))
-  write.csv(eod_ret_testing[b20Avg],paste0("plots/",end_date,"_Testing_B20A.csv"))
-  
-  write.csv(trainingBetaSorted,paste0("plots/",end_date,"_trainingBetaSorted.csv"))
-  write.csv(testingBetaSorted,paste0("plots/",end_date,"_testingBetaSorted.csv"))
-  
-  write.csv(trainingAvgSorted,paste0("plots/",end_date,"_trainingAvgSorted.csv"))
-  write.csv(testingAvgSorted,paste0("plots/",end_date,"_testingAvgSorted.csv"))
-  
-  write.csv(trainingCumRetSorted,paste0("plots/",end_date,"_trainingCumRetSorted.csv"))
-  write.csv(testingCumRetSorted,paste0("plots/",end_date,"_testingCumRetSorted.csv"))
-  
   list_Ra<-c()
   #list_Ra<-c(t20Mix_Ra,b20Mix_Ra)
   #list_Ra<-c(t20Beta,b20Beta)
@@ -714,6 +689,30 @@ for (iterator in seq(0, 9, by=3))
   # use last 3 months
   RaM_testing<-tail(RaM,months)
   RbM_testing<-tail(RbM,months)
+  
+  write.csv(Rb_training,"plots/rb_Training.csv")
+  write.csv(Rb_testing,"plots/rb_Testing.csv")
+  
+  write.csv(eod_ret_training[t20Beta],paste0("plots/",end_date,"_Training_T20B.csv"))
+  write.csv(eod_ret_testing[t20Beta],paste0("plots/",end_date,"_Testing_T20B.csv"))
+  
+  write.csv(eod_ret_training[b20Beta],paste0("plots/",end_date,"_Training_B20B.csv"))
+  write.csv(eod_ret_testing[b20Beta],paste0("plots/",end_date,"_Testing_B20B.csv"))
+  
+  write.csv(eod_ret_training[t20Avg],paste0("plots/",end_date,"_Training_T20A.csv"))
+  write.csv(eod_ret_testing[t20Avg],paste0("plots/",end_date,"_Testing_T20A.csv"))
+  
+  write.csv(eod_ret_training[b20Avg],paste0("plots/",end_date,"_Training_B20A.csv"))
+  write.csv(eod_ret_testing[b20Avg],paste0("plots/",end_date,"_Testing_B20A.csv"))
+  
+  write.csv(trainingBetaSorted,paste0("plots/",end_date,"_trainingBetaSorted.csv"))
+  write.csv(testingBetaSorted,paste0("plots/",end_date,"_testingBetaSorted.csv"))
+  
+  write.csv(trainingAvgSorted,paste0("plots/",end_date,"_trainingAvgSorted.csv"))
+  write.csv(testingAvgSorted,paste0("plots/",end_date,"_testingAvgSorted.csv"))
+  
+  write.csv(trainingCumRetSorted,paste0("plots/",end_date,"_trainingCumRetSorted.csv"))
+  write.csv(testingCumRetSorted,paste0("plots/",end_date,"_testingCumRetSorted.csv"))
   
   #list stuff
   
@@ -1023,62 +1022,67 @@ for (iterator in seq(0, 9, by=3))
     #need to extract these as names for this next step.
     
     #graph cumulative returns by best/worst beta's before and after
-    chart.CumReturns(eod_ret_training[t20Beta])
-    chart.CumReturns(eod_ret_testing[t20Beta])
+    #chart.CumReturns(eod_ret_training[t20Beta])
+    chart.CumReturns(eod_ret_training[unlist(t20Beta)])
     
-    chart.CumReturns(eod_ret_training[b20Beta])
-    chart.CumReturns(eod_ret_testing[b20Beta])
+    #as.character(t20Beta)
+    #typeof(t20Beta)
+    #typeof(b20Avg)
+    chart.CumReturns(eod_ret_testing[unlist(t20Beta)])
+    
+    chart.CumReturns(eod_ret_training[unlist(b20Beta)])
+    chart.CumReturns(eod_ret_testing[unlist(b20Beta)])
     
     #graph cumulative returns by best/worst avg's before and after    
-    chart.CumReturns(eod_ret_training[t20Avg])
-    chart.CumReturns(eod_ret_testing[t20Avg])
+    chart.CumReturns(eod_ret_training[unlist(t20Avg)])
+    chart.CumReturns(eod_ret_testing[unlist(t20Avg)])
     
-    chart.CumReturns(eod_ret_training[b20Avg])
-    chart.CumReturns(eod_ret_testing[b20Avg])
+    chart.CumReturns(eod_ret_training[unlist(b20Avg)])
+    chart.CumReturns(eod_ret_testing[unlist(b20Avg)])
     
     #compare accumulated returns via means of best/worst beta's
     
     #good returns, before after, do predictions hold?
-    mean_acc_training_beta_t20 <- mean(Return.cumulative(eod_ret_training[t20Beta]))
-    mean_acc_testing_beta_t20 <- mean(Return.cumulative(eod_ret_testing[t20Beta]))
+    mean_acc_training_beta_t20 <- mean(Return.cumulative(eod_ret_training[unlist(t20Beta)]))
+    mean_acc_testing_beta_t20 <- mean(Return.cumulative(eod_ret_testing[unlist(t20Beta)]))
     
     #bad returns, before after, do predictions hold?
-    mean_acc_training_beta_b20 <- mean(Return.cumulative(eod_ret_training[b20Beta]))
-    mean_acc_testing_beta_b20 <- mean(Return.cumulative(eod_ret_testing[b20Beta]))
+    mean_acc_training_beta_b20 <- mean(Return.cumulative(eod_ret_training[unlist(b20Beta)]))
+    mean_acc_testing_beta_b20 <- mean(Return.cumulative(eod_ret_testing[unlist(b20Beta)]))
     
     #compare accumulated returns via means of best/worst average cumulative return
     
     #good returns, before after, do predictions hold?
-    mean_acc_training_t20 <- mean(Return.cumulative(eod_ret_training[t20Cum]))
-    mean_acc_testing_t20 <- mean(Return.cumulative(eod_ret_testing[t20Cum]))
+    mean_acc_training_t20 <- mean(Return.cumulative(eod_ret_training[unlist(t20Cum)]))
+    mean_acc_testing_t20 <- mean(Return.cumulative(eod_ret_testing[unlist(t20Cum)]))
     
     #bad returns, before after, do predictions hold?
-    mean_acc_training_b20 <- mean(Return.cumulative(eod_ret_training[b20Cum]))
-    mean_acc_testing_b20 <- mean(Return.cumulative(eod_ret_testing[b20Cum]))
+    mean_acc_training_b20 <- mean(Return.cumulative(eod_ret_training[unlist(b20Cum)]))
+    mean_acc_testing_b20 <- mean(Return.cumulative(eod_ret_testing[unlist(b20Cum)]))
     
     print (paste("Beta: [from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 mean_acc_testing_b20", mean_acc_training_t20 , mean_acc_testing_t20 , mean_acc_training_b20, mean_acc_testing_b20))
     
     #compare accumulated returns via means of best/worst avg return
     
     #good returns, before after, do predictions hold?
-    mean_acc_training_t20 <- mean(Return.cumulative(eod_ret_training[t20Avg]))
-    mean_acc_testing_t20 <- mean(Return.cumulative(eod_ret_testing[t20Avg]))
+    mean_acc_training_t20 <- mean(Return.cumulative(eod_ret_training[unlist(t20Avg)]))
+    mean_acc_testing_t20 <- mean(Return.cumulative(eod_ret_testing[unlist(t20Avg)]))
     
     #bad returns, before after, do predictions hold?
-    mean_acc_training_b20 <- mean(Return.cumulative(eod_ret_training[b20Avg]))
-    mean_acc_testing_b20 <- mean(Return.cumulative(eod_ret_testing[b20Avg]))
+    mean_acc_training_b20 <- mean(Return.cumulative(eod_ret_training[unlist(b20Avg)]))
+    mean_acc_testing_b20 <- mean(Return.cumulative(eod_ret_testing[unlist(b20Avg)]))
     
     print (paste("Beta: [from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 mean_acc_testing_b20", mean_acc_training_t20 , mean_acc_testing_t20 , mean_acc_training_b20, mean_acc_testing_b20))
     
     #compare accumulated returns, avg
     
     #good returns, before after, do predictions hold?
-    mean_acc_training_t20 <- mean(Return.cumulative(eod_ret_training[t20Avg]))
-    mean_acc_testing_t20 <- mean(Return.cumulative(eod_ret_testing[t20Avg]))
+    mean_acc_training_t20 <- mean(Return.cumulative(eod_ret_training[unlist(t20Avg)]))
+    mean_acc_testing_t20 <- mean(Return.cumulative(eod_ret_testing[unlist(t20Avg)]))
     
     #bad returns, before after, do predictions hold?
-    mean_acc_training_b20 <- mean(Return.cumulative(eod_ret_training[b20Avg]))
-    mean_acc_testing_b20 <- mean(Return.cumulative(eod_ret_testing[b20Avg]))
+    mean_acc_training_b20 <- mean(Return.cumulative(eod_ret_training[unlist(b20Avg)]))
+    mean_acc_testing_b20 <- mean(Return.cumulative(eod_ret_testing[unlist(b20Avg)]))
     
     print (paste("Average: [from a Set of Average] Cumulative Returns: train_t20 test_t20 train_b20 test_b20", mean_acc_training_t20 , mean_acc_testing_t20 , mean_acc_training_b20, mean_acc_testing_b20))
     
