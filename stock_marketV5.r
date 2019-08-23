@@ -1,6 +1,12 @@
 
 #dp<-read.csv('c:/test/share/quantshare/quotes.csv',header = FALSE) # no arguments
 
+psqluser="postgres"
+psqlpassword="Read1234"
+psqlport=5432
+psqldbname="readyloop"
+psqlhost="192.168.3.103"
+
 library(Rserve);
 library(mondate);
 require(Rserve);
@@ -21,7 +27,7 @@ pg = dbDriver("PostgreSQL")
 conn = dbConnect(drv=pg
                  ,user="postgres"
                  ,password="Read1234"
-                 ,host="192.168.1.5"
+                 ,host="192.168.3.103"
                  ,port=5432
                  ,dbname="readyloop"
 )
@@ -30,7 +36,7 @@ conn = dbConnect(drv=pg
 #max date is already stored on db creation
 end_date = dbGetQuery(conn,"select max(max) from qs_max_date")
 #2 years = 365*2 = 730
-start_date = (end_date - 365)
+start_date = (end_date - 730)
 
 end_date = end_date$max
 start_date = start_date$max
@@ -38,15 +44,15 @@ start_date = start_date$max
 dbDisconnect(conn)
 
 iterator=0
-class(todayIs)
-class(end_date_Pre)
+class(start_date)
+#class(end_date)
 #end_date <-as.Date(mondate(as.Date(todayIs)) - iterator)
 
 print(paste("End Date: ",end_date))
 
 #have to reference $max else it returns a data.frame of a unix timetsamp vs a dereferenced string date
 
-conn = dbConnect(drv=pg, user="postgres", password="Read1234", host="192.168.1.5", port=5432, dbname="readyloop")
+conn = dbConnect(drv=pg, user=psqluser, password=psqlpassword, host=psqlhost, port=psqlport, dbname=psqldbname)
 #eod prices and indices
 qry=paste0("SELECT * FROM custom_calendar WHERE date BETWEEN '", start_date, "' AND '",end_date,"' ORDER by date")
 ccal<-dbGetQuery(conn,qry)
