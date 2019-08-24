@@ -109,6 +109,7 @@ iterator=0
 }
 
 iterator=0
+#won't work with 730 days which is 2 years
 for (iterator in seq(0, 9, by=3))
 {
   
@@ -171,14 +172,17 @@ for (iterator in seq(0, 9, by=3))
   #eom_ret
   #View(testing)
   
+  #hist(table(eod$symbol))
+  
   pct<-table(eod$symbol)/(nrow(tdays)-1)
+  #hist(pct)
   #tail(pct,50)
   #pct<-table(eod$symbol)/max(table(eod$symbol))
-  selected_symbols_daily<-names(pct)[which(pct>=0.99)]
+  
+  selected_symbols_daily<-names(pct)[which(pct>=0.90)]
   length(selected_symbols_daily)
   
   eod_completewNA<-eod[which(eod$symbol %in% selected_symbols_daily),,drop=F]
-  
   
   #temp<-c()
   #temp<-eod_complete$date
@@ -203,6 +207,9 @@ for (iterator in seq(0, 9, by=3))
   require(stringi)
   require(reshape2) #did you install this package?
   eod_pvtwNA<-dcast(eod_completewNA, date ~ symbol,value.var='adj_close',fun.aggregate = mean, fill=NULL)
+  
+  eod_pvtwNA_allDays<-dcast(eod, date ~ symbol,value.var='adj_close',fun.aggregate = mean, fill=NULL)
+  #View(eod_pvtwNA_allDays)
   
   
   #check
@@ -374,7 +381,7 @@ for (iterator in seq(0, 9, by=3))
   
   #y2 <- na.replace(y, 0)  
   
-  (eod_ret[!complete.cases(eod_pvt), ][1:5])
+  #(eod_ret[!complete.cases(eod_pvt), ][1:5])
   
   #check
   tail(eom_ret[,1:2])
@@ -467,7 +474,6 @@ for (iterator in seq(0, 9, by=3))
   
   #t20Beta
   
-  
   #Return.cumulative(eod_ret_training$TNA)
   trainingBetaSorted <- colSortMax(linearModTraining$coefficients)
   testingBetaSorted <- colSortMax(linearModTesting$coefficients)
@@ -517,7 +523,7 @@ for (iterator in seq(0, 9, by=3))
   
   #chart.Boxplot(eod_ret[t20CR])
   #top/bottom 2.5%
-  setPercent=round(length(colnames(eod_pvt_complete))*.025,0)
+  setPercent=round(length(colnames(eod_pvt_complete))*.25,0)
   if(setPercent<=4)
   {setPercent=5}
   
