@@ -404,8 +404,8 @@ for (iterator in seq(0, 9, by=3))
   # We need to convert data frames to xts (extensible time series)
   source("colSortAndFilter.R")
   
-  #eod_ret_training<-head(eod_ret,-days)
-  eod_ret_training<-(eod_ret)
+  eod_ret_training<-head(eod_ret,-days)
+  #eod_ret_training<-(eod_ret)
   #View(eod_ret_training[1:4])
   #View(eod_ret_testing[1:4])
   #eow_ret_training<-head(eow_ret,-weeks)
@@ -523,7 +523,7 @@ for (iterator in seq(0, 9, by=3))
   
   #chart.Boxplot(eod_ret[t20CR])
   #top/bottom 2.5%
-  setPercent=round(length(colnames(eod_pvt_complete))*.003125,0)
+  setPercent=round(length(colnames(eod_pvt_complete))*.0015625,0)
   if(setPercent<=4)
   {setPercent=5}
   
