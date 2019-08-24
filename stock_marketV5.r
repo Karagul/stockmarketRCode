@@ -523,7 +523,7 @@ for (iterator in seq(0, 9, by=3))
   
   #chart.Boxplot(eod_ret[t20CR])
   #top/bottom 2.5%
-  setPercent=round(length(colnames(eod_pvt_complete))*.25,0)
+  setPercent=round(length(colnames(eod_pvt_complete))*.003125,0)
   if(setPercent<=4)
   {setPercent=5}
   
