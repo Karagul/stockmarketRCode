@@ -116,7 +116,7 @@ start_dateInLoop <- 0
 iterator=0
 #won't work with 730 days which is 2 years
 #3 months, not years
-for (iterator in seq(0, 12, by=3))
+for (iterator in seq(0, 24, by=3))
 {
   
   start_dateInLoop = mondate(start_date) + iterator
@@ -1020,8 +1020,8 @@ for (iterator in seq(0, 12, by=3))
   print(paste(c("train portfolio",round(sum(Return.cumulative(eod_ret_training[t20Cum])),3))))
   print(paste(c("train SP500",round(sum(Return.cumulative(eod_ret_training["SP500TR"])),3))))
   
-  print(paste(c("train portfolio",round(sum(Return.cumulative(eod_ret_testing[t20Cum])),3))))
-  print(paste(c("train SP500",round(sum(Return.cumulative(eod_ret_testing["SP500TR"])),3))))
+  print(paste(c("test portfolio",round(sum(Return.cumulative(eod_ret_testing[t20Cum])),3))))
+  print(paste(c("test SP500",round(sum(Return.cumulative(eod_ret_testing["SP500TR"])),3))))
   
   for (weight in 2:3)
   {
@@ -1480,7 +1480,7 @@ for (iterator in seq(0, 12, by=3))
   RpW$ptf<-RaW_testing %*% opt_w
   RpM$ptf<-RaM_testing %*% opt_w
   
-  print (paste("Beta: Iterator:[from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 test_b20", mean_acc_training_beta_t20 , mean_acc_testing_beta_t20 , mean_acc_training_beta_b20, mean_acc_testing_beta_b20))
+  print (paste("Beta: CumRet", "tr_t20 te_t20 tr_b20 te_b20", round(mean_acc_training_beta_t20,3) , round(mean_acc_testing_beta_t20,3) , round(mean_acc_training_beta_b20,3), round(mean_acc_testing_beta_b20,3)))
   
   #only use with negative weights
   print(paste("Markowitz Profile ret", round(Return.cumulative(Rp$ptf),3)))
