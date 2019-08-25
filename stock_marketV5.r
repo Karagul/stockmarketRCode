@@ -1483,7 +1483,7 @@ for (iterator in seq(0, 12, by=3))
   print (paste("Beta: Iterator:[from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 test_b20", mean_acc_training_beta_t20 , mean_acc_testing_beta_t20 , mean_acc_training_beta_b20, mean_acc_testing_beta_b20))
   
   #only use with negative weights
-  print(paste("start: ", start_date, "end: ", end_date, "Markowitz Profile & The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))
+  print(paste("Markowitz Profile ret", round(Return.cumulative(Rp$ptf),3)))
   
   #zip up reports
   
