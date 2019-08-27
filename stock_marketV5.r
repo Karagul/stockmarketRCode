@@ -120,14 +120,14 @@ for (iterator in seq(0, 24, by=1))
   start_dateInLoop = mondate(start_date) + iterator
   end_dateInLoop = mondate(start_dateInLoop) + 24
   
-  typeof(start_dateInLoop)
-  typeof(start_date)
+  #typeof(start_dateInLoop)
+  #typeof(start_date)
   
   eod <<- eodOutside[which(eodOutside$date>=as.Date(start_dateInLoop) & eodOutside$date <= as.Date(end_dateInLoop)),,drop=F]
   
   #set # of years back here.
 
-  nrow(eod)
+  #nrow(eod)
   
   #problem is null records are loaded
   #table(eod$symbol=='AGT')
@@ -149,37 +149,38 @@ for (iterator in seq(0, 24, by=1))
   #eod<-dbGetQuery(conn,paste(qry))
   
   #Explore
-  head(ccal)
-  tail(ccal)
-  nrow(ccal)
+  #head(ccal)
+  #tail(ccal)
+  #nrow(ccal)
   
-  head(eod)
-  tail(eod)
-  nrow(eod)
+  #head(eod)
+  #tail(eod)
+  #nrow(eod)
   
-  head(eod[which(eod$symbol=='SP500TR'),])
+  #head(eod[which(eod$symbol=='SP500TR'),])
   
-  tail(eod)
+  #tail(eod)
   
   # Use Calendar --------------------------------------------------------
   
   tdays<-ccal[which(ccal$trading==1 & ccal$date >= as.Date(start_dateInLoop) & ccal$date <=as.Date(end_dateInLoop)),,drop=F]
+  #short sighted on holidays
   wdays<-tdays[which(tdays$dow=="Fri"),,drop=F]
   mdays<-tdays[which(tdays$eom==1),,drop=F]
-  head(tdays)
-  nrow(tdays)-1
+  #head(tdays)
+  #nrow(tdays)-1
   
   # Completeness ----------------------------------------------------------
   # Percentage of completeness
   
-  table(eod$symbol)
+  #table(eod$symbol)
   
   #View(table(eod$symbol))
   
   #hist(table(eod$symbol))
   
-  max(table(eod$symbol))
-  length(table(eod$symbol))
+  #max(table(eod$symbol))
+  #length(table(eod$symbol))
   
   #filter
   #testing<-eod[which(eod$symbol=='YLCO'),,]
@@ -225,7 +226,7 @@ for (iterator in seq(0, 24, by=1))
   require(reshape2) #did you install this package?
   eod_pvtwNA<-dcast(eod_completewNA, date ~ symbol,value.var='adj_close',fun.aggregate = mean, fill=NULL)
   
-  eod_pvtwNA_allDays<-dcast(eod, date ~ symbol,value.var='adj_close',fun.aggregate = mean, fill=NULL)
+  #eod_pvtwNA_allDays<-dcast(eod, date ~ symbol,value.var='adj_close',fun.aggregate = mean, fill=NULL)
   #View(eod_pvtwNA_allDays)
   
   #eod_pvtwNA_allDays

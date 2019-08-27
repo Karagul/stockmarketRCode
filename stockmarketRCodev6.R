@@ -11,9 +11,12 @@ library(TTR);
 library(quantmod);
 #https://stackoverflow.com/questions/4297231/converting-a-data-frame-to-xts
 #tidyquant deprecated
-library(timetk);
-library(xtsanalytics)
-
+#library(timetk);
+#source("xtsanalytics-master/R/mget_symbols.R")
+#library(data.table)
+library(mondate);
+require(stringi)
+require(reshape2) #did you install this package?
 
 #todayIs <- as.Date(as.POSIXlt(as.Date(Sys.Date())))
 #redundant, but included for usefulness
@@ -56,8 +59,8 @@ conn = dbConnect(drv=pg, user=psqluser, password=psqlpassword, host=psqlhost, po
 qry=paste0("SELECT * FROM custom_calendar WHERE date BETWEEN '", start_date, "' AND '",end_date,"' ORDER by date")
 ccal<-dbGetQuery(conn,qry)
 
-qry1=paste0("SELECT symbol,date,open,high,low,adj_close AS close,volume  FROM eod_indices WHERE date BETWEEN '", start_date, "' AND '",end_date,"'")
-qry2=paste0("SELECT symbol,timestamp AS date,open,high,low,close,volume FROM mv_qs_facts WHERE timestamp BETWEEN '", start_date, "' AND '",end_date,"'")
+qry1=paste0("SELECT date,symbol,open,high,low,adj_close AS close,volume  FROM eod_indices WHERE date BETWEEN '", start_date, "' AND '",end_date,"'")
+qry2=paste0("SELECT timestamp AS date,symbol,open,high,low,close,volume FROM mv_qs_facts WHERE timestamp BETWEEN '", start_date, "' AND '",end_date,"'")
 queryAggregate=paste(qry1,'UNION',qry2)
 eodwNA<-dbGetQuery(conn,queryAggregate)
 
@@ -66,10 +69,94 @@ dbDisconnect(conn)
 #eodwNA_xts <- as.xts(eodwNA)
 colnames(eodwNA)
 
+#symbolNames <- c()
+#symbolNames <- unique(eodwNA$symbol)
+
+#fwrite(eodwNA,"eodwNA.csv")
+
 #https://rdrr.io/github/jeanmarcgp/xtsanalytics/man/mget_symbols.html
 
+eodOutside<-na.omit(eodwNA)
 
-eodwNA_xts <- timetk::tk_xts(eodwNA, date_col = date)
-colnames(eodwNA_xts)
+start_dateInLoop = mondate(start_date)
+end_dateInLoop = mondate(start_dateInLoop) + 24
 
-bbands <- BBands( [eodwNA_xts,c("High","Low","Close")] )
+eod <<- eodOutside[which(eodOutside$date>=as.Date(start_dateInLoop) & eodOutside$date <= as.Date(end_dateInLoop)),,drop=F]
+
+tdays<-ccal[which(ccal$trading==1 & ccal$date >= as.Date(start_dateInLoop) & ccal$date <=as.Date(end_dateInLoop)),,drop=F]
+#short sighted on holidays
+wdays<-tdays[which(tdays$dow=="Fri"),,drop=F]
+mdays<-tdays[which(tdays$eom==1),,drop=F]
+
+pct<-table(eod$symbol)/(nrow(tdays))
+
+#filter out symbols that were bound together (example shp and gst)
+selected_symbols_daily<-names(pct)[which(pct>=0.99 & pct<=1)]
+
+eod_completewNA<-eod[which(eod$symbol %in% selected_symbols_daily),,drop=F]
+
+#https://stackoverflow.com/questions/35371004/error-using-dcast-with-multiple-value-var?noredirect=1&lq=1
+#"date"   "open"   "high"   "low"    "close"  "volume"
+
+
+head(eod_completewNA[1:5])
+
+list_symbols <- unique(eod_completewNA$symbol)
+
+for(lister in list_symbols)
+{
+  tempHolder <- c()
+  tempHolder <- eod_completewNA[which(eod_completewNA$symbol==lister),,drop=F][,-2]
+  colnames(tempHolder)
+  class(tempHolder$date)
+  #https://www.oipapio.com/question-12219593
+  rownames(tempHolder) <- tempHolder$date 
+  xts_holder <- as.xts(tempHolder,date_col = date)
+  
+  
+}
+
+#melted_eod_completewNA <- melt(eod_completewNA, measure.vars = c("open","high","low","close","volume"))
+
+#https://seananderson.ca/2013/10/19/reshape/
+#https://t1.daumcdn.net/cfile/tistory/25177F4E5863D58A0C
+melted_eod_completewNA <- melt(eod_completewNA, measure.vars = c("open","high","low","close","volume"))
+
+melted_eod_completewNA[which(melted_eod_completewNA$symbol=="ACAD" & melted_eod_completewNA$date == "2015-08-24"),,drop=F]
+
+#how to filter
+melted_eod_completewNA[which(melted_eod_completewNA$symbol=="ACAD" & melted_eod_completewNA$date == "2015-08-24" & (melted_eod_completewNA$variable=="high" | melted_eod_completewNA$variable=="low" | melted_eod_completewNA$variable=="close")),,drop=F]
+
+#https://stackoverflow.com/questions/25143428/why-cant-one-have-several-value-var-in-dcast
+eod_pvtwNA<-dcast(melted_eod_completewNA, date ~ symbol + variable, value.var="value" ,mean)
+
+colnames(eod_completewNA)
+#https://stackoverflow.com/questions/4297231/converting-a-data-frame-to-xts
+colnames(eod_completewNA[,-1:-2])
+
+xts_melted_eod_completewNA <- as.xts(eod_completewNA[,-1:-2],date_col = eod_completewNA[,1])
+
+head(xts_melted_eod_completewNA)
+
+colnames(eod_completewNA)
+melted_eod_completewNA_bbands <- BBands( eod_completewNA[,c("high","low","close")] )
+
+colnames(melted_eod_completewNA_bbands)
+nrow(eod_completewNA)
+head(melted_eod_completewNA_bbands)
+
+#value.var (value) not found in input
+
+colnames(eod_completewNA)
+
+colnames(eod_pvtwNA)
+
+
+
+#head(eod_pvtwNA)
+
+testWide <- dcast(eod_completewNA, formula = date ~ symbol, value.var = c('open','high','low','close','volume'))
+
+pct2 <- 1-(sapply(eod_pvtwNA, function(x) sum(is.na(x)))/nrow(eod_pvtwNA))
+
+View(colnames(eod_pvtwNA))
