@@ -37,10 +37,10 @@ conn = dbConnect(drv=pg
 end_date = dbGetQuery(conn,"select max(max) from qs_max_date")
 #2 years = 365*2 = 730
 #4 years = 1461
-start_date = (end_date - 1461)
 
+#have to reference $max else it returns a data.frame of a unix timetsamp vs a dereferenced string date
 end_date = end_date$max
-start_date = start_date$max
+start_date = (end_date - 1461)
 
 dbDisconnect(conn)
 
@@ -49,8 +49,6 @@ class(start_date)
 #class(end_date)
 
 print(paste("End Date: ",end_date))
-
-#have to reference $max else it returns a data.frame of a unix timetsamp vs a dereferenced string date
 
 conn = dbConnect(drv=pg, user=psqluser, password=psqlpassword, host=psqlhost, port=psqlport, dbname=psqldbname)
 #eod prices and indices
@@ -116,7 +114,7 @@ start_dateInLoop <- 0
 iterator=0
 #won't work with 730 days which is 2 years
 #3 months, not years
-for (iterator in seq(0, 24, by=3))
+for (iterator in seq(0, 24, by=1))
 {
   
   start_dateInLoop = mondate(start_date) + iterator
@@ -1005,7 +1003,7 @@ for (iterator in seq(0, 24, by=3))
   
   sevenNumModSdev=firstSixth+secondSixth+thirdSixth+fourthSixth+fifthSixth+sixthSixth
   #weight=2
-  print(paste("start: ", as.Date(start_dateInLoop), "end: ", as.Date(end_dateInLoop), "Weights", positive, "vs", negative, "The lag month is", iterator))
+  print(paste("start: ", as.Date(start_dateInLoop), "end: ", as.Date(end_dateInLoop), "Lag", iterator))
   chart.CumReturns(eod_ret_training[c(t20Cum,"SP500TR")],legend.loc = 'topleft')
   chart.CumReturns(eod_ret_testing[c(t20Cum,"SP500TR")],legend.loc = 'topleft')
   
@@ -1025,6 +1023,7 @@ for (iterator in seq(0, 24, by=3))
   
   for (weight in 2:3)
   {
+    print(paste("Weights", positive, "vs", negative))
     positive=weight
     negative=abs((positive)-1)*-1
     
