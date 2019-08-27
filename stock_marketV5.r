@@ -1,6 +1,12 @@
 
 #dp<-read.csv('c:/test/share/quantshare/quotes.csv',header = FALSE) # no arguments
 
+psqluser="postgres"
+psqlpassword="Read1234"
+psqlport=5432
+psqldbname="readyloop"
+psqlhost="192.168.3.103"
+
 library(Rserve);
 library(mondate);
 require(Rserve);
@@ -21,7 +27,7 @@ pg = dbDriver("PostgreSQL")
 conn = dbConnect(drv=pg
                  ,user="postgres"
                  ,password="Read1234"
-                 ,host="192.168.1.5"
+                 ,host="192.168.3.103"
                  ,port=5432
                  ,dbname="readyloop"
 )
@@ -30,7 +36,8 @@ conn = dbConnect(drv=pg
 #max date is already stored on db creation
 end_date = dbGetQuery(conn,"select max(max) from qs_max_date")
 #2 years = 365*2 = 730
-start_date = (end_date - 365)
+#4 years = 1461
+start_date = (end_date - 1461)
 
 end_date = end_date$max
 start_date = start_date$max
@@ -38,15 +45,14 @@ start_date = start_date$max
 dbDisconnect(conn)
 
 iterator=0
-class(todayIs)
-class(end_date_Pre)
-#end_date <-as.Date(mondate(as.Date(todayIs)) - iterator)
+class(start_date)
+#class(end_date)
 
 print(paste("End Date: ",end_date))
 
 #have to reference $max else it returns a data.frame of a unix timetsamp vs a dereferenced string date
 
-conn = dbConnect(drv=pg, user="postgres", password="Read1234", host="192.168.1.5", port=5432, dbname="readyloop")
+conn = dbConnect(drv=pg, user=psqluser, password=psqlpassword, host=psqlhost, port=psqlport, dbname=psqldbname)
 #eod prices and indices
 qry=paste0("SELECT * FROM custom_calendar WHERE date BETWEEN '", start_date, "' AND '",end_date,"' ORDER by date")
 ccal<-dbGetQuery(conn,qry)
@@ -89,11 +95,12 @@ eodOutside<-na.omit(eodwNA)
 
 #if file exists, will overwrite with file, else error
 #eodOutside<-na.omit(dp[which(dp$date>=start_date & dp$date <= end_date),,drop=F])
-eod <<- eodOutside[which(eodOutside$date>=start_date & eodOutside$date <= end_date),,drop=F]
 
 nrow(eodOutside)
 
 table(eodOutside$symbol)
+
+#View(table(eodOutside$symbol))
 
 #scores<-c()
 iterator=0
@@ -102,15 +109,27 @@ iterator=0
   print(paste("iterator", iterator))
 }
 
+end_dateInLoop <- 0
+start_dateInLoop <- 0
+
+
 iterator=0
-for (iterator in seq(0, 9, by=3))
+#won't work with 730 days which is 2 years
+#3 months, not years
+for (iterator in seq(0, 24, by=3))
 {
+  
+  start_dateInLoop = mondate(start_date) + iterator
+  end_dateInLoop = mondate(start_dateInLoop) + 24
+  
+  typeof(start_dateInLoop)
+  typeof(start_date)
+  
+  eod <<- eodOutside[which(eodOutside$date>=as.Date(start_dateInLoop) & eodOutside$date <= as.Date(end_dateInLoop)),,drop=F]
   
   #set # of years back here.
 
-  eod <<- eodOutside[which(eodOutside$date>=start_date & eodOutside$date <= end_date),,drop=F]
   nrow(eod)
-  
   
   #problem is null records are loaded
   #table(eod$symbol=='AGT')
@@ -131,7 +150,6 @@ for (iterator in seq(0, 9, by=3))
   
   #eod<-dbGetQuery(conn,paste(qry))
   
-  
   #Explore
   head(ccal)
   tail(ccal)
@@ -147,7 +165,7 @@ for (iterator in seq(0, 9, by=3))
   
   # Use Calendar --------------------------------------------------------
   
-  tdays<-ccal[which(ccal$trading==1 & ccal$date >= start_date & ccal$date <=end_date),,drop=F]
+  tdays<-ccal[which(ccal$trading==1 & ccal$date >= as.Date(start_dateInLoop) & ccal$date <=as.Date(end_dateInLoop)),,drop=F]
   wdays<-tdays[which(tdays$dow=="Fri"),,drop=F]
   mdays<-tdays[which(tdays$eom==1),,drop=F]
   head(tdays)
@@ -157,22 +175,33 @@ for (iterator in seq(0, 9, by=3))
   # Percentage of completeness
   
   table(eod$symbol)
-  length(table(eod$symbol))
   
+  #View(table(eod$symbol))
+  
+  #hist(table(eod$symbol))
+  
+  max(table(eod$symbol))
+  length(table(eod$symbol))
   
   #filter
   #testing<-eod[which(eod$symbol=='YLCO'),,]
   #eom_ret
   #View(testing)
   
-  pct<-table(eod$symbol)/(nrow(tdays)-1)
+  #hist(table(eod$symbol))
+  
+  pct<-table(eod$symbol)/(nrow(tdays))
+  #hist(pct)
   #tail(pct,50)
   #pct<-table(eod$symbol)/max(table(eod$symbol))
-  selected_symbols_daily<-names(pct)[which(pct>=0.99)]
+  
+  #filter out symbols that were bound together (example shp and gst)
+  selected_symbols_daily<-names(pct)[which(pct>=0.99 & pct<=1)]
   length(selected_symbols_daily)
   
   eod_completewNA<-eod[which(eod$symbol %in% selected_symbols_daily),,drop=F]
-  
+  table(eod_completewNA$symbol)
+  max(table(eod_completewNA$symbol))
   
   #temp<-c()
   #temp<-eod_complete$date
@@ -198,6 +227,10 @@ for (iterator in seq(0, 9, by=3))
   require(reshape2) #did you install this package?
   eod_pvtwNA<-dcast(eod_completewNA, date ~ symbol,value.var='adj_close',fun.aggregate = mean, fill=NULL)
   
+  eod_pvtwNA_allDays<-dcast(eod, date ~ symbol,value.var='adj_close',fun.aggregate = mean, fill=NULL)
+  #View(eod_pvtwNA_allDays)
+  
+  #eod_pvtwNA_allDays
   
   #check
   #View((eod_pvt[c('date','SP500TR')])) #first 10 rows and first 5 columns 
@@ -209,7 +242,7 @@ for (iterator in seq(0, 9, by=3))
   #table(is.na(eod_pvt$YLCO))
   
   #https://sebastiansauer.github.io/sum-isna/
-  pct2<-1-(sapply(eod_pvtwNA, function(x) sum(is.na(x)))/nrow(eod_pvtwNA))
+  pct2 <- 1-(sapply(eod_pvtwNA, function(x) sum(is.na(x)))/nrow(eod_pvtwNA))
   
   #length(eod_complete)
   length(table(eod$symbol))
@@ -225,7 +258,6 @@ for (iterator in seq(0, 9, by=3))
   length(selected_symbols_daily3)
   
   eod_complete<-eod[which(eod$symbol %in% selected_symbols_daily3),,drop=F]
-  
   
   eod_pvt<-dcast(eod_complete, date ~ symbol,value.var='adj_close',fun.aggregate = mean, fill=NULL)
   
@@ -279,7 +311,7 @@ for (iterator in seq(0, 9, by=3))
   #cut it here, see the true#  noo!!!
   
   #re-check, if years is set -3, then agt has 364 non na's, but 808 na's... something is getting past the filter here.
-  table(is.na(data.frame(eod_pvt_complete$AGT)))
+  #table(is.na(data.frame(eod_pvt_complete$AGT)))
   
   #colnames(eod_ret)
   
@@ -368,7 +400,7 @@ for (iterator in seq(0, 9, by=3))
   
   #y2 <- na.replace(y, 0)  
   
-  (eod_ret[!complete.cases(eod_pvt), ][1:5])
+  #(eod_ret[!complete.cases(eod_pvt), ][1:5])
   
   #check
   tail(eom_ret[,1:2])
@@ -391,14 +423,16 @@ for (iterator in seq(0, 9, by=3))
   # We need to convert data frames to xts (extensible time series)
   source("colSortAndFilter.R")
   
-  #eod_ret_training<-head(eod_ret,-days)
-  eod_ret_training<-(eod_ret)
+  
+  #all but last 3 mo's
+  eod_ret_training<-head(eod_ret,-days)
+  #eod_ret_training<-(eod_ret)
   #View(eod_ret_training[1:4])
   #View(eod_ret_testing[1:4])
   #eow_ret_training<-head(eow_ret,-weeks)
-  eow_ret_training<-(eow_ret)
+  eow_ret_training<-head(eow_ret,-weeks)
   #eom_ret_training<-head(eom_ret,-months)
-  eom_ret_training<-(eom_ret)
+  eom_ret_training<-head(eom_ret,-months)
   
   eod_ret_testing<-tail(eod_ret,days)
   eow_ret_testing<-tail(eow_ret,weeks)
@@ -461,7 +495,6 @@ for (iterator in seq(0, 9, by=3))
   
   #t20Beta
   
-  
   #Return.cumulative(eod_ret_training$TNA)
   trainingBetaSorted <- colSortMax(linearModTraining$coefficients)
   testingBetaSorted <- colSortMax(linearModTesting$coefficients)
@@ -511,7 +544,7 @@ for (iterator in seq(0, 9, by=3))
   
   #chart.Boxplot(eod_ret[t20CR])
   #top/bottom 2.5%
-  setPercent=round(length(colnames(eod_pvt_complete))*.025,0)
+  setPercent=round(length(colnames(eod_pvt_complete))*.0015625,0)
   if(setPercent<=4)
   {setPercent=5}
   
@@ -557,38 +590,15 @@ for (iterator in seq(0, 9, by=3))
   #b20Mix_RaW<-unique(c(b20CR_RaW,b20AVGR_RaW))
   #b20Mix_RaM<-unique(c(b20CR_RaM,b20AVGR_RaM))
   
-  
-  write.csv(Rb_training,"plots/rb_Training.csv")
-  write.csv(Rb_testing,"plots/rb_Testing.csv")
-
-  write.csv(eod_ret_training[t20Beta],paste0("plots/",end_date,"_Training_T20B.csv"))
-  write.csv(eod_ret_testing[t20Beta],paste0("plots/",end_date,"_Testing_T20B.csv"))
-  
-  write.csv(eod_ret_training[b20Beta],paste0("plots/",end_date,"_Training_B20B.csv"))
-  write.csv(eod_ret_testing[b20Beta],paste0("plots/",end_date,"_Testing_B20B.csv"))
-  
-  write.csv(eod_ret_training[t20Avg],paste0("plots/",end_date,"_Training_T20A.csv"))
-  write.csv(eod_ret_testing[t20Avg],paste0("plots/",end_date,"_Testing_T20A.csv"))
-
-  write.csv(eod_ret_training[b20Avg],paste0("plots/",end_date,"_Training_B20A.csv"))
-  write.csv(eod_ret_testing[b20Avg],paste0("plots/",end_date,"_Testing_B20A.csv"))
-  
-  write.csv(trainingBetaSorted,paste0("plots/",end_date,"_trainingBetaSorted.csv"))
-  write.csv(testingBetaSorted,paste0("plots/",end_date,"_testingBetaSorted.csv"))
-  
-  write.csv(trainingAvgSorted,paste0("plots/",end_date,"_trainingAvgSorted.csv"))
-  write.csv(testingAvgSorted,paste0("plots/",end_date,"_testingAvgSorted.csv"))
-  
-  write.csv(trainingCumRetSorted,paste0("plots/",end_date,"_trainingCumRetSorted.csv"))
-  write.csv(testingCumRetSorted,paste0("plots/",end_date,"_testingCumRetSorted.csv"))
-  
   list_Ra<-c()
   #list_Ra<-c(t20Mix_Ra,b20Mix_Ra)
   #list_Ra<-c(t20Beta,b20Beta)
   list_upper<-c()
   list_lower<-c()
-  list_upper<-c(t20Beta)
-  list_lower<-c(b20Beta)
+  #list_upper<-c(t20Beta)
+  #list_lower<-c(b20Beta)
+  list_lower<-c(b20Cum)
+  list_upper<-c(t20Cum)
   #View(b20Beta)
   list_Ra<-c(list_upper,list_lower)
   #list_Ra<-c(t20Beta)
@@ -709,6 +719,30 @@ for (iterator in seq(0, 9, by=3))
   RaM_testing<-tail(RaM,months)
   RbM_testing<-tail(RbM,months)
   
+  write.csv(Rb_training,"plots/rb_Training.csv")
+  write.csv(Rb_testing,"plots/rb_Testing.csv")
+  
+  write.csv(eod_ret_training[t20Beta],paste0("plots/",end_date,"_Training_T20B.csv"))
+  write.csv(eod_ret_testing[t20Beta],paste0("plots/",end_date,"_Testing_T20B.csv"))
+  
+  write.csv(eod_ret_training[b20Beta],paste0("plots/",end_date,"_Training_B20B.csv"))
+  write.csv(eod_ret_testing[b20Beta],paste0("plots/",end_date,"_Testing_B20B.csv"))
+  
+  write.csv(eod_ret_training[t20Avg],paste0("plots/",end_date,"_Training_T20A.csv"))
+  write.csv(eod_ret_testing[t20Avg],paste0("plots/",end_date,"_Testing_T20A.csv"))
+  
+  write.csv(eod_ret_training[b20Avg],paste0("plots/",end_date,"_Training_B20A.csv"))
+  write.csv(eod_ret_testing[b20Avg],paste0("plots/",end_date,"_Testing_B20A.csv"))
+  
+  write.csv(trainingBetaSorted,paste0("plots/",end_date,"_trainingBetaSorted.csv"))
+  write.csv(testingBetaSorted,paste0("plots/",end_date,"_testingBetaSorted.csv"))
+  
+  write.csv(trainingAvgSorted,paste0("plots/",end_date,"_trainingAvgSorted.csv"))
+  write.csv(testingAvgSorted,paste0("plots/",end_date,"_testingAvgSorted.csv"))
+  
+  write.csv(trainingCumRetSorted,paste0("plots/",end_date,"_trainingCumRetSorted.csv"))
+  write.csv(testingCumRetSorted,paste0("plots/",end_date,"_testingCumRetSorted.csv"))
+  
   #list stuff
   
   acc_Ra_training<-Return.cumulative(Ra_training)
@@ -823,6 +857,10 @@ for (iterator in seq(0, 9, by=3))
   # Cumulative returns chart
   chart.CumReturns(Ra,legend.loc = 'topleft')
   chart.CumReturns(Rb,legend.loc = 'topleft')
+  
+  colnames(eod_ret_training)
+  
+  #head(eow_ret,tdays/2)
   
   #Box plots
   chart.Boxplot(cbind(Rb_training,Ra_training))
@@ -966,7 +1004,25 @@ for (iterator in seq(0, 9, by=3))
   sixthSixth = (all_profile[7]-all_profile[6])*(1-.9)
   
   sevenNumModSdev=firstSixth+secondSixth+thirdSixth+fourthSixth+fifthSixth+sixthSixth
-  weight=2
+  #weight=2
+  print(paste("start: ", as.Date(start_dateInLoop), "end: ", as.Date(end_dateInLoop), "Weights", positive, "vs", negative, "The lag month is", iterator))
+  chart.CumReturns(eod_ret_training[c(t20Cum,"SP500TR")],legend.loc = 'topleft')
+  chart.CumReturns(eod_ret_testing[c(t20Cum,"SP500TR")],legend.loc = 'topleft')
+  
+  
+  #sp500
+  #chart.CumReturns(Ra_testing)
+  #chart.CumReturns(Ra_testing)
+  #sp500
+  #chart.CumReturns(Rb_testing)
+  
+  
+  print(paste(c("train portfolio",round(sum(Return.cumulative(eod_ret_training[t20Cum])),3))))
+  print(paste(c("train SP500",round(sum(Return.cumulative(eod_ret_training["SP500TR"])),3))))
+  
+  print(paste(c("test portfolio",round(sum(Return.cumulative(eod_ret_testing[t20Cum])),3))))
+  print(paste(c("test SP500",round(sum(Return.cumulative(eod_ret_testing["SP500TR"])),3))))
+  
   for (weight in 2:3)
   {
     positive=weight
@@ -980,7 +1036,6 @@ for (iterator in seq(0, 9, by=3))
     
     #use with negative
     opt_w[(length(list_upper)+1):(length(list_lower)+length(list_upper))]<-negative/length(list_lower)
-    
     
     sum(opt_w)
     
@@ -1017,73 +1072,79 @@ for (iterator in seq(0, 9, by=3))
     #need to extract these as names for this next step.
     
     #graph cumulative returns by best/worst beta's before and after
-    chart.CumReturns(eod_ret_training[t20Beta])
-    chart.CumReturns(eod_ret_testing[t20Beta])
+    #chart.CumReturns(eod_ret_training[t20Beta])
+    chart.CumReturns(eod_ret_training[unlist(t20Beta)])
     
-    chart.CumReturns(eod_ret_training[b20Beta])
-    chart.CumReturns(eod_ret_testing[b20Beta])
+    #as.character(t20Beta)
+    #typeof(t20Beta)
+    #typeof(b20Avg)
+    chart.CumReturns(eod_ret_testing[unlist(t20Beta)])
+    
+    chart.CumReturns(eod_ret_training[unlist(b20Beta)])
+    chart.CumReturns(eod_ret_testing[unlist(b20Beta)])
     
     #graph cumulative returns by best/worst avg's before and after    
-    chart.CumReturns(eod_ret_training[t20Avg])
-    chart.CumReturns(eod_ret_testing[t20Avg])
+    chart.CumReturns(eod_ret_training[unlist(t20Avg)])
+    chart.CumReturns(eod_ret_testing[unlist(t20Avg)])
     
-    chart.CumReturns(eod_ret_training[b20Avg])
-    chart.CumReturns(eod_ret_testing[b20Avg])
+    chart.CumReturns(eod_ret_training[unlist(b20Avg)])
+    chart.CumReturns(eod_ret_testing[unlist(b20Avg)])
     
     #compare accumulated returns via means of best/worst beta's
     
     #good returns, before after, do predictions hold?
-    mean_acc_training_beta_t20 <- mean(Return.cumulative(eod_ret_training[t20Beta]))
-    mean_acc_testing_beta_t20 <- mean(Return.cumulative(eod_ret_testing[t20Beta]))
+    mean_acc_training_beta_t20 <- mean(Return.cumulative(eod_ret_training[unlist(t20Beta)]))
+    mean_acc_testing_beta_t20 <- mean(Return.cumulative(eod_ret_testing[unlist(t20Beta)]))
     
     #bad returns, before after, do predictions hold?
-    mean_acc_training_beta_b20 <- mean(Return.cumulative(eod_ret_training[b20Beta]))
-    mean_acc_testing_beta_b20 <- mean(Return.cumulative(eod_ret_testing[b20Beta]))
+    mean_acc_training_beta_b20 <- mean(Return.cumulative(eod_ret_training[unlist(b20Beta)]))
+    mean_acc_testing_beta_b20 <- mean(Return.cumulative(eod_ret_testing[unlist(b20Beta)]))
     
     #compare accumulated returns via means of best/worst average cumulative return
     
     #good returns, before after, do predictions hold?
-    mean_acc_training_t20 <- mean(Return.cumulative(eod_ret_training[t20Cum]))
-    mean_acc_testing_t20 <- mean(Return.cumulative(eod_ret_testing[t20Cum]))
+    mean_acc_training_t20 <- mean(Return.cumulative(eod_ret_training[unlist(t20Cum)]))
+    mean_acc_testing_t20 <- mean(Return.cumulative(eod_ret_testing[unlist(t20Cum)]))
     
     #bad returns, before after, do predictions hold?
-    mean_acc_training_b20 <- mean(Return.cumulative(eod_ret_training[b20Cum]))
-    mean_acc_testing_b20 <- mean(Return.cumulative(eod_ret_testing[b20Cum]))
+    mean_acc_training_b20 <- mean(Return.cumulative(eod_ret_training[unlist(b20Cum)]))
+    mean_acc_testing_b20 <- mean(Return.cumulative(eod_ret_testing[unlist(b20Cum)]))
     
-    print (paste("Beta: [from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 mean_acc_testing_b20", mean_acc_training_t20 , mean_acc_testing_t20 , mean_acc_training_b20, mean_acc_testing_b20))
+    print (paste("Beta: CumRet", "mean_acc tr_t20 te_t20 tr_b20 te_b20", round(mean_acc_training_t20,3) , round(mean_acc_testing_t20,3) , round(mean_acc_training_b20,3), round(mean_acc_testing_b20,3)))
     
     #compare accumulated returns via means of best/worst avg return
     
     #good returns, before after, do predictions hold?
-    mean_acc_training_t20 <- mean(Return.cumulative(eod_ret_training[t20Avg]))
-    mean_acc_testing_t20 <- mean(Return.cumulative(eod_ret_testing[t20Avg]))
+    mean_acc_training_t20 <- mean(Return.cumulative(eod_ret_training[unlist(t20Avg)]))
+    mean_acc_testing_t20 <- mean(Return.cumulative(eod_ret_testing[unlist(t20Avg)]))
     
     #bad returns, before after, do predictions hold?
-    mean_acc_training_b20 <- mean(Return.cumulative(eod_ret_training[b20Avg]))
-    mean_acc_testing_b20 <- mean(Return.cumulative(eod_ret_testing[b20Avg]))
+    mean_acc_training_b20 <- mean(Return.cumulative(eod_ret_training[unlist(b20Avg)]))
+    mean_acc_testing_b20 <- mean(Return.cumulative(eod_ret_testing[unlist(b20Avg)]))
     
-    print (paste("Beta: [from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 mean_acc_testing_b20", mean_acc_training_t20 , mean_acc_testing_t20 , mean_acc_training_b20, mean_acc_testing_b20))
+    print (paste("Beta: CumRet", "mean_acc tr_t20 te_t20 tr_b20 te_b20", round(mean_acc_training_t20,3) , round(mean_acc_testing_t20,3) , round(mean_acc_training_b20,3), round(mean_acc_testing_b20,3)))
     
     #compare accumulated returns, avg
     
     #good returns, before after, do predictions hold?
-    mean_acc_training_t20 <- mean(Return.cumulative(eod_ret_training[t20Avg]))
-    mean_acc_testing_t20 <- mean(Return.cumulative(eod_ret_testing[t20Avg]))
+    mean_acc_training_t20 <- mean(Return.cumulative(eod_ret_training[unlist(t20Avg)]))
+    mean_acc_testing_t20 <- mean(Return.cumulative(eod_ret_testing[unlist(t20Avg)]))
     
     #bad returns, before after, do predictions hold?
-    mean_acc_training_b20 <- mean(Return.cumulative(eod_ret_training[b20Avg]))
-    mean_acc_testing_b20 <- mean(Return.cumulative(eod_ret_testing[b20Avg]))
+    mean_acc_training_b20 <- mean(Return.cumulative(eod_ret_training[unlist(b20Avg)]))
+    mean_acc_testing_b20 <- mean(Return.cumulative(eod_ret_testing[unlist(b20Avg)]))
     
-    print (paste("Average: [from a Set of Average] Cumulative Returns: train_t20 test_t20 train_b20 test_b20", mean_acc_training_t20 , mean_acc_testing_t20 , mean_acc_training_b20, mean_acc_testing_b20))
+    print (paste("Avg: CumRet: tr_t20 te_t20 tr_b20 te_b20", round(mean_acc_training_t20,3) , round(mean_acc_testing_t20,3) , round(mean_acc_training_b20,3), round(mean_acc_testing_b20,3)))
     
     #chart.CumReturns(Ra_training[,b20AVGR_Ra])
     
     #boxplot(data.frame(stack(((data.frame(eod_ret_training[t20AVGR_Ra])))))$values, horizontal = 1)
     #boxplot(data.frame(stack(((data.frame(eod_ret_testing[t20AVGR_Ra])))))$values, horizontal = 1)
     
-    
-    chart.CumReturns(Rb_training)
-    chart.CumReturns(Rb_testing)
+    print (paste("Avg: CumRet: tr_t20 te_t20 tr_b20 te_b20", round(mean_acc_training_t20,3) , round(mean_acc_testing_t20,3) , round(mean_acc_training_b20,3), round(mean_acc_testing_b20,3)))
+
+    #uses lists
+    #chart.CumReturns(Ra_training,legend.loc = 'topleft')
     
     # Chart Hypothetical Portfolio Returns ------------------------------------
     
@@ -1105,8 +1166,8 @@ for (iterator in seq(0, 9, by=3))
     # End of Stock Market Case Study 
     
     #don't use without shorts
-    print(paste("start: ", start_date, "end: ", end_date, "Weights", positive, "vs", negative, "The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))      
     #scores<-rbind(scores,Return.cumulative(Rp$ptf))
+    print(paste( "The return is", round(Return.cumulative(Rp$ptf),3)))
     
   }
   
@@ -1419,10 +1480,10 @@ for (iterator in seq(0, 9, by=3))
   RpW$ptf<-RaW_testing %*% opt_w
   RpM$ptf<-RaM_testing %*% opt_w
   
-  print (paste("Beta: Iterator:[from a Set of Beta] Cumulative Returns", "train_t20 test_t20 train_b20 test_b20", mean_acc_training_beta_t20 , mean_acc_testing_beta_t20 , mean_acc_training_beta_b20, mean_acc_testing_beta_b20))
+  print (paste("Beta: CumRet", "tr_t20 te_t20 tr_b20 te_b20", round(mean_acc_training_beta_t20,3) , round(mean_acc_testing_beta_t20,3) , round(mean_acc_training_beta_b20,3), round(mean_acc_testing_beta_b20,3)))
   
   #only use with negative weights
-  print(paste("start: ", start_date, "end: ", end_date, "Markowitz Profile & The lag month is", iterator, "and the return is", Return.cumulative(Rp$ptf)))
+  print(paste("Markowitz Profile ret", round(Return.cumulative(Rp$ptf),3)))
   
   #zip up reports
   
