@@ -112,7 +112,23 @@ for(lister in list_symbols)
   #https://www.oipapio.com/question-12219593
   rownames(tempHolder) <- tempHolder$date 
   xts_holder <- as.xts(tempHolder,date_col = date)
+  colnames(xts_holder)
+  colnames(tempHolder)
+  class(tempHolder)
+
+  bbands <- BBands( tempHolder[,c("high","low","close")] )
+  adx <- ADX( tempHolder[,c("high","low","close")] )
+  ema <- EMA(tempHolder[,"close"], n=20)
+  sma <- SMA(tempHolder[,"close"], n=20)
   
+  # MACD
+  macd <- MACD( tempHolder[,"close"] )
+  
+  # RSI
+  rsi <- RSI(tempHolder[,"close"])
+  
+  # Stochastics
+  stochOsc <- stoch(tempHolder[,c("high","low","close")])
   
 }
 
@@ -124,13 +140,17 @@ melted_eod_completewNA <- melt(eod_completewNA, measure.vars = c("open","high","
 
 melted_eod_completewNA[which(melted_eod_completewNA$symbol=="ACAD" & melted_eod_completewNA$date == "2015-08-24"),,drop=F]
 
+rownames(melted_eod_completewNA) <- melted_eod_completewNA$date
+
+colnames(melted_eod_completewNA)
+
 #how to filter
 melted_eod_completewNA[which(melted_eod_completewNA$symbol=="ACAD" & melted_eod_completewNA$date == "2015-08-24" & (melted_eod_completewNA$variable=="high" | melted_eod_completewNA$variable=="low" | melted_eod_completewNA$variable=="close")),,drop=F]
 
 #https://stackoverflow.com/questions/25143428/why-cant-one-have-several-value-var-in-dcast
 eod_pvtwNA<-dcast(melted_eod_completewNA, date ~ symbol + variable, value.var="value" ,mean)
 
-colnames(eod_completewNA)
+colnames(eod_pvtwNA)
 #https://stackoverflow.com/questions/4297231/converting-a-data-frame-to-xts
 colnames(eod_completewNA[,-1:-2])
 
