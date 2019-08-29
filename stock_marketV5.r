@@ -234,8 +234,8 @@ for (iterator in seq(0, 24, by=1))
   #check
   #View((eod_pvt[c('date','SP500TR')])) #first 10 rows and first 5 columns 
   #View((eod_ret[c('SP500TR')]))
-  ncol(eod_pvtwNA) # column count
-  nrow(eod_pvtwNA)
+  #ncol(eod_pvtwNA) # column count
+  #nrow(eod_pvtwNA)
   
   #still a problem, 451/809
   #table(is.na(eod_pvt$YLCO))

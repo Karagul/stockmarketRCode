@@ -13,10 +13,13 @@ library(quantmod);
 #tidyquant deprecated
 #library(timetk);
 #source("xtsanalytics-master/R/mget_symbols.R")
+#requires sprint which doesn't install easily
+#library(sprint)
 #library(data.table)
 library(mondate);
 require(stringi)
 require(reshape2) #did you install this package?
+library(plyr)
 
 #todayIs <- as.Date(as.POSIXlt(as.Date(Sys.Date())))
 #redundant, but included for usefulness
@@ -66,15 +69,7 @@ eodwNA<-dbGetQuery(conn,queryAggregate)
 
 dbDisconnect(conn)
 
-#eodwNA_xts <- as.xts(eodwNA)
 colnames(eodwNA)
-
-#symbolNames <- c()
-#symbolNames <- unique(eodwNA$symbol)
-
-#fwrite(eodwNA,"eodwNA.csv")
-
-#https://rdrr.io/github/jeanmarcgp/xtsanalytics/man/mget_symbols.html
 
 eodOutside<-na.omit(eodwNA)
 
@@ -95,88 +90,110 @@ selected_symbols_daily<-names(pct)[which(pct>=0.99 & pct<=1)]
 
 eod_completewNA<-eod[which(eod$symbol %in% selected_symbols_daily),,drop=F]
 
-#https://stackoverflow.com/questions/35371004/error-using-dcast-with-multiple-value-var?noredirect=1&lq=1
-#"date"   "open"   "high"   "low"    "close"  "volume"
-
-
-head(eod_completewNA[1:5])
-
-list_symbols <- unique(eod_completewNA$symbol)
-
-for(lister in list_symbols)
-{
-  tempHolder <- c()
-  tempHolder <- eod_completewNA[which(eod_completewNA$symbol==lister),,drop=F][,-2]
-  colnames(tempHolder)
-  class(tempHolder$date)
-  #https://www.oipapio.com/question-12219593
-  rownames(tempHolder) <- tempHolder$date 
-  xts_holder <- as.xts(tempHolder,date_col = date)
-  colnames(xts_holder)
-  colnames(tempHolder)
-  class(tempHolder)
-
-  bbands <- BBands( tempHolder[,c("high","low","close")] )
-  adx <- ADX( tempHolder[,c("high","low","close")] )
-  ema <- EMA(tempHolder[,"close"], n=20)
-  sma <- SMA(tempHolder[,"close"], n=20)
-  
-  # MACD
-  macd <- MACD( tempHolder[,"close"] )
-  
-  # RSI
-  rsi <- RSI(tempHolder[,"close"])
-  
-  # Stochastics
-  stochOsc <- stoch(tempHolder[,c("high","low","close")])
-  
-}
-
 #melted_eod_completewNA <- melt(eod_completewNA, measure.vars = c("open","high","low","close","volume"))
 
 #https://seananderson.ca/2013/10/19/reshape/
 #https://t1.daumcdn.net/cfile/tistory/25177F4E5863D58A0C
-melted_eod_completewNA <- melt(eod_completewNA, measure.vars = c("open","high","low","close","volume"))
-
-melted_eod_completewNA[which(melted_eod_completewNA$symbol=="ACAD" & melted_eod_completewNA$date == "2015-08-24"),,drop=F]
-
-rownames(melted_eod_completewNA) <- melted_eod_completewNA$date
-
-colnames(melted_eod_completewNA)
+#melted_eod_completewNA <- melt(eod_completewNA, measure.vars = c("open","high","low","close","volume"))
+melted_eod_completewNA_close <- melt(eod_completewNA, measure.vars = c("close"))
+#melted_eod_completewNA[which(melted_eod_completewNA$symbol=="ACAD" & melted_eod_completewNA$date == "2015-08-24"),,drop=F]
 
 #how to filter
 melted_eod_completewNA[which(melted_eod_completewNA$symbol=="ACAD" & melted_eod_completewNA$date == "2015-08-24" & (melted_eod_completewNA$variable=="high" | melted_eod_completewNA$variable=="low" | melted_eod_completewNA$variable=="close")),,drop=F]
 
 #https://stackoverflow.com/questions/25143428/why-cant-one-have-several-value-var-in-dcast
-eod_pvtwNA<-dcast(melted_eod_completewNA, date ~ symbol + variable, value.var="value" ,mean)
+#eod_pvtwNA<-dcast(melted_eod_completewNA, date ~ symbol + variable, value.var="value" ,mean)
 
-colnames(eod_pvtwNA)
-#https://stackoverflow.com/questions/4297231/converting-a-data-frame-to-xts
-colnames(eod_completewNA[,-1:-2])
+#eod_pvtwNA_close<-dcast(melted_eod_completewNA_close, date ~ symbol + variable, value.var="value" ,mean)
+eod_pvtwNA_close<-dcast(melted_eod_completewNA_close, date ~ symbol, value.var="value" ,mean)
 
-xts_melted_eod_completewNA <- as.xts(eod_completewNA[,-1:-2],date_col = eod_completewNA[,1])
+#some symbols had all 1's, so I need to drop those columns
+#https://stackoverflow.com/questions/22196078/count-unique-values-for-every-column
+#pct_uniques <- apply(eod_pvtwNA_close, 2, function(x) length(unique(x)))
 
-head(xts_melted_eod_completewNA)
+#https://masterr.org/r/how-to-find-consecutive-repeats-in-r/
+#https://stackoverflow.com/questions/19998836/r-count-consecutive-occurrences-of-values-in-a-single-column
+repeats <- c()
+repeats <- apply(eod_pvtwNA_close, 2, function(x) max(rle(x)$lengths))
 
-colnames(eod_completewNA)
-melted_eod_completewNA_bbands <- BBands( eod_completewNA[,c("high","low","close")] )
+length(names(repeats))
+#90% repeats was 5.5
+repeated_symbols_daily<-names(repeats)[which(repeats>=8)]
 
-colnames(melted_eod_completewNA_bbands)
-nrow(eod_completewNA)
-head(melted_eod_completewNA_bbands)
+eod_completewNA_woutRepeats<-eod_completewNA[which(!eod_completewNA$symbol %in% repeated_symbols_daily),,drop=F]
 
-#value.var (value) not found in input
+#pct2 <- 1-(sapply(eod_pvtwNA, function(x) sum(is.na(x)))/nrow(eod_pvtwNA))
 
-colnames(eod_completewNA)
+list_symbols <- unique(eod_completewNA_woutRepeats$symbol)
 
-colnames(eod_pvtwNA)
-
+#x <- mget_symbols(list_symbols, startdate=start_date,src="database",filepath="eodwNA.csv")
 
 
-#head(eod_pvtwNA)
+#colnames(eod_completewNA_woutRepeats)
 
-testWide <- dcast(eod_completewNA, formula = date ~ symbol, value.var = c('open','high','low','close','volume'))
+eod_completewNA_techInd <- c()
+for(lister in list_symbols)
+{
+  tempHolder <- c()
+  tempHolder <- eod_completewNA_woutRepeats[which(eod_completewNA_woutRepeats$symbol==lister),,drop=F][,-2]
+  colnames(tempHolder) <- c("Date","Open","High","Low","Close","Volume")
+  #
+  
+  #https://www.oipapio.com/question-12219593
+  #rownames(tempHolder) <- tempHolder$date 
 
-pct2 <- 1-(sapply(eod_pvtwNA, function(x) sum(is.na(x)))/nrow(eod_pvtwNA))
+  bbands <- c()
+  adx <- c()
+  ema <- c()
+  sma <- c()
+  macd <- c()
+  rsi <- c()
+  stochOsc <- c()
+  
+  #ARK breaks this with too many values at the same value
+  
+  bbands <- BBands( tempHolder[,c("High","Low","Close")] )
+  adx <- ADX( tempHolder[,c("High","Low","Close")] )
+  ema <- data.frame(EMA(tempHolder[,"Close"], n=20)[,drop=FALSE])
+  sma <- data.frame(SMA(tempHolder[,"Close"], n=20)[,drop=FALSE])
+  
+  # MACD
+  macd <- MACD( tempHolder[,"Close"] )
+  
+  # RSI
+  rsi <- RSI(tempHolder[,"Close"])
+  
+  # Stochastics
+  stochOsc <- stoch(tempHolder[,c("High","Low","Close")])
+  
+  View(tempHolder$Date)
+  rownames(tempHolder) <- tempHolder$Date
+  
+  eod <<- tempHolder[which(tempHolder$Date=="2016-10-14"),,drop=F]
+  xts_holder <- as.xts(tempHolder)
+  
+  nrow(tempHolder)
+  
+
+  tech_ind <- cbind(lister,tempHolder,bbands,adx,ema,sma,macd,rsi,stochOsc)
+  
+  colnames(tech_ind)[1] <- "Symbol"
+  
+  if(is.null(eod_completewNA_techInd))
+  {
+    eod_completewNA_techInd <- tech_ind
+  }
+  if(!is.null(eod_completewNA_techInd))
+  {
+    colnames(tech_ind)
+    eod_completewNA_techInd <- rbind(eod_completewNA_techInd,tech_ind)
+    
+  }
+  #print(nrow(eod_completewNA_techInd))
+}
+View(eod_completewNA_woutRepeats$symbol)
+View(unique(eod_completewNA_techInd$Symbol))
+
+
 
 View(colnames(eod_pvtwNA))
