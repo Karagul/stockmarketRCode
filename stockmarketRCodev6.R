@@ -20,6 +20,7 @@ library(mondate);
 require(stringi)
 require(reshape2) #did you install this package?
 library(plyr)
+library(dplyr)
 
 #todayIs <- as.Date(as.POSIXlt(as.Date(Sys.Date())))
 #redundant, but included for usefulness
@@ -41,7 +42,6 @@ conn = dbConnect(drv=pg
                  ,port=5432
                  ,dbname="readyloop"
 )
-
 
 #max date is already stored on db creation
 end_date = dbGetQuery(conn,"select max(max) from qs_max_date")
@@ -111,16 +111,47 @@ eod_pvtwNA_close<-dcast(melted_eod_completewNA_close, date ~ symbol, value.var="
 #https://stackoverflow.com/questions/22196078/count-unique-values-for-every-column
 #pct_uniques <- apply(eod_pvtwNA_close, 2, function(x) length(unique(x)))
 
+# # of unique's by close
+#https://stackoverflow.com/questions/57697414/ohcl-data-with-symbols-in-a-data-frame-need-to-extract-of-unique-closes-by-sy
+
+eod_completewNA %>% 
+  group_by(symbol) %>% 
+  summarise(n = n_distinct(close))
+
+#duplicate Dates
+
+num_Dates <- eod_completewNA %>% 
+  group_by(symbol) %>% 
+  summarise(n = length(date))
+
+num_Unique_Dates <- eod_completewNA %>% 
+  group_by(symbol) %>% 
+  summarise(n = n_distinct(date))
+
+#subtract two data.frames
+  #https://stackoverflow.com/questions/18708395/subtract-values-in-one-dataframe-from-another/18708488
+z <- names(num_Dates)[-1]
+diff_Dates <- c()
+diff_Dates <- cbind(num_Dates[1], num_Dates[z] - num_Unique_Dates[match(num_Dates$symbol, num_Unique_Dates$symbol), z])
+  
+repeated_dates <- c()
+repeated_dates<-diff_Dates$symbol[which(diff_Dates$n>0)]
+
 #https://masterr.org/r/how-to-find-consecutive-repeats-in-r/
 #https://stackoverflow.com/questions/19998836/r-count-consecutive-occurrences-of-values-in-a-single-column
-repeats <- c()
-repeats <- apply(eod_pvtwNA_close, 2, function(x) max(rle(x)$lengths))
+sequential_repeat_closes <- c()
+sequential_repeat_closes <- apply(eod_pvtwNA_close, 2, function(x) max(rle(x)$lengths))
 
-length(names(repeats))
+length(names(sequential_repeat_closes))
 #90% repeats was 5.5
-repeated_symbols_daily<-names(repeats)[which(repeats>=8)]
+sequential_repeated_symbols_daily <- c()
+sequential_repeated_symbols_daily<-names(sequential_repeat_closes)[which(sequential_repeat_closes>=8)]
 
-eod_completewNA_woutRepeats<-eod_completewNA[which(!eod_completewNA$symbol %in% repeated_symbols_daily),,drop=F]
+filtered_symbols <- c()
+filtered_symbols <- c(sequential_repeated_symbols_daily,repeated_dates)
+
+eod_completewNA_woutRepeats <- c()
+eod_completewNA_woutRepeats<-eod_completewNA[which(!eod_completewNA$symbol %in% filtered_symbols),,drop=F]
 
 #pct2 <- 1-(sapply(eod_pvtwNA, function(x) sum(is.na(x)))/nrow(eod_pvtwNA))
 
@@ -130,6 +161,8 @@ list_symbols <- unique(eod_completewNA_woutRepeats$symbol)
 
 
 #colnames(eod_completewNA_woutRepeats)
+
+head(tempHolder)
 
 eod_completewNA_techInd <- c()
 for(lister in list_symbols)
@@ -174,7 +207,6 @@ for(lister in list_symbols)
   
   nrow(tempHolder)
   
-
   tech_ind <- cbind(lister,tempHolder,bbands,adx,ema,sma,macd,rsi,stochOsc)
   
   colnames(tech_ind)[1] <- "Symbol"
