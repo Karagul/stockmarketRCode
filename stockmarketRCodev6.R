@@ -7,12 +7,12 @@ psqlhost="192.168.3.103"
 library(Rserve);
 library(mondate);
 require(Rserve);
-library(TTR);
 library(quantmod);
 #https://stackoverflow.com/questions/4297231/converting-a-data-frame-to-xts
 #tidyquant deprecated
 #library(timetk);
 #source("xtsanalytics-master/R/mget_symbols.R")
+source("tech_ind.R")
 #requires sprint which doesn't install easily
 #library(sprint)
 #library(data.table)
@@ -159,7 +159,6 @@ list_symbols <- unique(eod_completewNA_woutRepeats$symbol)
 
 #x <- mget_symbols(list_symbols, startdate=start_date,src="database",filepath="eodwNA.csv")
 
-
 #colnames(eod_completewNA_woutRepeats)
 
 head(tempHolder)
@@ -169,60 +168,30 @@ for(lister in list_symbols)
 {
   tempHolder <- c()
   tempHolder <- eod_completewNA_woutRepeats[which(eod_completewNA_woutRepeats$symbol==lister),,drop=F][,-2]
-  colnames(tempHolder) <- c("Date","Open","High","Low","Close","Volume")
-  #
   
-  #https://www.oipapio.com/question-12219593
-  #rownames(tempHolder) <- tempHolder$date 
+  tech_ind_result <- tech_ind(tempHolder)
 
-  bbands <- c()
-  adx <- c()
-  ema <- c()
-  sma <- c()
-  macd <- c()
-  rsi <- c()
-  stochOsc <- c()
-  
-  #ARK breaks this with too many values at the same value
-  
-  bbands <- BBands( tempHolder[,c("High","Low","Close")] )
-  adx <- ADX( tempHolder[,c("High","Low","Close")] )
-  ema <- data.frame(EMA(tempHolder[,"Close"], n=20)[,drop=FALSE])
-  sma <- data.frame(SMA(tempHolder[,"Close"], n=20)[,drop=FALSE])
-  
-  # MACD
-  macd <- MACD( tempHolder[,"Close"] )
-  
-  # RSI
-  rsi <- RSI(tempHolder[,"Close"])
-  
-  # Stochastics
-  stochOsc <- stoch(tempHolder[,c("High","Low","Close")])
-  
-  View(tempHolder$Date)
-  rownames(tempHolder) <- tempHolder$Date
-  
-  eod <<- tempHolder[which(tempHolder$Date=="2016-10-14"),,drop=F]
-  xts_holder <- as.xts(tempHolder)
-  
-  nrow(tempHolder)
-  
-  tech_ind <- cbind(lister,tempHolder,bbands,adx,ema,sma,macd,rsi,stochOsc)
-  
-  colnames(tech_ind)[1] <- "Symbol"
+  colnames(tech_ind_result)[1] <- "Symbol"
   
   if(is.null(eod_completewNA_techInd))
   {
-    eod_completewNA_techInd <- tech_ind
+    eod_completewNA_techInd <- tech_ind_result
   }
   if(!is.null(eod_completewNA_techInd))
   {
-    colnames(tech_ind)
-    eod_completewNA_techInd <- rbind(eod_completewNA_techInd,tech_ind)
+    colnames(tech_ind_result)
+    eod_completewNA_techInd <- rbind(eod_completewNA_techInd,tech_ind_result)
     
   }
   #print(nrow(eod_completewNA_techInd))
 }
+
+colnames(eod_completewNA_techInd) <- c("Symbol","Date","Open","High","Low","Close","Volume","dn","mavg","up","pctB","DIp","DIn","DX","ADX","EMA","SMA","macd","signal","rsi","fastK","fastD","slowD")
+
+View(head(eod_completewNA_techInd,100))
+unique(eod_completewNA_techInd$Symbol)
+nrow(eod_completewNA_techInd)
+fwrite(eod_completewNA_techInd,"eod_completewNA_techInd.csv")
 View(eod_completewNA_woutRepeats$symbol)
 View(unique(eod_completewNA_techInd$Symbol))
 
