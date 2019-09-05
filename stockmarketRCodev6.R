@@ -8,6 +8,8 @@ library(Rserve);
 library(mondate);
 require(Rserve);
 library(quantmod);
+library(TTR);
+library(PerformanceAnalytics);
 #https://stackoverflow.com/questions/4297231/converting-a-data-frame-to-xts
 #tidyquant deprecated
 #library(timetk);
@@ -132,6 +134,7 @@ num_Unique_Dates <- eod_completewNA %>%
   #https://stackoverflow.com/questions/18708395/subtract-values-in-one-dataframe-from-another/18708488
 z <- names(num_Dates)[-1]
 diff_Dates <- c()
+#group_by(symbol) %>% summarise(n1 = n() - n_distinct(date))
 diff_Dates <- cbind(num_Dates[1], num_Dates[z] - num_Unique_Dates[match(num_Dates$symbol, num_Unique_Dates$symbol), z])
   
 repeated_dates <- c()
@@ -161,7 +164,10 @@ list_symbols <- unique(eod_completewNA_woutRepeats$symbol)
 
 #colnames(eod_completewNA_woutRepeats)
 
-head(tempHolder)
+num_Unique_Dates <- eod_completewNA_woutRepeats[which(eod_completewNA_woutRepeats$symbol==list_symbols[1:2]),c("symbol","high","low","close"),drop=F] %>% 
+  group_by(symbol) %>% 
+  ADX(eod_completewNA_woutRepeats[,c("high","low","close")])
+
 
 eod_completewNA_techInd <- c()
 for(lister in list_symbols)
@@ -179,22 +185,22 @@ for(lister in list_symbols)
   }
   if(!is.null(eod_completewNA_techInd))
   {
-    colnames(tech_ind_result)
     eod_completewNA_techInd <- rbind(eod_completewNA_techInd,tech_ind_result)
-    
   }
   #print(nrow(eod_completewNA_techInd))
 }
 
 colnames(eod_completewNA_techInd) <- c("Symbol","Date","Open","High","Low","Close","Volume","dn","mavg","up","pctB","DIp","DIn","DX","ADX","EMA","SMA","macd","signal","rsi","fastK","fastD","slowD")
 
-View(head(eod_completewNA_techInd,100))
-unique(eod_completewNA_techInd$Symbol)
-nrow(eod_completewNA_techInd)
 fwrite(eod_completewNA_techInd,"eod_completewNA_techInd.csv")
-View(eod_completewNA_woutRepeats$symbol)
-View(unique(eod_completewNA_techInd$Symbol))
 
+eod_ret<-CalculateReturns(eod_pvt_complete[,c("Symbol","Date","Close")])
 
+View(eod_completewNA_techInd$Date)
 
-View(colnames(eod_pvtwNA))
+test <- eod_completewNA_techInd[,c("Symbol","Date","Close")] %>% 
+  group_by(Symbol) %>% 
+  group_by(Date) %>% 
+  CalculateReturns()
+  #summarise(n = n_distinct(close))
+
